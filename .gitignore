@@ -54,3 +54,5 @@ dkms.conf
 .idea/
 
 cmake-build-debug/
+
+log.txt
