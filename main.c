@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "functions/log.h"
+#include "functions/xml.h"
 
 char *logFile = "log.txt";
 
@@ -13,6 +14,7 @@ int main(int argc, char **argv) {
     initLogFile();
     FILE *xml_file = openXMLFile(argc, argv);
 
+    readXML(xml_file);
 
     fclose(xml_file);
     return 0;
@@ -34,7 +36,7 @@ FILE *openXMLFile(int argc, char **argv) {
             logIt("File opened");
         }
     } else {
-        logIt("Wrong arg number");
+        logIt("Wrong arg number, you must provide XML file path in argument");
         exit(1);
     }
     return fp;
