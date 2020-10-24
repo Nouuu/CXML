@@ -15,10 +15,12 @@ void readXML(FILE *fp) {
 
     size_t end_pos = 0;
     char *between = getBetween(xml_str, tag, &end_pos);
-    printf("XML between balise \"%s\" is :\n%s\n", tag, between);
-    printf("Après:\n%s", xml_str + end_pos);
+    if (between != NULL) {
+        printf("XML between balise \"%s\" is :\n%s\n", tag, between);
+        printf("Après:\n%s", xml_str + end_pos);
+        free(between);
+    }
     free(xml_str);
-    free(between);
 }
 
 /**
