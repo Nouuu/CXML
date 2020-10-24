@@ -11,9 +11,10 @@ FILE *openXMLFile(int argc, char **argv);
 
 int main(int argc, char **argv) {
     initLogFile();
-    FILE *xmlFile = openXMLFile(argc, argv);
+    FILE *xml_file = openXMLFile(argc, argv);
 
-    fclose(xmlFile);
+
+    fclose(xml_file);
     return 0;
 }
 

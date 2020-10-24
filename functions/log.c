@@ -4,25 +4,25 @@
 
 #include "log.h"
 
-char *logFileName = NULL;
+char *log_file_name = NULL;
 
 int setLogFileName(char *filename) {
     if (!strlen(filename)) {
         return 1;
     }
-    if (logFileName != NULL) {
-        free(logFileName);
+    if (log_file_name != NULL) {
+        free(log_file_name);
     }
-    logFileName = malloc(sizeof(char) * (strlen(filename) + 1));
-    strcpy(logFileName, filename);
+    log_file_name = malloc(sizeof(char) * (strlen(filename) + 1));
+    strcpy(log_file_name, filename);
     return 0;
 }
 
 
 void logIt(char *message) {
     char buff[20];
-    struct tm *sTm;
-    FILE *fp = fopen(logFileName, "a+");
+    struct tm *s_tm;
+    FILE *fp = fopen(log_file_name, "a+");
     if (fp == NULL) {
         fprintf(stderr, "Cannot open log file !\n");
         return;
@@ -33,8 +33,8 @@ void logIt(char *message) {
     }
 
     time_t now = time(0);
-    sTm = gmtime(&now);
-    strftime(buff, sizeof(buff), "%d-%m-%Y %H:%M:%S", sTm);
+    s_tm = gmtime(&now);
+    strftime(buff, sizeof(buff), "%d-%m-%Y %H:%M:%S", s_tm);
 
     printf("[%s] %s\n", buff, message);
     fprintf(fp, "[%s] %s\n", buff, message);

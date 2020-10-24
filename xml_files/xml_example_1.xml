@@ -1,8 +1,4 @@
 <?xml version="1.0"?>
-<!DOCTYPE ee[
-        <!ELEMENT classrooms (classroom)>
-        <!ELEMENT classroom (#PCDATA)>
-        ]>
 <classrooms>
     <classroom>AL</classroom>
     <classroom>IABD</classroom>
