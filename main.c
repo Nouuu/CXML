@@ -22,6 +22,7 @@ int main(int argc, char **argv) {
 
     fclose(xml_file);
     fclose(dtd_file);
+
     return 0;
 }
 

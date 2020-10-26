@@ -18,6 +18,13 @@ typedef struct xml_string xml_string;
 typedef struct xml_attribute xml_attribute;
 typedef struct xml_node xml_node;
 typedef struct xml_document xml_document;
+typedef struct xml_parser xml_parser;
+
+enum xml_parser_offset {
+    NO_CHARACTER = -1,
+    CURRENT_CHARACTER = 0,
+    NEXT_CHARACTER = 1,
+};
 
 enum bool {
     false = 0,
@@ -52,6 +59,12 @@ struct xml_document {
     xml_node *root;
 };
 
+struct xml_parser {
+    uint8_t *buffer;
+    size_t position;
+    size_t length;
+};
+
 xml_document *xml_parse_document(uint8_t *buffer, size_t length);
 
 xml_document *xml_open_document(FILE *source);
@@ -79,5 +92,20 @@ xml_node *xml_easy_child(xml_node *node, uint8_t const *child, ...);
 size_t xml_string_length(xml_string *string);
 
 void xml_string_copy(xml_string *string, uint8_t *buffer, size_t length);
+
+size_t get_zero_terminated_array_attributes(xml_attribute **attributes);
+
+size_t get_zero_terminated_array_nodes(xml_node **nodes);
+
+bool xml_string_equals(xml_string *a, xml_string *b);
+
+uint8_t *xml_string_clone(struct xml_string *s);
+
+void xml_string_free(xml_string *string);
+
+void xml_attribute_free(xml_attribute *attribute);
+
+void xml_node_free(xml_node *node);
+
 
 #endif //CXML_XML_PARSER_H
