@@ -119,3 +119,20 @@ uint8_t xml_parser_peek(xml_parser *parser, size_t n) {
     return 0;
 }
 
+void xml_parser_inc(xml_parser *parser, size_t n) {
+    parser->position += n;
+
+    if (parser->position >= strlen(parser->buffer)) {
+        parser->position = strlen(parser->buffer) - 1;
+    }
+}
+
+void xml_skip_whitespace(xml_parser *parser) {
+    while (isspace(parser->buffer[parser->position])) {
+        if (parser->position + 1 >= strlen(parser->buffer)) {
+            return;
+        } else {
+            parser->position++;
+        }
+    }
+}
