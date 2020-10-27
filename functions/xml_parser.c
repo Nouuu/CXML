@@ -68,7 +68,7 @@ void xml_node_free(xml_node *node) {
     free(node);
 }
 
-//TODO line 314
+
 /**
  * Echos xml parser error
  * @param parser
@@ -135,4 +135,61 @@ void xml_skip_whitespace(xml_parser *parser) {
             parser->position++;
         }
     }
+}
+
+xml_attribute **xml_find_attributes(xml_parser *parser, char *tag_open) {
+    char *tmp;
+    char *rest = NULL;
+    char *token;
+    char *str_name;
+    char *str_content;
+    const char *start_name;
+    const char *start_content;
+    size_t old_elements;
+    size_t new_elements;
+    xml_attribute *new_attribute;
+    xml_attribute **attributes;
+    size_t position;
+
+    attributes = malloc(sizeof(xml_attribute *));
+    attributes[0] = 0;
+
+    tmp = xml_string_clone(tag_open);
+
+    token = strtok_r(tmp, " ", &rest); // skip the first value
+    if (token != NULL) {
+
+        for (token = strtok_r(NULL, " ", &rest); token != NULL; token = strtok_r(NULL, " ", &rest)) {
+            str_name = malloc(strlen(token) + 1);
+            str_content = malloc(strlen(token) + 1);
+            if (sscanf(token, "%[^=]=\"%[^\"]", str_name, str_content) != 2) {
+                if (sscanf(token, "%[^=]=\'%[^\']", str_name, str_content) != 2) {
+                    free(str_name);
+                    free(str_content);
+                    continue;
+                }
+            }
+            position = token - tmp;
+            start_name = &tag_open[position];
+            start_content = &tag_open[position + strlen(str_name) + 2];
+
+            new_attribute = malloc(sizeof(struct xml_attribute));
+            new_attribute->name = (char *) start_name;
+            new_attribute->content = (char *) start_content;
+
+            old_elements = get_zero_terminated_array_attributes(attributes);
+            new_elements = old_elements + 1;
+            attributes = realloc(attributes, (new_elements + 1) * sizeof(struct xml_attributes *));
+
+            attributes[new_elements - 1] = new_attribute;
+            attributes[new_elements] = 0;
+
+
+            free(str_name);
+            free(str_content);
+        }
+    }
+
+    free(tmp);
+    return attributes;
 }
