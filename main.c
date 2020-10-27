@@ -3,6 +3,7 @@
 #include <string.h>
 #include "functions/log.h"
 #include "functions/xml.h"
+#include "functions/xml_parser.h"
 
 char *logFile = "log.txt";
 

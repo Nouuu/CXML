@@ -9,12 +9,17 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <math.h>
+#include <ctype.h>
 #include "log.h"
+
+#define MIN(X, Y) ((X) < (Y) ? (X) : (Y))
+#define MAX(X, Y) ((X) > (Y) ? (X) : (Y))
 
 typedef unsigned char uint8_t;
 typedef enum bool bool;
+typedef enum xml_parser_offset xml_parser_offset;
 typedef struct xml_buffer xml_buffer;
-typedef struct xml_string xml_string;
 typedef struct xml_attribute xml_attribute;
 typedef struct xml_node xml_node;
 typedef struct xml_document xml_document;
