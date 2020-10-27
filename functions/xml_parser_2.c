@@ -5,7 +5,7 @@
 #include "xml_parser_2.h"
 
 int xml_document_load(xml_document *document, const char *path) {
-    char message_buffer[300] = {0};
+    char message_buffer[500] = {0};
     FILE *fp = NULL;
     size_t size;
 
@@ -27,13 +27,12 @@ int xml_document_load(xml_document *document, const char *path) {
     document->source[size] = '\0';
     document->root_node = xml_node_new(NULL);
 
-    char parsing_buffer[256] = {0};
+    char parsing_buffer[500] = {0};
     int parsing_buffer_i = 0;
     int i = 0;
 
     xml_node *current_node = NULL;
-
-    while (document->source[i] != '\0') {
+    while (document->source[i] != '\0' && i < size) {
 
         if (document->source[i] == '<') {
             parsing_buffer[parsing_buffer_i] = '\0';
@@ -84,15 +83,85 @@ int xml_document_load(xml_document *document, const char *path) {
                 current_node = xml_node_new(current_node);
             }
 
-            // getting tag name
+
+            // getting tag name beginning
             i++;
-            while (document->source[i] != '>') {
+            xml_attribute current_attribute;
+            current_attribute.key = NULL;
+            current_attribute.value = NULL;
+
+            while (document->source[i] != '>' && i < size) {
                 parsing_buffer[parsing_buffer_i] = document->source[i];
                 parsing_buffer_i++;
                 i++;
+
+                //Tag name ending
+                if (isspace(document->source[i]) && !current_node->tag) {
+                    printf("Tag end : |%s|\n", parsing_buffer);
+                    parsing_buffer[parsing_buffer_i] = '\0';
+                    current_node->tag = strdup(parsing_buffer);
+                    parsing_buffer_i = 0;
+                    i++;
+                    continue;
+                }
+
+                //Pas sur ?
+                if (isspace(parsing_buffer[parsing_buffer_i - 1])) {
+                    parsing_buffer_i--;
+                    continue;
+                }
+
+                //Getting attribute key
+                if (document->source[i] == '=') {
+                    parsing_buffer[parsing_buffer_i] = '\0';
+                    current_attribute.key = strdup(parsing_buffer);
+                    parsing_buffer_i = 0;
+                    continue;
+                }
+
+                //getting attribute value
+                if (document->source[i] == '"' || document->source[i] == '\'') {
+                    if (!current_attribute.key) {
+                        logIt("ERROR - attribute's value has no key");
+                        return FALSE;
+                    }
+
+                    char choosen_quote = document->source[i];
+                    parsing_buffer_i = 0;
+                    i++;
+
+                    while (document->source[i] != choosen_quote) {
+                        if (i == size - 1) {
+                            sprintf(message_buffer,
+                                    "ERROR - You forgot to close quote on your attribute '%s' in your tag '%s'",
+                                    current_attribute.key, current_node->tag);
+                            logIt(message_buffer);
+                            return FALSE;
+                        }
+
+                        parsing_buffer[parsing_buffer_i] = document->source[i];
+                        parsing_buffer_i++;
+                        i++;
+                    }
+
+                    parsing_buffer[parsing_buffer_i] = '\0';
+                    current_attribute.value = strdup(parsing_buffer);
+                    xml_attribute_list_add(&current_node->attribute_list, &current_attribute);
+
+                    current_attribute.value = NULL;
+                    current_attribute.key = NULL;
+
+                    parsing_buffer_i = 0;
+                    i++;
+                    continue;
+                }
             }
+
+            // Set tag name if none
             parsing_buffer[parsing_buffer_i] = '\0';
-            current_node->tag = strdup(parsing_buffer);
+            if (!current_node->tag) {
+                current_node->tag = strdup(parsing_buffer);
+            }
 
             // resetting parsing buffer
             parsing_buffer_i = 0;
@@ -118,11 +187,12 @@ xml_node *xml_node_new(xml_node *parent) {
     node->tag = NULL;
     node->inner_text = NULL;
     node->parent = parent;
+    xml_attribute_list_init(&node->attribute_list);
     return node;
 }
 
 void xml_node_free(xml_node *node) {
-    if (node != NULL) {
+    if (node) {
         if (node->tag) {
             free(node->tag);
         }
@@ -130,7 +200,41 @@ void xml_node_free(xml_node *node) {
             free(node->inner_text);
         }
         free(node);
+
+        int i;
+        for (i = 0; i < node->attribute_list.size; ++i) {
+            xml_attribute_free(&node->attribute_list.data[i]);
+        }
     }
 }
+
+void xml_attribute_free(xml_attribute *attribute) {
+    if (attribute) {
+        if (attribute->key) {
+            free(attribute->key);
+        }
+        if (attribute->value) {
+            free(attribute->value);
+        }
+    }
+}
+
+void xml_attribute_list_init(xml_attribute_list *attribute_list) {
+    attribute_list->capacity = 1;
+    attribute_list->size = 0;
+    attribute_list->data = malloc(sizeof(xml_attribute) * attribute_list->capacity);
+}
+
+void xml_attribute_list_add(xml_attribute_list *attribute_list, xml_attribute *attribute) {
+    while (attribute_list->size >= attribute_list->capacity) {
+        attribute_list->capacity *= 2;
+        attribute_list->data = realloc(attribute_list->data, sizeof(xml_attribute) * attribute_list->capacity);
+    }
+
+    attribute_list->data[attribute_list->size] = *attribute;
+    attribute_list->size++;
+}
+
+
 
 
