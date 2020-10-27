@@ -69,3 +69,53 @@ void xml_node_free(xml_node *node) {
 }
 
 //TODO line 314
+/**
+ * Echos xml parser error
+ * @param parser
+ * @param offset
+ * @param message
+ */
+void xml_parser_error(xml_parser *parser, xml_parser_offset offset, char const *message) {
+    int row = 0;
+    int column = 0;
+
+    size_t character = MAX(0, MIN(strlen(parser->buffer), parser->position + offset));
+
+    size_t position;
+    for (position = 0; position < character; position++) {
+        column++;
+
+        if (parser->buffer[position] == '\n') {
+            row++;
+            column = 0;
+        }
+    }
+
+    if (offset != NO_CHARACTER) {
+        fprintf(stderr, "xml_parser_error at %d:%d (is %c): %s\n",
+                row + 1, column, parser->buffer[character], message
+        );
+    } else {
+        fprintf(stderr, "xml_parser_error at %d:%d: %s\n",
+                row + 1, column, message
+        );
+    }
+}
+
+uint8_t xml_parser_peek(xml_parser *parser, size_t n) {
+    size_t position = parser->position;
+
+    while (position < strlen(parser->buffer)) {
+        if (!isspace(parser->buffer[position])) {
+            if (n == 0) {
+                return parser->buffer[position];
+            } else {
+                n--;
+            }
+        }
+        position++;
+    }
+
+    return 0;
+}
+
