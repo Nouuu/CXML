@@ -1,1 +1,8 @@
-<root key='value' another="other value" third="here it is !">I am root</root>
+<root key='value' another="other value">
+    <inner>
+        <more>Im having fuuuuuuunnn</more>
+        <one id="2">
+        </one>
+    </inner>
+    I am root
+</root>

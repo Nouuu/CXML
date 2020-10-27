@@ -97,7 +97,6 @@ int xml_document_load(xml_document *document, const char *path) {
 
                 //Tag name ending
                 if (isspace(document->source[i]) && !current_node->tag) {
-                    printf("Tag end : |%s|\n", parsing_buffer);
                     parsing_buffer[parsing_buffer_i] = '\0';
                     current_node->tag = strdup(parsing_buffer);
                     parsing_buffer_i = 0;
@@ -188,6 +187,10 @@ xml_node *xml_node_new(xml_node *parent) {
     node->inner_text = NULL;
     node->parent = parent;
     xml_attribute_list_init(&node->attribute_list);
+    xml_node_list_init(&node->children);
+    if (parent) {
+        xml_node_list_add(&parent->children, node);
+    }
     return node;
 }
 
@@ -202,8 +205,11 @@ void xml_node_free(xml_node *node) {
         free(node);
 
         int i;
-        for (i = 0; i < node->attribute_list.size; ++i) {
+        for (i = 0; i < node->attribute_list.size; i++) {
             xml_attribute_free(&node->attribute_list.data[i]);
+        }
+        for (i = 0; i < node->children.size; i++) {
+            xml_node_free(node->children.data[i]);
         }
     }
 }
@@ -234,6 +240,32 @@ void xml_attribute_list_add(xml_attribute_list *attribute_list, xml_attribute *a
     attribute_list->data[attribute_list->size] = *attribute;
     attribute_list->size++;
 }
+
+void xml_node_list_init(xml_node_list *node_list) {
+    node_list->capacity = 1;
+    node_list->size = 0;
+    node_list->data = malloc(sizeof(xml_node) * node_list->capacity);
+
+}
+
+void xml_node_list_add(xml_node_list *node_list, xml_node *node) {
+    while (node_list->size >= node_list->capacity) {
+        node_list->capacity *= 2;
+        node_list->data = realloc(node_list->data, sizeof(xml_node *) * node_list->capacity);
+    }
+
+    node_list->data[node_list->size] = node;
+    node_list->size++;
+
+}
+
+xml_node *xml_node_child(xml_node *parent, int index) {
+    if (index >= parent->children.size) {
+        return NULL;
+    }
+    return parent->children.data[index];
+}
+
 
 
 

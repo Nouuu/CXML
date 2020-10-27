@@ -22,6 +22,7 @@ typedef struct xml_document_s xml_document;
 typedef struct xml_node_s xml_node;
 typedef struct xml_attribute_s xml_attribute;
 typedef struct xml_attribute_list_s xml_attribute_list;
+typedef struct xml_node_list_s xml_node_list;
 
 struct xml_attribute_s {
     char *key;
@@ -34,12 +35,20 @@ struct xml_attribute_list_s {
     xml_attribute *data;
 };
 
+struct xml_node_list_s {
+    int capacity;
+    int size;
+    xml_node **data;
+};
+
 struct xml_node_s {
     char *tag;
     char *inner_text;
     xml_node *parent;
     xml_attribute_list attribute_list;
+    xml_node_list children;
 };
+
 
 struct xml_document_s {
     char *source;
@@ -62,5 +71,11 @@ void xml_attribute_free(xml_attribute *attribute);
 void xml_attribute_list_init(xml_attribute_list *attribute_list);
 
 void xml_attribute_list_add(xml_attribute_list *attribute_list, xml_attribute *attribute);
+
+void xml_node_list_init(xml_node_list *node_list);
+
+void xml_node_list_add(xml_node_list *node_list, xml_node *node);
+
+xml_node *xml_node_child(xml_node *parent, int index);
 
 #endif //CXML_XML_PARSER_2_H
