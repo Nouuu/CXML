@@ -20,55 +20,35 @@ size_t get_zero_terminated_array_nodes(xml_node **nodes) {
     return elements;
 }
 
-bool xml_string_equals(xml_string *a, xml_string *b) {
-    if (a->length != b->length) {
-        return false;
-    }
-
-    size_t i;
-    for (i = 0; i < a->length; ++i) {
-        if (a->buffer[i] != b->buffer[i]) {
-            return false;
-        }
-    }
-
-    return true;
-}
-
-uint8_t *xml_string_clone(struct xml_string *s) {
-    if (!s) {
+char *xml_string_clone(char *s) {
+    if (s == NULL || strlen(s) <= 0) {
         return 0;
     }
 
-    uint8_t *clone = malloc(sizeof(uint8_t) * (s->length + 1));
+    char *clone = malloc(sizeof(uint8_t) * (strlen(s) + 1));
 
-    xml_string_copy(s, clone, s->length);
-    clone[s->length] = 0;
+    strcpy(clone, s);
 
     return clone;
 }
 
-void xml_string_free(xml_string *string) {
-    free(string);
-}
-
 void xml_attribute_free(xml_attribute *attribute) {
     if (attribute->name) {
-        xml_string_free(attribute->name);
+        free(attribute->name);
     }
     if (attribute->content) {
-        xml_string_free(attribute->content);
+        free(attribute->content);
     }
     free(attribute);
 }
 
 void xml_node_free(xml_node *node) {
     if (node->name) {
-        xml_string_free(node->name);
+        free(node->name);
     }
 
     if (node->content) {
-        xml_string_free(node->content);
+        free(node->content);
     }
 
     xml_attribute **at_cursor = node->attributes;
