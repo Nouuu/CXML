@@ -64,8 +64,6 @@ xml_node *xml_node_new(xml_node *parent);
 
 void xml_node_free(xml_node *node);
 
-xml_attribute *xml_attribute_new(xml_attribute *jesaispas);
-
 void xml_attribute_free(xml_attribute *attribute);
 
 void xml_attribute_list_init(xml_attribute_list *attribute_list);

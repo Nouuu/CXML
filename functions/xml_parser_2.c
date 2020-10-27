@@ -31,7 +31,8 @@ int xml_document_load(xml_document *document, const char *path) {
     int parsing_buffer_i = 0;
     int i = 0;
 
-    xml_node *current_node = NULL;
+    xml_node *current_node = document->root_node;
+
     while (document->source[i] != '\0' && i < size) {
 
         if (document->source[i] == '<') {
@@ -77,12 +78,7 @@ int xml_document_load(xml_document *document, const char *path) {
             }
 
             // setting current node
-            if (!current_node) {
-                current_node = document->root_node;
-            } else {
-                current_node = xml_node_new(current_node);
-            }
-
+            current_node = xml_node_new(current_node);
 
             // getting tag name beginning
             i++;
