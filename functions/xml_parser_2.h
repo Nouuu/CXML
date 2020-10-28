@@ -52,6 +52,8 @@ struct xml_node_s {
 
 struct xml_document_s {
     char *source;
+    char *version;
+    char *encoding;
     xml_node *root_node;
 };
 
@@ -73,6 +75,11 @@ void xml_attribute_list_add(xml_attribute_list *attribute_list, xml_attribute *a
 void xml_node_list_init(xml_node_list *node_list);
 
 void xml_node_list_add(xml_node_list *node_list, xml_node *node);
+
+void parse_attributes(const char *source, int *i, char *parsing_buffer, int *parsing_buffer_i, xml_node *current_node,
+                      size_t size);
+
+char *xml_node_attribute_value(xml_node *node, const char *key);
 
 xml_node *xml_node_child(xml_node *parent, int index);
 

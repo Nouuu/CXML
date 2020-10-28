@@ -88,7 +88,7 @@ int xml_document_load(xml_document *document, const char *path) {
                 parsing_buffer[parsing_buffer_i] = '\0';
 
                 // checking comment
-                if (strstr(parsing_buffer, "<!--") == parsing_buffer) {
+                if (!strcmp(parsing_buffer, "<!--")) {
                     while (ends_with(parsing_buffer, "-->") == FALSE) {
                         if (i >= size - 1) {
                             logIt("ERROR - You have unclosed comment in your XML file");
@@ -100,86 +100,35 @@ int xml_document_load(xml_document *document, const char *path) {
                     }
                     parsing_buffer[parsing_buffer_i] = '\0';
                     printf("Found comment : \n|%s|\n\n\n", parsing_buffer);
-                    i++;
+
+//                    i++;
                     continue;
+                }
+            }
+
+            //xml spec tag
+            if (document->source[i + 1] == '?') {
+                while (!isspace(document->source[i]) && document->source[i] != '>') {
+                    parsing_buffer[parsing_buffer_i] = document->source[i];
+                    parsing_buffer_i++;
+                    i++;
+                }
+                parsing_buffer[parsing_buffer_i] = '\0';
+
+                // checking xml special tag
+                if (!strcmp(parsing_buffer, "<?xml")) {
+                    parsing_buffer_i = 0;
+                    xml_node *specifications = xml_node_new(NULL);
+                    parse_attributes(document->source, &i, parsing_buffer, &parsing_buffer_i, specifications, size);
                 }
 
             }
-
             // setting current node
             current_node = xml_node_new(current_node);
 
             // getting tag name beginning
             i++;
-            xml_attribute current_attribute;
-            current_attribute.key = NULL;
-            current_attribute.value = NULL;
-
-            while (document->source[i] != '>' && i < size) {
-                parsing_buffer[parsing_buffer_i] = document->source[i];
-                parsing_buffer_i++;
-                i++;
-
-                //Tag name ending
-                if (isspace(document->source[i]) && !current_node->tag) {
-                    parsing_buffer[parsing_buffer_i] = '\0';
-                    current_node->tag = strdup(parsing_buffer);
-                    parsing_buffer_i = 0;
-                    i++;
-                    continue;
-                }
-
-                //Pas sur ?
-                if (isspace(parsing_buffer[parsing_buffer_i - 1])) {
-                    parsing_buffer_i--;
-                    continue;
-                }
-
-                //Getting attribute key
-                if (document->source[i] == '=') {
-                    parsing_buffer[parsing_buffer_i] = '\0';
-                    current_attribute.key = strdup(parsing_buffer);
-                    parsing_buffer_i = 0;
-                    continue;
-                }
-
-                //getting attribute value
-                if (document->source[i] == '"' || document->source[i] == '\'') {
-                    if (!current_attribute.key) {
-                        logIt("ERROR - attribute's value has no key");
-                        return FALSE;
-                    }
-
-                    char choosen_quote = document->source[i];
-                    parsing_buffer_i = 0;
-                    i++;
-
-                    while (document->source[i] != choosen_quote) {
-                        if (i == size - 1) {
-                            sprintf(message_buffer,
-                                    "ERROR - You forgot to close quote on your attribute '%s' in your tag '%s'",
-                                    current_attribute.key, current_node->tag);
-                            logIt(message_buffer);
-                            return FALSE;
-                        }
-
-                        parsing_buffer[parsing_buffer_i] = document->source[i];
-                        parsing_buffer_i++;
-                        i++;
-                    }
-
-                    parsing_buffer[parsing_buffer_i] = '\0';
-                    current_attribute.value = strdup(parsing_buffer);
-                    xml_attribute_list_add(&current_node->attribute_list, &current_attribute);
-
-                    current_attribute.value = NULL;
-                    current_attribute.key = NULL;
-
-                    parsing_buffer_i = 0;
-                    i++;
-                    continue;
-                }
-            }
+            parse_attributes(document->source, &i, parsing_buffer, &parsing_buffer_i, current_node, size);
 
             // Set tag name if none
             parsing_buffer[parsing_buffer_i] = '\0';
@@ -303,7 +252,82 @@ int ends_with(const char *str, const char *end_str) {
     return strcmp(str + str_len - end_str_len, end_str) == 0;
 }
 
+void parse_attributes(const char *source, int *i, char *parsing_buffer, int *parsing_buffer_i, xml_node *current_node,
+                      size_t size) {
+    char message_buffer[500] = {0};
+    xml_attribute current_attribute;
+    current_attribute.key = NULL;
+    current_attribute.value = NULL;
 
+    while (source[(*i)] != '>' && (*i) < size) {
+        parsing_buffer[(*parsing_buffer_i)] = source[(*i)];
+        (*parsing_buffer_i)++;
+        (*i)++;
 
+        //Tag name ending
+        if (isspace(source[(*i)]) && !current_node->tag) {
+            parsing_buffer[(*parsing_buffer_i)] = '\0';
+            current_node->tag = strdup(parsing_buffer);
+            (*parsing_buffer_i) = 0;
+            (*i)++;
+            continue;
+        }
+
+        //Pas sur ?
+        if (isspace(parsing_buffer[(*parsing_buffer_i) - 1])) {
+            (*parsing_buffer_i)--;
+            continue;
+        }
+
+        //Getting attribute key
+        if (source[(*i)] == '=') {
+            parsing_buffer[(*parsing_buffer_i)] = '\0';
+            current_attribute.key = strdup(parsing_buffer);
+            (*parsing_buffer_i) = 0;
+            continue;
+        }
+
+        //getting attribute value
+        if (source[(*i)] == '"' || source[(*i)] == '\'') {
+            if (!current_attribute.key) {
+                logIt("ERROR - attribute's value has no key");
+                exit(FALSE);
+            }
+
+            char choosen_quote = source[(*i)];
+            (*parsing_buffer_i) = 0;
+            (*i)++;
+
+            while (source[(*i)] != choosen_quote) {
+                if ((*i) == size - 1) {
+                    sprintf(message_buffer,
+                            "ERROR - You forgot to close quote on your attribute '%s' in your tag '%s'",
+                            current_attribute.key, current_node->tag);
+                    logIt(message_buffer);
+                    exit(FALSE);
+                }
+
+                parsing_buffer[(*parsing_buffer_i)] = source[(*i)];
+                (*parsing_buffer_i)++;
+                (*i)++;
+            }
+
+            parsing_buffer[(*parsing_buffer_i)] = '\0';
+            current_attribute.value = strdup(parsing_buffer);
+            xml_attribute_list_add(&current_node->attribute_list, &current_attribute);
+
+            current_attribute.value = NULL;
+            current_attribute.key = NULL;
+
+            (*parsing_buffer_i) = 0;
+            (*i)++;
+            continue;
+        }
+    }
+}
+
+char *xml_node_attribute_value(xml_node *node, const char *key) {
+    
+}
 
 
