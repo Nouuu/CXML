@@ -1,5 +1,7 @@
 <root key='value' another="other value">
     <inner>
+        <!--
+        comment-->
         <more>Im having fuuuuuuunnn</more>
         <one id="2">
         </one>

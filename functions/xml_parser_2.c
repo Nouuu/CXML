@@ -77,6 +77,35 @@ int xml_document_load(xml_document *document, const char *path) {
                 continue;
             }
 
+
+            //Look like there is a special node
+            if (document->source[i + 1] == '!') {
+                while (!isspace(document->source[i]) && document->source[i] != '>') {
+                    parsing_buffer[parsing_buffer_i] = document->source[i];
+                    parsing_buffer_i++;
+                    i++;
+                }
+                parsing_buffer[parsing_buffer_i] = '\0';
+
+                // checking comment
+                if (strstr(parsing_buffer, "<!--") == parsing_buffer) {
+                    while (ends_with(parsing_buffer, "-->") == FALSE) {
+                        if (i >= size - 1) {
+                            logIt("ERROR - You have unclosed comment in your XML file");
+                            return FALSE;
+                        }
+                        parsing_buffer[parsing_buffer_i] = document->source[i];
+                        parsing_buffer_i++;
+                        i++;
+                    }
+                    parsing_buffer[parsing_buffer_i] = '\0';
+                    printf("Found comment : \n|%s|\n\n\n", parsing_buffer);
+                    i++;
+                    continue;
+                }
+
+            }
+
             // setting current node
             current_node = xml_node_new(current_node);
 
