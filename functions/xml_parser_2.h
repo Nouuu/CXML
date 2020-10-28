@@ -76,4 +76,6 @@ void xml_node_list_add(xml_node_list *node_list, xml_node *node);
 
 xml_node *xml_node_child(xml_node *parent, int index);
 
+int ends_with(const char *str, const char *end_str);
+
 #endif //CXML_XML_PARSER_2_H

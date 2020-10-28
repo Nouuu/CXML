@@ -263,6 +263,18 @@ xml_node *xml_node_child(xml_node *parent, int index) {
 }
 
 
+int ends_with(const char *str, const char *end_str) {
+    size_t str_len = strlen(str);
+    size_t end_str_len = strlen(end_str);
+
+    if (str_len < end_str_len) {
+        return FALSE;
+    }
+
+    return strcmp(str + str_len - end_str_len, end_str) == 0;
+}
+
+
 
 
 
