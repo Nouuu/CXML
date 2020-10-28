@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <root key='value' another="other value">
     <inner>
         <!--
@@ -7,5 +7,4 @@
         <one id="2">
         </one>
     </inner>
-    I am root
 </root>

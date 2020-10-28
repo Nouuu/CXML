@@ -120,8 +120,11 @@ int xml_document_load(xml_document *document, const char *path) {
                     parsing_buffer_i = 0;
                     xml_node *specifications = xml_node_new(NULL);
                     parse_attributes(document->source, &i, parsing_buffer, &parsing_buffer_i, specifications, size);
-                }
 
+                    document->version = xml_node_attribute_value(specifications, "version");
+                    document->encoding = xml_node_attribute_value(specifications, "encoding");
+                    continue;
+                }
             }
             // setting current node
             current_node = xml_node_new(current_node);
@@ -327,7 +330,17 @@ void parse_attributes(const char *source, int *i, char *parsing_buffer, int *par
 }
 
 char *xml_node_attribute_value(xml_node *node, const char *key) {
-    
+    char message[255] = {0};
+    xml_attribute attribute;
+    for (int i = 0; i < node->attribute_list.size; i++) {
+        attribute = node->attribute_list.data[i];
+        if (!strcmp(attribute.key, key)) {
+            return attribute.value;
+        }
+    }
+    sprintf(message, "Cannot find attribute '%s' on node '%s'", key, node->tag);
+    logIt(message);
+    return NULL;
 }
 
 
