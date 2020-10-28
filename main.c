@@ -30,6 +30,9 @@ int main(int argc, char **argv) {
     xml_document document;
     if (xml_document_load(&document, "xml_files/test.xml")) {
         printf("%s\n", document.source);
+
+        xml_node_list *fields = xml_node_children_by_tagname(xml_node_child(document.root_node, 0), "field");
+
         xml_document_free(&document);
     }
 

@@ -131,7 +131,8 @@ int xml_document_load(xml_document *document, const char *path) {
 
             // getting tag name beginning
             i++;
-            if (parse_attributes(document->source, &i, parsing_buffer, &parsing_buffer_i, current_node, size) == INLINE_TAG) {
+            if (parse_attributes(document->source, &i, parsing_buffer, &parsing_buffer_i, current_node, size) ==
+                INLINE_TAG) {
                 current_node = current_node->parent;
                 i++;
                 continue;
@@ -241,7 +242,11 @@ void xml_node_list_add(xml_node_list *node_list, xml_node *node) {
 }
 
 xml_node *xml_node_child(xml_node *parent, int index) {
+    char message[255] = {0};
     if (index >= parent->children.size) {
+        sprintf(message, "Trying to get node child out of range. parent node '%s' child index '%d'", parent->tag,
+                index);
+        logIt(message);
         return NULL;
     }
     return parent->children.data[index];
@@ -259,7 +264,8 @@ int ends_with(const char *str, const char *end_str) {
     return strcmp(str + str_len - end_str_len, end_str) == 0;
 }
 
-tag_type parse_attributes(const char *source, int *i, char *parsing_buffer, int *parsing_buffer_i, xml_node *current_node,
+tag_type
+parse_attributes(const char *source, int *i, char *parsing_buffer, int *parsing_buffer_i, xml_node *current_node,
                  size_t size) {
     char message_buffer[500] = {0};
     xml_attribute current_attribute;
@@ -298,7 +304,7 @@ tag_type parse_attributes(const char *source, int *i, char *parsing_buffer, int 
         if (source[(*i)] == '"' || source[(*i)] == '\'') {
             if (!current_attribute.key) {
                 logIt("ERROR - attribute's value has no key");
-                exit (FALSE);
+                exit(FALSE);
             }
 
             char choosen_quote = source[(*i)];
@@ -354,6 +360,57 @@ char *xml_node_attribute_value(xml_node *node, const char *key) {
     sprintf(message, "Cannot find attribute '%s' on node '%s'", key, node->tag);
     logIt(message);
     return NULL;
+}
+
+xml_attribute *xml_node_attribute(xml_node *node, const char *key) {
+    char message[255] = {0};
+    xml_attribute *attribute;
+    for (int i = 0; i < node->attribute_list.size; i++) {
+        attribute = &node->attribute_list.data[i];
+        if (!strcmp(attribute->key, key)) {
+            return attribute;
+        }
+    }
+    sprintf(message, "Cannot find attribute '%s' on node '%s'", key, node->tag);
+    logIt(message);
+    return NULL;
+}
+
+xml_node *xml_node_get(xml_node_list node_list, int index) {
+    char message[255] = {0};
+    if (index >= node_list.size) {
+        sprintf(message, "Trying to get node out of range. index '%d'", index);
+        logIt(message);
+        return NULL;
+    }
+    return node_list.data[index];
+}
+
+void xml_node_list_free(xml_node_list *node_list) {
+    int i;
+
+    ////Pas sur sur
+    for (i = 0; i < node_list->size; i++) {
+        if (node_list->data[i] != NULL) {
+            free(node_list->data[i]);
+        }
+    }
+    free(node_list);
+}
+
+xml_node_list *xml_node_children_by_tagname(xml_node *parent, const char *tag) {
+    int i;
+    xml_node *child = NULL;
+    xml_node_list *list = malloc(sizeof(xml_node_list));
+    xml_node_list_init(list);
+
+    for (i = 0; i < parent->children.size; i++) {
+        child = parent->children.data[i];
+        if (!strcmp(child->tag, tag)) {
+            xml_node_list_add(list, child);
+        }
+    }
+    return list;
 }
 
 
