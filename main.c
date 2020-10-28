@@ -15,6 +15,7 @@ FILE *openXMLFile(int argc, char **argv);
 FILE *openDTDFile(int argc, char **argv);
 
 int main(int argc, char **argv) {
+    printf("Coucou");
     initLogFile();
 /*
     FILE *xml_file = openXMLFile(argc, argv);
