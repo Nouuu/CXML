@@ -131,7 +131,11 @@ int xml_document_load(xml_document *document, const char *path) {
 
             // getting tag name beginning
             i++;
-            parse_attributes(document->source, &i, parsing_buffer, &parsing_buffer_i, current_node, size);
+            if (parse_attributes(document->source, &i, parsing_buffer, &parsing_buffer_i, current_node, size) == INLINE_TAG) {
+                current_node = current_node->parent;
+                i++;
+                continue;
+            }
 
             // Set tag name if none
             parsing_buffer[parsing_buffer_i] = '\0';
@@ -255,8 +259,8 @@ int ends_with(const char *str, const char *end_str) {
     return strcmp(str + str_len - end_str_len, end_str) == 0;
 }
 
-void parse_attributes(const char *source, int *i, char *parsing_buffer, int *parsing_buffer_i, xml_node *current_node,
-                      size_t size) {
+tag_type parse_attributes(const char *source, int *i, char *parsing_buffer, int *parsing_buffer_i, xml_node *current_node,
+                 size_t size) {
     char message_buffer[500] = {0};
     xml_attribute current_attribute;
     current_attribute.key = NULL;
@@ -294,7 +298,7 @@ void parse_attributes(const char *source, int *i, char *parsing_buffer, int *par
         if (source[(*i)] == '"' || source[(*i)] == '\'') {
             if (!current_attribute.key) {
                 logIt("ERROR - attribute's value has no key");
-                exit(FALSE);
+                exit (FALSE);
             }
 
             char choosen_quote = source[(*i)];
@@ -327,6 +331,15 @@ void parse_attributes(const char *source, int *i, char *parsing_buffer, int *par
             continue;
         }
     }
+    if (source[(*i) - 1] == '/') {
+        parsing_buffer[(*parsing_buffer_i)] = '\0';
+        if (!current_node->tag) {
+            current_node->tag = strdup(parsing_buffer);
+        }
+        (*i)++;
+        return INLINE_TAG;
+    }
+    return START_TAG;
 }
 
 char *xml_node_attribute_value(xml_node *node, const char *key) {

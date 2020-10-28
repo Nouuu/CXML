@@ -23,6 +23,7 @@ typedef struct xml_node_s xml_node;
 typedef struct xml_attribute_s xml_attribute;
 typedef struct xml_attribute_list_s xml_attribute_list;
 typedef struct xml_node_list_s xml_node_list;
+typedef enum tag_type_e tag_type;
 
 struct xml_attribute_s {
     char *key;
@@ -57,6 +58,10 @@ struct xml_document_s {
     xml_node *root_node;
 };
 
+enum tag_type_e {
+    START_TAG,
+    INLINE_TAG
+};
 
 int xml_document_load(xml_document *document, const char *path);
 
@@ -76,7 +81,7 @@ void xml_node_list_init(xml_node_list *node_list);
 
 void xml_node_list_add(xml_node_list *node_list, xml_node *node);
 
-void parse_attributes(const char *source, int *i, char *parsing_buffer, int *parsing_buffer_i, xml_node *current_node,
+tag_type parse_attributes(const char *source, int *i, char *parsing_buffer, int *parsing_buffer_i, xml_node *current_node,
                       size_t size);
 
 char *xml_node_attribute_value(xml_node *node, const char *key);
