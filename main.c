@@ -3,6 +3,8 @@
 #include <string.h>
 #include "functions/log.h"
 #include "functions/xml.h"
+//#include "functions/xml_parser.h"
+#include "functions/xml_parser_2.h"
 
 char *logFile = "log.txt";
 
@@ -14,6 +16,7 @@ FILE *openDTDFile(int argc, char **argv);
 
 int main(int argc, char **argv) {
     initLogFile();
+/*
     FILE *xml_file = openXMLFile(argc, argv);
     readXML(xml_file);
 
@@ -22,6 +25,17 @@ int main(int argc, char **argv) {
 
     fclose(xml_file);
     fclose(dtd_file);
+*/
+
+    xml_document document;
+    if (xml_document_load(&document, "xml_files/test.xml")) {
+        printf("%s\n", document.source);
+
+        xml_node_list *fields = xml_node_children_by_tagname(xml_node_child(document.root_node, 0), "field");
+
+        xml_document_free(&document);
+    }
+
     return 0;
 }
 
