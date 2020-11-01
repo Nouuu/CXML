@@ -26,12 +26,14 @@ int xml_document_load(xml_document *document, const char *path) {
 
     document->source[size] = '\0';
     document->root_node = xml_node_new(NULL);
+    document->encoding = NULL;
+    document->version = NULL;
 
     char parsing_buffer[500] = {0};
     int parsing_buffer_i = 0;
     int i = 0;
 
-    xml_node *current_node = document->root_node;
+    xml_node *current_node = NULL;
 
     while (document->source[i] != '\0' && i < size) {
 
@@ -39,7 +41,8 @@ int xml_document_load(xml_document *document, const char *path) {
             parsing_buffer[parsing_buffer_i] = '\0';
 
             // parsing_ buffer is here inner text
-            if (parsing_buffer_i > 0) {
+            if (parsing_buffer_i > 0 && !string_only_contain_space_characters(parsing_buffer)) {
+
                 if (!current_node) {
                     sprintf(message_buffer, "ERROR - Text outside of document : '%s'", parsing_buffer);
                     logIt(message_buffer);
@@ -48,6 +51,9 @@ int xml_document_load(xml_document *document, const char *path) {
 
                 current_node->inner_text = strdup(parsing_buffer);
                 parsing_buffer_i = 0;
+            } else {
+                parsing_buffer_i = 0;
+                parsing_buffer[parsing_buffer_i] = '\0';
             }
 
             // ending node
@@ -73,6 +79,8 @@ int xml_document_load(xml_document *document, const char *path) {
                 }
 
                 current_node = current_node->parent;
+                parsing_buffer_i = 0;
+                parsing_buffer[parsing_buffer_i] = '\0';
                 i++;
                 continue;
             }
@@ -118,16 +126,25 @@ int xml_document_load(xml_document *document, const char *path) {
                 // checking xml special tag
                 if (!strcmp(parsing_buffer, "<?xml")) {
                     parsing_buffer_i = 0;
+
                     xml_node *specifications = xml_node_new(NULL);
                     parse_attributes(document->source, &i, parsing_buffer, &parsing_buffer_i, specifications, size);
 
-                    document->version = xml_node_attribute_value(specifications, "version");
-                    document->encoding = xml_node_attribute_value(specifications, "encoding");
+                    document->version = strdup(xml_node_attribute_value(specifications, "version"));
+                    document->encoding = strdup(xml_node_attribute_value(specifications, "encoding"));
+
+                    xml_node_free(specifications);
+                    parsing_buffer_i = 0;
+                    i++;
                     continue;
                 }
             }
             // setting current node
-            current_node = xml_node_new(current_node);
+            if (!current_node) {
+                current_node = document->root_node;
+            } else {
+                current_node = xml_node_new(current_node);
+            }
 
             // getting tag name beginning
             i++;
@@ -135,6 +152,8 @@ int xml_document_load(xml_document *document, const char *path) {
                 INLINE_TAG) {
                 current_node = current_node->parent;
                 i++;
+                parsing_buffer_i = 0;
+                parsing_buffer[parsing_buffer_i] = '\0';
                 continue;
             }
 
@@ -146,6 +165,7 @@ int xml_document_load(xml_document *document, const char *path) {
 
             // resetting parsing buffer
             parsing_buffer_i = 0;
+            parsing_buffer[parsing_buffer_i] = '\0';
             i++;
             continue;
         } else {
@@ -338,7 +358,7 @@ parse_attributes(const char *source, int *i, char *parsing_buffer, int *parsing_
         }
     }
     if (source[(*i) - 1] == '/') {
-        parsing_buffer[(*parsing_buffer_i)] = '\0';
+        parsing_buffer[(*parsing_buffer_i)-1] = '\0';
         if (!current_node->tag) {
             current_node->tag = strdup(parsing_buffer);
         }
@@ -411,6 +431,16 @@ xml_node_list *xml_node_children_by_tagname(xml_node *parent, const char *tag) {
         }
     }
     return list;
+}
+
+int string_only_contain_space_characters(const char *string) {
+    int i;
+    for (i = 0; i < strlen(string); i++) {
+        if (!isspace(string[i])) {
+            return FALSE;
+        }
+    }
+    return TRUE;
 }
 
 
