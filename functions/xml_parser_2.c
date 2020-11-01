@@ -79,6 +79,8 @@ int xml_document_load(xml_document *document, const char *path) {
                 }
 
                 current_node = current_node->parent;
+                parsing_buffer_i = 0;
+                parsing_buffer[parsing_buffer_i] = '\0';
                 i++;
                 continue;
             }
@@ -163,6 +165,7 @@ int xml_document_load(xml_document *document, const char *path) {
 
             // resetting parsing buffer
             parsing_buffer_i = 0;
+            parsing_buffer[parsing_buffer_i] = '\0';
             i++;
             continue;
         } else {
@@ -355,7 +358,7 @@ parse_attributes(const char *source, int *i, char *parsing_buffer, int *parsing_
         }
     }
     if (source[(*i) - 1] == '/') {
-        parsing_buffer[(*parsing_buffer_i)] = '\0';
+        parsing_buffer[(*parsing_buffer_i)-1] = '\0';
         if (!current_node->tag) {
             current_node->tag = strdup(parsing_buffer);
         }
