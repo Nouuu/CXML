@@ -100,4 +100,6 @@ xml_node_list *xml_node_children_by_tagname(xml_node *parent, const char *tag);
 
 int string_only_contain_space_characters(const char *string);
 
+char *strcat_realloc(char *str_1, char *str_2);
+
 #endif //CXML_XML_PARSER_2_H

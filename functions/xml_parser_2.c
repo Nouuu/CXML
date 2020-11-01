@@ -49,7 +49,11 @@ int xml_document_load(xml_document *document, const char *path) {
                     return FALSE;
                 }
 
-                current_node->inner_text = strdup(parsing_buffer);
+                if (!current_node->inner_text) {
+                    current_node->inner_text = strdup(parsing_buffer);
+                } else {
+                    current_node->inner_text = strcat_realloc(current_node->inner_text, parsing_buffer);
+                }
                 parsing_buffer_i = 0;
             } else {
                 parsing_buffer_i = 0;
@@ -358,7 +362,7 @@ parse_attributes(const char *source, int *i, char *parsing_buffer, int *parsing_
         }
     }
     if (source[(*i) - 1] == '/') {
-        parsing_buffer[(*parsing_buffer_i)-1] = '\0';
+        parsing_buffer[(*parsing_buffer_i) - 1] = '\0';
         if (!current_node->tag) {
             current_node->tag = strdup(parsing_buffer);
         }
@@ -442,5 +446,12 @@ int string_only_contain_space_characters(const char *string) {
     }
     return TRUE;
 }
+
+char *strcat_realloc(char *str_1, char *str_2) {
+    str_1 = realloc(str_1, strlen(str_1) + strlen(str_2) + 1);
+    strcat(str_1, str_2);
+    return str_1;
+}
+
 
 
