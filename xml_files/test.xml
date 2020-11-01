@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <struct key='value' another="other value">
-    <field name="name" type="string"/>
-    <inline/>
+    <field name="name" type="string">coucou</field>
+    cc
     <field name="second" type="int"/>
+    cc2
+    <inline/>
 </struct>
