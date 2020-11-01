@@ -1,104 +1,105 @@
 //
-// Created by Nospy on 26/10/2020.
+// Created by Nospy on 27/10/2020.
 //
 
 #ifndef CXML_XML_PARSER_H
 #define CXML_XML_PARSER_H
 
-#include <string.h>
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
-#include <math.h>
+#include <string.h>
 #include <ctype.h>
 #include "log.h"
 
-#define MIN(X, Y) ((X) < (Y) ? (X) : (Y))
-#define MAX(X, Y) ((X) > (Y) ? (X) : (Y))
+#ifndef TRUE
+#define TRUE 1
+#endif
+#ifndef FALSE
+#define FALSE 0
+#endif
 
-typedef unsigned char uint8_t;
-typedef enum bool bool;
-typedef enum xml_parser_offset xml_parser_offset;
-typedef struct xml_buffer xml_buffer;
-typedef struct xml_attribute xml_attribute;
-typedef struct xml_node xml_node;
-typedef struct xml_document xml_document;
-typedef struct xml_parser xml_parser;
+typedef struct xml_document_s xml_document;
+typedef struct xml_node_s xml_node;
+typedef struct xml_attribute_s xml_attribute;
+typedef struct xml_attribute_list_s xml_attribute_list;
+typedef struct xml_node_list_s xml_node_list;
+typedef enum tag_type_e tag_type;
 
-enum xml_parser_offset {
-    NO_CHARACTER = -1,
-    CURRENT_CHARACTER = 0,
-    NEXT_CHARACTER = 1,
+struct xml_attribute_s {
+    char *key;
+    char *value;
 };
 
-enum bool {
-    false = 0,
-    true = 1
+struct xml_attribute_list_s {
+    int capacity;
+    int size;
+    xml_attribute *data;
+};
+
+struct xml_node_list_s {
+    int capacity;
+    int size;
+    xml_node **data;
+};
+
+struct xml_node_s {
+    char *tag;
+    char *inner_text;
+    xml_node *parent;
+    xml_attribute_list attribute_list;
+    xml_node_list children;
 };
 
 
-struct xml_buffer {
-    char *buffer;
-//    size_t length;
+struct xml_document_s {
+    char *source;
+    char *version;
+    char *encoding;
+    xml_node *root_node;
 };
 
-struct xml_attribute {
-    char *name;
-    char *content;
+enum tag_type_e {
+    START_TAG,
+    INLINE_TAG
 };
 
-struct xml_node {
-    char *name;
-    char *content;
-    xml_attribute **attributes;
-    xml_node **children;
-};
+char *xml_node_attribute_value(xml_node *node, const char *key);
 
-struct xml_document {
-    xml_buffer buffer;
-    xml_node *root;
-};
+xml_attribute *xml_node_attribute(xml_node *node, const char *key);
 
-struct xml_parser {
-    char *buffer;
-    size_t position;
-//    size_t length;
-};
+int ends_with(const char *str, const char *end_str);
 
-char *xml_node_attribute_content(xml_node *node, size_t attribute);
+int xml_document_load(xml_document *document, const char *path);
 
-char *xml_node_attribute_name(xml_node *node, size_t attribute);
-
-char *xml_node_content(xml_node *node);
-
-char *xml_node_name(xml_node *node);
-
-char *xml_string_clone(char *s);
-
-size_t get_zero_terminated_array_attributes(xml_attribute **attributes);
-
-size_t get_zero_terminated_array_nodes(xml_node **nodes);
-
-size_t xml_node_attributes(xml_node *node);
-
-size_t xml_node_children(xml_node *node);
+tag_type parse_attributes(const char *source, int *i, char *parsing_buffer, int *parsing_buffer_i,
+                          xml_node *current_node, size_t size);
 
 void xml_attribute_free(xml_attribute *attribute);
 
-void xml_document_free(xml_document *document, bool free_buffer);
+void xml_attribute_list_add(xml_attribute_list *attribute_list, xml_attribute *attribute);
+
+void xml_attribute_list_init(xml_attribute_list *attribute_list);
+
+void xml_document_free(xml_document *document);
 
 void xml_node_free(xml_node *node);
 
-void xml_parser_error(xml_parser *parser, xml_parser_offset offset, char const *message);
+void xml_node_list_add(xml_node_list *node_list, xml_node *node);
 
-xml_document *xml_open_document(FILE *source);
+void xml_node_list_free(xml_node_list *node_list);
 
-xml_document *xml_parse_document(uint8_t *buffer, size_t length);
+void xml_node_list_init(xml_node_list *node_list);
 
-xml_node *xml_document_root(xml_document *document);
+xml_node *xml_node_child(xml_node *parent, int index);
 
-xml_node *xml_easy_child(xml_node *node, uint8_t const *child, ...);
+xml_node *xml_node_get(xml_node_list node_list, int index);
 
-xml_node *xml_node_child(xml_node *node, size_t child);
+xml_node *xml_node_new(xml_node *parent);
+
+xml_node_list *xml_node_children_by_tagname(xml_node *parent, const char *tag);
+
+int string_only_contain_space_characters(const char *string);
+
+char *strcat_realloc(char *str_1, char *str_2);
 
 #endif //CXML_XML_PARSER_H
