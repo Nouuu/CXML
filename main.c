@@ -5,6 +5,7 @@
 #include "functions/xml_parser.h"
 #include "functions/xml_finder.h"
 #include "functions/dtd_rules.h"
+#include "functions/dtd_parser.h"
 
 char *logFile = "log.txt";
 
