@@ -184,6 +184,12 @@ int xml_document_load(xml_document *document, const char *path) {
 
 void xml_document_free(xml_document *document) {
     free(document->source);
+    if (document->version) {
+        free(document->version);
+    }
+    if (document->encoding) {
+        free(document->encoding);
+    }
     xml_node_free(document->root_node);
 }
 
