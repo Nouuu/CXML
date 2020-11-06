@@ -4,7 +4,7 @@
 
 #include "dtd_rules.h"
 
-int pcData(xml_node *xmlNode) {
+int pc_data(xml_node *xmlNode) {
     char message[200] = {0};
     if (xmlNode->children.size > 0) {
         sprintf(message, "%s node supposed to be pcdata but have children", xmlNode->tag);

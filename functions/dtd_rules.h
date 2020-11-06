@@ -10,7 +10,16 @@
 #include <string.h>
 #include "log.h"
 #include "xml_parser.h"
+#include "xml_finder.h"
 
-int pcData(xml_node* xmlNode);
+int pc_data(xml_node *xmlNode);
+
+int process_pc_data(const char *tag, xml_document document);
+
+xml_attribute *get_node_attribute(const char *attribute_name, xml_node *xmlNode);
+
+int node_contain_required_attribute(const char *required, xml_node *xmlNode);
+
+int attribute_contain_value(xml_attribute *attribute, const char **str_list, int size);
 
 #endif //CXML_DTD_RULES_H
