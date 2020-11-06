@@ -56,3 +56,7 @@ dkms.conf
 cmake-build-debug/
 
 log.txt
+
+cmake-build-debug-wsl/
+
+cmake-build-debug-mingw/
