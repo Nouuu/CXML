@@ -4,6 +4,7 @@
 #include "functions/log.h"
 #include "functions/xml_parser.h"
 #include "functions/xml_finder.h"
+#include "functions/dtd_rules.h"
 
 char *logFile = "log.txt";
 
@@ -13,14 +14,13 @@ int main(int argc, char **argv) {
     initLogFile();
 
     xml_document document;
-    if (xml_document_load(&document, "xml_files/test.xml")) {
-        printf("%s\n", document.source);
+    xml_document_load(&document, "xml_files/xml_example_1.xml");
 
         xml_node_list *fields = get_nodes("field", document);
+    pcData(document.root_node->children.data[0]);
 
 
         xml_document_free(&document);
-    }
 
     return 0;
 }
