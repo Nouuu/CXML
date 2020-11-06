@@ -4,6 +4,7 @@
 #include "functions/log.h"
 #include "functions/xml.h"
 #include "functions/xml_parser.h"
+#include "functions/xml_finder.h"
 
 char *logFile = "log.txt";
 
@@ -31,7 +32,8 @@ int main(int argc, char **argv) {
     if (xml_document_load(&document, "xml_files/test.xml")) {
         printf("%s\n", document.source);
 
-        xml_node_list *fields = xml_node_children_by_tagname(xml_node_child(document.root_node, 0), "field");
+        xml_node_list *fields = get_nodes("field", document);
+
 
         xml_document_free(&document);
     }

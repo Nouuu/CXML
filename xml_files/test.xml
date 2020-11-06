@@ -1,6 +1,11 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" ?>
 <struct key='value' another="other value">
     <field name="name" type="string">coucou</field>
+    <pasfield>
+        <field>
+            <field/>
+        </field>
+    </pasfield>
     cc
     <field name="second" type="int"/>
     cc2
