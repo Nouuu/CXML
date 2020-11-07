@@ -64,3 +64,61 @@ int attribute_contain_required_value(xml_attribute *attribute, const char **str_
     logIt(message);
     return 0;
 }
+
+// e*
+int node_contain_only_children_optional(xml_node *node, const char *name) {
+    char message[200] = {0};
+    for(int i = 0; i < node->children.size; i++) {
+        if(!strcmp(node->children.data[i]->tag, name)) {
+            return 1;
+        }
+    }
+    sprintf(message, "%s node have no |%s| children (optional)", node->tag, name);
+    logIt(message);
+    return 0;
+}
+
+// e
+int node_contain_only_one_child_required(xml_node *node, const char *name) {
+    char message[200] = {0};
+    if(node->children.size == 1) {
+        for(int i = 0; i < node->children.size; i++) {
+            if(!strcmp(node->children.data[i]->tag, name)) {
+                return 1;
+            }
+        }
+    }
+    sprintf(message, "%s node have no only one child called |%s|", node->tag, name);
+    logIt(message);
+    return 0;
+}
+
+// e?
+int node_contain_only_one_child_optional(xml_node *node, const char *name) {
+    char message[200] = {0};
+    if(node->children.size == 0 || node->children.size == 1) {
+        for(int i = 0; i < node->children.size; i++) {
+            if(!strcmp(node->children.data[i]->tag, name)) {
+                return 1;
+            }
+        }
+    }
+    sprintf(message, "%s node have no only one or none child called |%s|", node->tag, name);
+    logIt(message);
+    return 0;
+}
+
+// e+
+int node_contain_only_children_required(xml_node *node, const char *name) {
+    char message[200] = {0};
+    if(node->children.size >= 1) {
+        for(int i = 0; i < node->children.size; i++) {
+            if(!strcmp(node->children.data[i]->tag, name)) {
+                return 1;
+            }
+        }
+    }
+    sprintf(message, "%s node have no one or many |%s| children", node->tag, name);
+    logIt(message);
+    return 0;
+}
