@@ -5,6 +5,7 @@
 #include "functions/xml_parser.h"
 #include "functions/xml_finder.h"
 #include "functions/dtd_rules.h"
+#include "tests/xml_parsing_test.h"
 
 char *logFile = "log.txt";
 
@@ -13,11 +14,33 @@ void initLogFile();
 int main(int argc, char **argv) {
     initLogFile();
 
+    /////////////////////
+    //    run_xml_parse_test();
+    /////////////////////
+
     xml_document document;
     xml_document_load(&document, "xml_files/xml_example_1.xml");
 
     xml_node_list *fields = get_nodes("field", document);
-    pc_data(document.root_node->children.data[0]);
+
+    process_pc_data("classroom", document);
+    get_node_attribute("key", document.root_node);
+    node_contain_required_attribute("key", document.root_node);
+
+    char **children_tag = malloc(sizeof(char *) * 4);
+    children_tag[0] = strdup("classroom");
+    children_tag[1] = strdup("key");
+    children_tag[2] = strdup("test");
+    children_tag[3] = strdup("text");
+    attribute_contain_required_value(document.root_node->attribute_list.data, (const char **) children_tag,
+                                     4);
+
+    node_contain_only_children_optional(document.root_node, "classroom");
+    node_contain_only_one_child_required(document.root_node, "classroom");
+    node_contain_only_one_child_optional(document.root_node, "classroom");
+    node_contain_only_children_required(document.root_node, "classroom");
+
+    check_node_child_position(document.root_node, "classroom", 2);
 
     xml_document_free(&document);
 

@@ -50,7 +50,8 @@ int xml_document_load(xml_document *document, const char *path) {
                 }
 
                 if (!current_node->inner_text) {
-                    current_node->inner_text = strdup(parsing_buffer);
+
+                    current_node->inner_text = strtrim_space(parsing_buffer);
                 } else {
                     current_node->inner_text = strcat_realloc(current_node->inner_text, parsing_buffer);
                 }
@@ -134,8 +135,10 @@ int xml_document_load(xml_document *document, const char *path) {
                     xml_node *specifications = xml_node_new(NULL);
                     parse_attributes(document->source, &i, parsing_buffer, &parsing_buffer_i, specifications, size);
 
-                    document->version = strdup(xml_node_attribute_value(specifications, "version"));
-                    document->encoding = strdup(xml_node_attribute_value(specifications, "encoding"));
+                    document->version = xml_node_attribute_value(specifications, "version") == NULL ?
+                                        NULL : strdup(xml_node_attribute_value(specifications, "version"));
+                    document->encoding = xml_node_attribute_value(specifications, "encoding") == NULL ?
+                                         NULL : strdup(xml_node_attribute_value(specifications, "encoding"));
 
                     xml_node_free(specifications);
                     parsing_buffer_i = 0;
@@ -184,6 +187,12 @@ int xml_document_load(xml_document *document, const char *path) {
 
 void xml_document_free(xml_document *document) {
     free(document->source);
+    if (document->version) {
+        free(document->version);
+    }
+    if (document->encoding) {
+        free(document->encoding);
+    }
     xml_node_free(document->root_node);
 }
 
@@ -381,8 +390,10 @@ char *xml_node_attribute_value(xml_node *node, const char *key) {
             return attribute.value;
         }
     }
-    sprintf(message, "Cannot find attribute '%s' on node '%s'", key, node->tag);
-    logIt(message);
+    if (strcmp(key, "encoding") != 0 && strcmp(key, "version") != 0) {
+        sprintf(message, "Cannot find attribute '%s' on node '%s'", key, node->tag);
+        logIt(message);
+    }
     return NULL;
 }
 
@@ -448,8 +459,11 @@ int string_only_contain_space_characters(const char *string) {
 }
 
 char *strcat_realloc(char *str_1, char *str_2) {
-    str_1 = realloc(str_1, strlen(str_1) + strlen(str_2) + 1);
-    strcat(str_1, str_2);
+    char *temp = strtrim_space(str_2);
+    str_1 = realloc(str_1, strlen(str_1) + strlen(str_2) + 2);
+    strcat(str_1, " ");
+    strcat(str_1, temp);
+    free(temp);
     return str_1;
 }
 
