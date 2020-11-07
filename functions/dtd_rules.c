@@ -46,11 +46,20 @@ xml_attribute *get_node_attribute(const char *attribute_name, xml_node *xmlNode)
 }
 
 int node_contain_required_attribute(const char *required, xml_node *xmlNode) {
+    char message[200] = {0};
+    if(node_contain_optional_attribute(required, xmlNode)) {
+        return 1;
+    }
+    sprintf(message, "%s node no contain |%s| but is required", xmlNode->tag, required);
+    logIt(message);
+    return 0;
+}
+
+int node_contain_optional_attribute(const char *required, xml_node *xmlNode) {
     if (get_node_attribute(required, xmlNode)) {
         return 1;
-    } else {
-        return 0;
     }
+    return 0;
 }
 
 int attribute_contain_required_value(xml_attribute *attribute, const char **str_list, int size) {
@@ -119,6 +128,22 @@ int node_contain_only_children_required(xml_node *node, const char *name) {
         }
     }
     sprintf(message, "%s node have no one or many |%s| children", node->tag, name);
+    logIt(message);
+    return 0;
+}
+
+int check_node_child_position(xml_node *node, const char *name, int position) {
+    char message[200] = {0};
+    if(node->children.size <= position) {
+        sprintf(message, "Trying to access children at position %d, but node %s has only %d children",
+                position, node->tag, node->children.size);
+        logIt(message);
+        return 0;
+    }
+    if(!strcmp(node->children.data[position]->tag, name)) {
+        return 1;
+    }
+    sprintf(message, "%s node have no |%s| children at the %d position", node->tag, name, position);
     logIt(message);
     return 0;
 }

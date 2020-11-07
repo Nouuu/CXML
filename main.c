@@ -34,10 +34,13 @@ int main(int argc, char **argv) {
     children_tag[3] = strdup("text");
     attribute_contain_required_value(document.root_node->attribute_list.data, (const char **) children_tag,
                                      4);
+
     node_contain_only_children_optional(document.root_node, "classroom");
     node_contain_only_one_child_required(document.root_node, "classroom");
     node_contain_only_one_child_optional(document.root_node, "classroom");
     node_contain_only_children_required(document.root_node, "classroom");
+
+    check_node_child_position(document.root_node, "classroom", 2);
 
     xml_document_free(&document);
 
