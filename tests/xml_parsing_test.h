@@ -28,8 +28,8 @@ void reset_console_color();
 
 void run_test_1(const char *path);
 
-//void run_test_2(const char *path);
-//
+void run_test_2(const char *path);
+
 //void run_test_3(const char *path);
 //
 //void run_test_4(const char *path);
@@ -46,10 +46,14 @@ void check_document_version(xml_document document, const char *version);
 
 void check_encoding_version(xml_document document, const char *version);
 
-void check_root_tag(xml_document document, const char *name);
+void check_node_tag(xml_node *node, const char *name);
 
-void check_root_children_tag_name(xml_document document, int size, char **tags);
+void check_node_inner_text(xml_node *node, const char *inner_text);
 
-void check_root_children_inner_text(xml_document document, int size, char **inner_text);
+void check_node_children_tag_name(xml_node *node, int size, char **tags);
+
+void check_node_children_inner_text(xml_node *node, int size, char **inner_text);
+
+void check_node_attributes(xml_node node, int size, const char **keys, const char **values);
 
 #endif //CXML_XML_PARSING_TEST_H

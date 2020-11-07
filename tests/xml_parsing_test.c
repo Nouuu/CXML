@@ -31,6 +31,7 @@ void run_xml_parse_test() {
 
     run_test_1("tests/test_1.xml");
 
+    run_test_2("tests/test_2.xml");
 
     printf("\n---- All tests passed ! ----------\n");
 
@@ -40,20 +41,20 @@ void run_xml_parse_test() {
 void run_test_1(const char *path) {
     printf("Running test 1\n");
     xml_document document;
-    check_document_load(&document, "tests/test_1.xml");
+    check_document_load(&document, path);
 
     check_document_version(document, "1.0");
 
     check_encoding_version(document, NULL);
 
-    check_root_tag(document, "classrooms");
+    check_node_tag(document.root_node, "classrooms");
 
     char **children_tag = malloc(sizeof(char *) * 4);
     children_tag[0] = "classroom";
     children_tag[1] = "classroom";
     children_tag[2] = "classroom";
     children_tag[3] = "classroom";
-    check_root_children_tag_name(document, 4, children_tag);
+    check_node_children_tag_name(document.root_node, 4, children_tag);
     free(children_tag);
 
     char **children_inner_text = malloc(sizeof(char *) * 4);
@@ -61,14 +62,39 @@ void run_test_1(const char *path) {
     children_inner_text[1] = "IABD";
     children_inner_text[2] = "MOC";
     children_inner_text[3] = "IBC";
-    check_root_children_inner_text(document, 4, children_inner_text);
+    check_node_children_inner_text(document.root_node, 4, children_inner_text);
     free(children_inner_text);
 
     xml_document_free(&document);
     printf("Test 1 passed\n\n");
 }
 
-//void run_test_2(const char *path);
+void run_test_2(const char *path) {
+    printf("Running test 2\n");
+    xml_document document;
+    check_document_load(&document, path);
+
+    check_document_version(document, NULL);
+
+    check_encoding_version(document, NULL);
+
+    check_node_tag(document.root_node, "ESGI");
+
+    char **children_tag = malloc(sizeof(char *));
+    children_tag[0] = "classroom";
+    check_node_children_tag_name(document.root_node, 1, children_tag);
+    free(children_tag);
+
+    char **children_inner_text = malloc(sizeof(char *));
+    children_inner_text[0] = "AL";
+    check_node_children_inner_text(document.root_node, 1, children_inner_text);
+    free(children_inner_text);
+
+
+    xml_document_free(&document);
+    printf("Test 2 passed\n\n");
+
+}
 //
 //void run_test_3(const char *path);
 //
@@ -103,23 +129,38 @@ void check_encoding_version(xml_document document, const char *version) {
     }
 }
 
-void check_root_tag(xml_document document, const char *name) {
-    printf("\tChecking root tag\n");
-    assert(!strcmp(document.root_node->tag, name));
+void check_node_tag(xml_node *node, const char *name) {
+    printf("\tChecking %s tag\n", node->tag);
+    assert(!strcmp(node->tag, name));
 }
 
-void check_root_children_tag_name(xml_document document, int size, char **tags) {
-    printf("\tChecking root children tag name\n");
-    assert(document.root_node->children.size == size);
-    for (int i = 0; i < size; ++i) {
-        assert(!strcmp(document.root_node->children.data[i]->tag, tags[i]));
+void check_node_attributes(xml_node node, int size, const char **keys, const char **values) {
+    printf("\tChecking %s attributes\n", node.tag);
+    assert(node.attribute_list.size == size);
+    for (int i = 0; i < size; i++) {
+        assert(!strcmp(node.attribute_list.data[i].key, keys[i]));
+        assert(!strcmp(node.attribute_list.data[i].value, values[i]));
     }
 }
 
-void check_root_children_inner_text(xml_document document, int size, char **tags) {
-    printf("\tChecking root children inner text\n");
-    assert(document.root_node->children.size == size);
+void check_node_children_tag_name(xml_node *node, int size, char **tags) {
+    printf("\tChecking %s children tag name\n", node->tag);
+    assert(node->children.size == size);
     for (int i = 0; i < size; ++i) {
-        assert(!strcmp(document.root_node->children.data[i]->inner_text, tags[i]));
+        assert(!strcmp(node->children.data[i]->tag, tags[i]));
     }
+}
+
+void check_node_children_inner_text(xml_node *node, int size, char **inner_text) {
+    printf("\tChecking %s children inner text\n", node->tag);
+    assert(node->children.size == size);
+    for (int i = 0; i < size; ++i) {
+        check_node_inner_text(node->children.data[i], inner_text[i]);
+    }
+}
+
+void check_node_inner_text(xml_node *node, const char *inner_text) {
+    printf("\tChecking %s inner text\n", node->tag);
+    assert(!strcmp(node->inner_text, inner_text));
+
 }
