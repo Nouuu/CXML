@@ -80,6 +80,9 @@ parse_attributes(const char *source, int *i, char *parsing_buffer, int *parsing_
 
 int parse_xml_file(xml_document *document, size_t size);
 
+int parse_xml_carret_open(xml_document *document, int *i, int *parsing_buffer_i, xml_node **current_node,
+                          char *parsing_buffer, char *message_buffer, size_t size);
+
 void xml_attribute_free(xml_attribute *attribute);
 
 void xml_attribute_list_add(xml_attribute_list *attribute_list, xml_attribute *attribute);
