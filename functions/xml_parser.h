@@ -64,16 +64,21 @@ enum tag_type_e {
     INLINE_TAG
 };
 
-char *xml_node_attribute_value(xml_node *node, const char *key);
+char *strcat_realloc(char *str_1, char *str_2);
 
-xml_attribute *xml_node_attribute(xml_node *node, const char *key);
+char *xml_node_attribute_value(xml_node *node, const char *key);
 
 int ends_with(const char *str, const char *end_str);
 
+int string_only_contain_space_characters(const char *string);
+
 int xml_document_load(xml_document *document, const char *path);
 
-tag_type parse_attributes(const char *source, int *i, char *parsing_buffer, int *parsing_buffer_i,
-                          xml_node *current_node, size_t size);
+tag_type
+parse_attributes(const char *source, int *i, char *parsing_buffer, int *parsing_buffer_i, xml_node *current_node,
+                 size_t size);
+
+int parse_xml_file(xml_document *document, size_t size);
 
 void xml_attribute_free(xml_attribute *attribute);
 
@@ -91,6 +96,8 @@ void xml_node_list_free(xml_node_list *node_list);
 
 void xml_node_list_init(xml_node_list *node_list);
 
+xml_attribute *xml_node_attribute(xml_node *node, const char *key);
+
 xml_node *xml_node_child(xml_node *parent, int index);
 
 xml_node *xml_node_get(xml_node_list node_list, int index);
@@ -98,9 +105,5 @@ xml_node *xml_node_get(xml_node_list node_list, int index);
 xml_node *xml_node_new(xml_node *parent);
 
 xml_node_list *xml_node_children_by_tagname(xml_node *parent, const char *tag);
-
-int string_only_contain_space_characters(const char *string);
-
-char *strcat_realloc(char *str_1, char *str_2);
 
 #endif //CXML_XML_PARSER_H

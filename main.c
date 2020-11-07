@@ -18,13 +18,12 @@ int main(int argc, char **argv) {
     run_xml_parse_test();
     /////////////////////
 
+/*
     xml_document document;
     xml_document_load(&document, "xml_files/xml_example_1.xml");
 
-    xml_node_list *fields = get_nodes("field", document);
-
     xml_document_free(&document);
-
+*/
     return 0;
 }
 

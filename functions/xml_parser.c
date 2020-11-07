@@ -29,6 +29,11 @@ int xml_document_load(xml_document *document, const char *path) {
     document->encoding = NULL;
     document->version = NULL;
 
+    return parse_xml_file(document, size);
+}
+
+int parse_xml_file(xml_document *document, size_t size) {
+    char message_buffer[500] = {0};
     char parsing_buffer[500] = {0};
     int parsing_buffer_i = 0;
     int i = 0;
@@ -181,7 +186,6 @@ int xml_document_load(xml_document *document, const char *path) {
             i++;
         }
     }
-
     return TRUE;
 }
 
