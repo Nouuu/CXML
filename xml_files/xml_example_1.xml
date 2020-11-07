@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<classrooms>
+<classrooms key="key">
     <classroom>AL</classroom>
     <classroom>IABD</classroom>
     <classroom>MOC</classroom>

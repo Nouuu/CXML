@@ -17,8 +17,10 @@ int main(int argc, char **argv) {
     xml_document_load(&document, "xml_files/xml_example_1.xml");
 
     xml_node_list *fields = get_nodes("field", document);
-    // pc_data(document.root_node->children.data[0]);
+
     process_pc_data("classroom", document);
+    get_node_attribute("key", document.root_node);
+    node_contain_required_attribute("key", document.root_node);
 
     xml_document_free(&document);
 

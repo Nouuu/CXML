@@ -32,3 +32,23 @@ int process_pc_data(const char *tag, xml_document document) {
     }
     return 1;
 }
+
+xml_attribute *get_node_attribute(const char *attribute_name, xml_node *xmlNode) {
+    char message[200] = {0};
+    for(int i = 0; i < xmlNode->attribute_list.size; i++) {
+        if(!strcmp(xmlNode->attribute_list.data[i].key, attribute_name)) {
+            return &xmlNode->attribute_list.data[i];
+        }
+    }
+    sprintf(message, "%s node not have |%s| key", xmlNode->tag, attribute_name);
+    logIt(message);
+    return NULL;
+}
+
+int node_contain_required_attribute(const char *required, xml_node *xmlNode) {
+    if(get_node_attribute(required, xmlNode)) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
