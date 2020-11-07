@@ -134,8 +134,10 @@ int xml_document_load(xml_document *document, const char *path) {
                     xml_node *specifications = xml_node_new(NULL);
                     parse_attributes(document->source, &i, parsing_buffer, &parsing_buffer_i, specifications, size);
 
-                    document->version = strdup(xml_node_attribute_value(specifications, "version"));
-                    document->encoding = strdup(xml_node_attribute_value(specifications, "encoding"));
+                    document->version = xml_node_attribute_value(specifications, "version") == NULL ?
+                                        NULL : strdup(xml_node_attribute_value(specifications, "version"));
+                    document->encoding = xml_node_attribute_value(specifications, "encoding") == NULL ?
+                                         NULL : strdup(xml_node_attribute_value(specifications, "encoding"));
 
                     xml_node_free(specifications);
                     parsing_buffer_i = 0;
@@ -387,8 +389,10 @@ char *xml_node_attribute_value(xml_node *node, const char *key) {
             return attribute.value;
         }
     }
-    sprintf(message, "Cannot find attribute '%s' on node '%s'", key, node->tag);
-    logIt(message);
+    if (strcmp(key, "encoding") != 0 && strcmp(key, "version") != 0) {
+        sprintf(message, "Cannot find attribute '%s' on node '%s'", key, node->tag);
+        logIt(message);
+    }
     return NULL;
 }
 
