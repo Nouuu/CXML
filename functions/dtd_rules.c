@@ -21,3 +21,14 @@ int pc_data(xml_node *xmlNode) {
     return 0;
 
 }
+
+int process_pc_data(const char *tag, xml_document document) {
+    xml_node_list* list = get_nodes(tag, document);
+
+    for(int i = 0; i < list->size; i++) {
+        if(!pc_data(list->data[i])) {
+            return 0;
+        }
+    }
+    return 1;
+}

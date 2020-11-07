@@ -7,4 +7,5 @@ add_executable(CXML main.c
         functions/log.c
         functions/dtd_parser.c
         functions/xml_parser.c
-        functions/xml_finder.c)
+        functions/xml_finder.c
+        functions/dtd_rules.c)
