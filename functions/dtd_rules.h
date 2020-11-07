@@ -20,6 +20,6 @@ xml_attribute *get_node_attribute(const char *attribute_name, xml_node *xmlNode)
 
 int node_contain_required_attribute(const char *required, xml_node *xmlNode);
 
-int attribute_contain_value(xml_attribute *attribute, const char **str_list, int size);
+int attribute_contain_required_value(xml_attribute *attribute, const char **str_list, int size);
 
 #endif //CXML_DTD_RULES_H

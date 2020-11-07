@@ -22,6 +22,14 @@ int main(int argc, char **argv) {
     get_node_attribute("key", document.root_node);
     node_contain_required_attribute("key", document.root_node);
 
+    char **children_tag = malloc(sizeof(char *) * 4);
+    children_tag[0] = strdup("classroom");
+    children_tag[1] = strdup("key");
+    children_tag[2] = strdup("test");
+    children_tag[3] = strdup("text");
+    attribute_contain_required_value(document.root_node->attribute_list.data, (const char **) children_tag,
+                                     4);
+
     xml_document_free(&document);
 
     return 0;

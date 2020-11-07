@@ -52,3 +52,15 @@ int node_contain_required_attribute(const char *required, xml_node *xmlNode) {
         return 0;
     }
 }
+
+int attribute_contain_required_value(xml_attribute *attribute, const char **str_list, int size) {
+    char message[200] = {0};
+    for(int i = 0; i < size; i++) {
+        if(!strcmp(attribute->value, str_list[i])) {
+            return 1;
+        }
+    }
+    sprintf(message, "%s attribute not supposed to have |%s| value", attribute->key, attribute->value);
+    logIt(message);
+    return 0;
+}
