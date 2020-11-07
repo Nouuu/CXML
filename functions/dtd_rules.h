@@ -22,4 +22,18 @@ int node_contain_required_attribute(const char *required, xml_node *xmlNode);
 
 int attribute_contain_required_value(xml_attribute *attribute, const char **str_list, int size);
 
+//e*
+int node_contain_only_children_optional(xml_node *node, const char *name);
+
+//e
+int node_contain_only_one_child_required(xml_node *node, const char *name);
+
+//e?
+int node_contain_only_one_child_optional(xml_node *node, const char *name);
+
+//e+
+int node_contain_only_children_required(xml_node *node, const char *name);
+
+
+
 #endif //CXML_DTD_RULES_H
