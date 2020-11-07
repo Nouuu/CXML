@@ -50,19 +50,27 @@ void run_test_1(const char *path) {
     check_node_tag(document.root_node, "classrooms");
 
     char **children_tag = malloc(sizeof(char *) * 4);
-    children_tag[0] = "classroom";
-    children_tag[1] = "classroom";
-    children_tag[2] = "classroom";
-    children_tag[3] = "classroom";
+    children_tag[0] = strdup("classroom");
+    children_tag[1] = strdup("classroom");
+    children_tag[2] = strdup("classroom");
+    children_tag[3] = strdup("classroom");
     check_node_children_tag_name(document.root_node, 4, children_tag);
+    free(children_tag[0]);
+    free(children_tag[1]);
+    free(children_tag[2]);
+    free(children_tag[3]);
     free(children_tag);
 
     char **children_inner_text = malloc(sizeof(char *) * 4);
-    children_inner_text[0] = "AL";
-    children_inner_text[1] = "IABD";
-    children_inner_text[2] = "MOC";
-    children_inner_text[3] = "IBC";
+    children_inner_text[0] = strdup("AL");
+    children_inner_text[1] = strdup("IABD");
+    children_inner_text[2] = strdup("MOC");
+    children_inner_text[3] = strdup("IBC");
     check_node_children_inner_text(document.root_node, 4, children_inner_text);
+    free(children_inner_text[0]);
+    free(children_inner_text[1]);
+    free(children_inner_text[2]);
+    free(children_inner_text[3]);
     free(children_inner_text);
 
     xml_document_free(&document);
@@ -80,20 +88,39 @@ void run_test_2(const char *path) {
 
     check_node_tag(document.root_node, "ESGI");
 
+    check_node_inner_text(document.root_node, "\n    IBC\n    \n    YOUPI\n");
+
     char **children_tag = malloc(sizeof(char *));
-    children_tag[0] = "classroom";
+    children_tag[0] = strdup("classroom");
     check_node_children_tag_name(document.root_node, 1, children_tag);
+    free(children_tag[0]);
     free(children_tag);
 
     char **children_inner_text = malloc(sizeof(char *));
-    children_inner_text[0] = "AL";
+    children_inner_text[0] = strdup("AL");
     check_node_children_inner_text(document.root_node, 1, children_inner_text);
+    free(children_inner_text[0]);
     free(children_inner_text);
 
+    char **attribute_keys = malloc(sizeof(char *));
+    attribute_keys[0] = strdup("key");
+    char **attribute_values = malloc(sizeof(char *));
+    attribute_values[0] = strdup("value");
+    check_node_attributes(document.root_node, 1, (const char **) attribute_keys, (const char **) attribute_values);
+
+    free(attribute_keys[0]);
+    free(attribute_values[0]);
+    attribute_keys[0] = strdup("other_key");
+    attribute_values[0] = strdup("other_value");
+    check_node_attributes(document.root_node->children.data[0], 1, (const char **) attribute_keys,
+                          (const char **) attribute_values);
+    free(attribute_keys[0]);
+    free(attribute_values[0]);
+    free(attribute_keys);
+    free(attribute_values);
 
     xml_document_free(&document);
     printf("Test 2 passed\n\n");
-
 }
 //
 //void run_test_3(const char *path);
@@ -134,12 +161,12 @@ void check_node_tag(xml_node *node, const char *name) {
     assert(!strcmp(node->tag, name));
 }
 
-void check_node_attributes(xml_node node, int size, const char **keys, const char **values) {
-    printf("\tChecking %s attributes\n", node.tag);
-    assert(node.attribute_list.size == size);
+void check_node_attributes(xml_node *node, int size, const char **keys, const char **values) {
+    printf("\tChecking %s attributes\n", node->tag);
+    assert(node->attribute_list.size == size);
     for (int i = 0; i < size; i++) {
-        assert(!strcmp(node.attribute_list.data[i].key, keys[i]));
-        assert(!strcmp(node.attribute_list.data[i].value, values[i]));
+        assert(!strcmp(node->attribute_list.data[i].key, keys[i]));
+        assert(!strcmp(node->attribute_list.data[i].value, values[i]));
     }
 }
 

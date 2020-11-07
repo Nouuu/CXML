@@ -54,6 +54,6 @@ void check_node_children_tag_name(xml_node *node, int size, char **tags);
 
 void check_node_children_inner_text(xml_node *node, int size, char **inner_text);
 
-void check_node_attributes(xml_node node, int size, const char **keys, const char **values);
+void check_node_attributes(xml_node *node, int size, const char **keys, const char **values);
 
 #endif //CXML_XML_PARSING_TEST_H
