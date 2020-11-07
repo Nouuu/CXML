@@ -50,7 +50,8 @@ int xml_document_load(xml_document *document, const char *path) {
                 }
 
                 if (!current_node->inner_text) {
-                    current_node->inner_text = strdup(parsing_buffer);
+
+                    current_node->inner_text = strtrim_space(parsing_buffer);
                 } else {
                     current_node->inner_text = strcat_realloc(current_node->inner_text, parsing_buffer);
                 }
@@ -458,8 +459,11 @@ int string_only_contain_space_characters(const char *string) {
 }
 
 char *strcat_realloc(char *str_1, char *str_2) {
-    str_1 = realloc(str_1, strlen(str_1) + strlen(str_2) + 1);
-    strcat(str_1, str_2);
+    char *temp = strtrim_space(str_2);
+    str_1 = realloc(str_1, strlen(str_1) + strlen(str_2) + 2);
+    strcat(str_1, " ");
+    strcat(str_1, temp);
+    free(temp);
     return str_1;
 }
 

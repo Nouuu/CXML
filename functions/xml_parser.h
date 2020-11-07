@@ -10,6 +10,7 @@
 #include <string.h>
 #include <ctype.h>
 #include "log.h"
+#include "str_tools.h"
 
 #ifndef TRUE
 #define TRUE 1
