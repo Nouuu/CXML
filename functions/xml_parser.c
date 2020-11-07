@@ -43,8 +43,12 @@ int parse_xml_file(xml_document *document, size_t size) {
     while (document->source[i] != '\0' && i < size) {
 
         if (document->source[i] == '<') {
-            int return_code = parse_xml_carret_open(document, &i, &parsing_buffer_i, &current_node, parsing_buffer,
-                                                    message_buffer, size);
+            int return_code = parse_xml_carret_open(document,
+                                                    &i, &parsing_buffer_i,
+                                                    &current_node,
+                                                    parsing_buffer,
+                                                    message_buffer,
+                                                    size);
             if (return_code == FALSE) {
                 return FALSE;
             } else if (return_code == 2) {
@@ -111,7 +115,7 @@ int parse_xml_carret_open(xml_document *document, int *i, int *parsing_buffer_i,
         (*parsing_buffer_i) = 0;
         parsing_buffer[(*parsing_buffer_i)] = '\0';
         (*i)++;
-        return 2;
+        return CONTINUE;
     }
 
 
@@ -139,7 +143,7 @@ int parse_xml_carret_open(xml_document *document, int *i, int *parsing_buffer_i,
             printf("Found comment : \n|%s|\n\n\n", parsing_buffer);
 
 //                    (*i)++;
-            return 2;
+            return CONTINUE;
         }
     }
 
@@ -167,7 +171,7 @@ int parse_xml_carret_open(xml_document *document, int *i, int *parsing_buffer_i,
             xml_node_free(specifications);
             (*parsing_buffer_i) = 0;
             (*i)++;
-            return 2;
+            return CONTINUE;
         }
     }
     // setting current node
@@ -185,7 +189,7 @@ int parse_xml_carret_open(xml_document *document, int *i, int *parsing_buffer_i,
         (*i)++;
         (*parsing_buffer_i) = 0;
         parsing_buffer[(*parsing_buffer_i)] = '\0';
-        return 2;
+        return CONTINUE;
     }
 
     // Set tag name if none
@@ -198,7 +202,7 @@ int parse_xml_carret_open(xml_document *document, int *i, int *parsing_buffer_i,
     (*parsing_buffer_i) = 0;
     parsing_buffer[(*parsing_buffer_i)] = '\0';
     (*i)++;
-    return 2;
+    return CONTINUE;
 }
 
 void xml_document_free(xml_document *document) {

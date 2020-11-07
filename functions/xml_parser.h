@@ -18,6 +18,9 @@
 #ifndef FALSE
 #define FALSE 0
 #endif
+#ifndef CONTINUE
+#define CONTINUE 2
+#endif
 
 typedef struct xml_document_s xml_document;
 typedef struct xml_node_s xml_node;
