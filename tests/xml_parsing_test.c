@@ -33,6 +33,8 @@ void run_xml_parse_test() {
 
     run_test_2("tests/test_2.xml");
 
+    run_test_3("tests/test_3.xml");
+
     printf("\n---- All tests passed ! ----------\n");
 
     reset_console_color();
@@ -88,7 +90,7 @@ void run_test_2(const char *path) {
 
     check_node_tag(document.root_node, "ESGI");
 
-    check_node_inner_text(document.root_node, "\n    IBC\n    \n    YOUPI\n");
+    check_node_inner_text(document.root_node, "IBC YOUPI");
 
     char **children_tag = malloc(sizeof(char *));
     children_tag[0] = strdup("classroom");
@@ -122,8 +124,23 @@ void run_test_2(const char *path) {
     xml_document_free(&document);
     printf("Test 2 passed\n\n");
 }
-//
-//void run_test_3(const char *path);
+
+void run_test_3(const char *path) {
+    printf("Running test 3\n");
+    xml_document document;
+    check_document_load(&document, path);
+
+    check_document_version(document, "1.0");
+
+    check_encoding_version(document, "UTF-8");
+
+    check_node_tag(document.root_node, "struct");
+
+    check_node_inner_text(document.root_node, "cc cc2");
+
+    xml_document_free(&document);
+    printf("Test 3 passed\n\n");
+}
 //
 //void run_test_4(const char *path);
 //
