@@ -15,6 +15,7 @@
 typedef struct linked_list_s linked_list;
 
 struct linked_list_s {
+    char *data;
     char *tag_name;
     char *name;
     char *rule;

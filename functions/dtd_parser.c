@@ -18,6 +18,7 @@ linked_list *init_linked_list(char *data) {
     //TODO parser data en 3 éléments
 
     linked_list_1->data = strdup(data);
+    //linked_list_1->tag_name = strdup(tag_name);
 
     return linked_list_1;
 }
@@ -64,14 +65,14 @@ char *dtd_to_string(char *path) {
     fread(buf, sizeof(char), size, fichier);
     buf[size] = '\0';
     fclose(fichier);
-
+    //logIt(buf);
     return buf;
 }
 
 linked_list *get_dtd_rules(char *buf) {
-    linked_list *list = init_linked_list("");
+    linked_list *list = init_linked_list("<!ELEMENT classrooms (classroom+)>");
     int i = 1;
-    int elem_linked_list = 0, start_index = 0, end_index = 0;
+    int elem_linked_list = 0,start_index = 0,end_index = 0;
     size_t size = 255;
     char *lines = malloc(sizeof(char) * (size + 1));
     while (i < strlen(buf)) {
@@ -98,6 +99,30 @@ linked_list *get_dtd_rules(char *buf) {
     //free(lines);
 }
 
+void parse_line_elements(linked_list *linkedList, const char *data) {
+// TAG NAME
+    int i = 0, start_tag_name_index = 1, end_tag_name_index = 0;
+    size_t sizeData = strlen(linkedList->data);
+    char *tag_names = malloc(sizeof(char) * (255 + 1));
+    while (linkedList->next != NULL){
+        while (linkedList->data[i] != ' ' && i < sizeData) {
+            i++;
+        }
+        end_tag_name_index = i;
+
+        strncpy(tag_names, linkedList->data + start_tag_name_index, (end_tag_name_index - start_tag_name_index) + 1);
+        tag_names[(end_tag_name_index - start_tag_name_index) + 1] = '\0';
+
+        linkedList->tag_name = tag_names; //TODO a tester fréro
+        logIt(tag_names);
+        linkedList = linkedList->next;
+    }
+// NAME
+   // int start_name_tag_index = 0, end_name_tag_index = 0;
+   // char *name_tag = malloc(sizeof(char) * (255 + 1));
+
+// RULE
+}
 
 
 
