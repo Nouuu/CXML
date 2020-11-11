@@ -64,89 +64,31 @@ int parse_xml_file(xml_document *document, size_t size) {
 int parse_xml_carret_open(xml_document *document, int *i, int *parsing_buffer_i, xml_node **current_node,
                           char *parsing_buffer, char *message_buffer, size_t size) {
 
+    //Close parsing buffer
     parsing_buffer[(*parsing_buffer_i)] = '\0';
 
-    // parsing_ buffer is here inner text
+    //Check if parsing buffer something, if it is, it should be inner text
     if ((*parsing_buffer_i) > 0 && !string_only_contain_space_characters(parsing_buffer)) {
-
-        if (!(*current_node)) {
-            sprintf(message_buffer, "ERROR - Text outside of document : '%s'", parsing_buffer);
-            logIt(message_buffer);
+        if (parse_xml_inner_text(parsing_buffer_i, parsing_buffer, current_node, message_buffer) == FALSE) {
             return FALSE;
         }
-
-        if (!(*current_node)->inner_text) {
-
-            (*current_node)->inner_text = strtrim_space(parsing_buffer);
-        } else {
-            (*current_node)->inner_text = strcat_realloc((*current_node)->inner_text, parsing_buffer);
-        }
-        (*parsing_buffer_i) = 0;
     } else {
-        (*parsing_buffer_i) = 0;
-        parsing_buffer[(*parsing_buffer_i)] = '\0';
+        reset_parsing_buffer(parsing_buffer, parsing_buffer_i);
     }
 
-    // ending node
+    // check if is ending node
     if (document->source[(*i) + 1] == '/') {
-        (*i) += 2;
-        while (document->source[(*i)] != '>') {
-            parsing_buffer[(*parsing_buffer_i)] = document->source[(*i)];
-            (*parsing_buffer_i)++;
-            (*i)++;
-        }
-        parsing_buffer[(*parsing_buffer_i)] = '\0';
-
-        if (!(*current_node)) {
-            logIt("ERROR - You are already at the root of document");
-            return FALSE;
-        }
-        if (strcmp((*current_node)->tag, parsing_buffer) != 0) {
-            sprintf(message_buffer,
-                    "ERROR - Closing tag don't match with opening tag. Expected :'%s', got :'%s'",
-                    (*current_node)->tag, parsing_buffer);
-            logIt(message_buffer);
-            return FALSE;
-        }
-
-        (*current_node) = (*current_node)->parent;
-        (*parsing_buffer_i) = 0;
-        parsing_buffer[(*parsing_buffer_i)] = '\0';
-        (*i)++;
-        return TRUE;
+        return parse_xml_ending_node(document, i, parsing_buffer_i, parsing_buffer, current_node, message_buffer, size);
     }
 
-
-    //Look like there is a special node
+    //Look like there is a comment
     if (document->source[(*i) + 1] == '!') {
-        while (!isspace(document->source[(*i)]) && document->source[(*i)] != '>') {
-            parsing_buffer[(*parsing_buffer_i)] = document->source[(*i)];
-            (*parsing_buffer_i)++;
-            (*i)++;
-        }
-        parsing_buffer[(*parsing_buffer_i)] = '\0';
-
-        // checking comment
-        if (!strcmp(parsing_buffer, "<!--")) {
-            while (ends_with(parsing_buffer, "-->") == FALSE) {
-                if ((*i) >= size - 1) {
-                    logIt("ERROR - You have unclosed comment in your XML file");
-                    return FALSE;
-                }
-                parsing_buffer[(*parsing_buffer_i)] = document->source[(*i)];
-                (*parsing_buffer_i)++;
-                (*i)++;
-            }
-            parsing_buffer[(*parsing_buffer_i)] = '\0';
-            printf("Found comment : \n|%s|\n\n\n", parsing_buffer);
-
-//                    (*i)++;
-            return TRUE;
-        }
+        return parse_xml_comment(document, i, parsing_buffer_i, parsing_buffer, message_buffer, size);
     }
 
     //xml spec tag
     if (document->source[(*i) + 1] == '?') {
+        //TODO check if it is at line 1
         while (!isspace(document->source[(*i)]) && document->source[(*i)] != '>') {
             parsing_buffer[(*parsing_buffer_i)] = document->source[(*i)];
             (*parsing_buffer_i)++;
@@ -181,13 +123,16 @@ int parse_xml_carret_open(xml_document *document, int *i, int *parsing_buffer_i,
 
     // getting tag name beginning
     (*i)++;
-    if (parse_attributes(document->source, &(*i), parsing_buffer, &(*parsing_buffer_i), (*current_node), size) ==
-        INLINE_TAG) {
+    tag_type tagType = parse_attributes(document->source, &(*i), parsing_buffer, &(*parsing_buffer_i), (*current_node),
+                                        size);
+    if (tagType == INLINE_TAG) {
         (*current_node) = (*current_node)->parent;
         (*i)++;
         (*parsing_buffer_i) = 0;
         parsing_buffer[(*parsing_buffer_i)] = '\0';
         return TRUE;
+    } else if (tagType == ERROR_PARSING) {
+        return FALSE;
     }
 
     // Set tag name if none
@@ -203,6 +148,115 @@ int parse_xml_carret_open(xml_document *document, int *i, int *parsing_buffer_i,
     return TRUE;
 }
 
+int parse_xml_inner_text(int *parsing_buffer_i, char *parsing_buffer, xml_node **current_node, char *message_buffer) {
+    if (!(*current_node)) {
+        sprintf(message_buffer, "ERROR - Text outside of document : '%s'", parsing_buffer);
+        logIt(message_buffer);
+        return FALSE;
+    }
+
+    if (!(*current_node)->inner_text) {
+
+        (*current_node)->inner_text = strtrim_space(parsing_buffer);
+    } else {
+        (*current_node)->inner_text = strcat_realloc((*current_node)->inner_text, parsing_buffer);
+    }
+    (*parsing_buffer_i) = 0;
+    return TRUE;
+}
+
+int parse_xml_ending_node(xml_document *document, int *i, int *parsing_buffer_i, char *parsing_buffer,
+                          xml_node **current_node, char *message_buffer, int size) {
+    (*i) += 2;
+
+    if (index_out_of_range(*i, size)) {
+        logIt("ERROR - Reached end of document but seems incomplete !");
+        return FALSE;
+    }
+
+    while (document->source[(*i)] != '>') {
+        parsing_buffer[(*parsing_buffer_i)] = document->source[(*i)];
+        (*parsing_buffer_i)++;
+        (*i)++;
+        if (index_out_of_range(*i, size)) {
+            logIt("ERROR - Reached end of document but seems incomplete !");
+            return FALSE;
+        }
+    }
+    parsing_buffer[(*parsing_buffer_i)] = '\0';
+
+    if (!(*current_node)) {
+        logIt("ERROR - You are already at the root of document");
+        return FALSE;
+    }
+    if (strcmp((*current_node)->tag, parsing_buffer) != 0) {
+        sprintf(message_buffer,
+                "ERROR - Closing tag don't match with opening tag. Expected :'%s', got :'%s'",
+                (*current_node)->tag, parsing_buffer);
+        logIt(message_buffer);
+        return FALSE;
+    }
+
+    //Go back to parent to continue parsing
+    (*current_node) = (*current_node)->parent;
+    (*parsing_buffer_i) = 0;
+    parsing_buffer[(*parsing_buffer_i)] = '\0';
+    (*i)++;
+    return TRUE;
+}
+
+int index_out_of_range(int i, int size) {
+    return i >= size;
+}
+
+int parse_xml_comment(xml_document *document, int *i, int *parsing_buffer_i, char *parsing_buffer, char *message_buffer,
+                      int size) {
+    /*while (document->source[(*i)] != '>') {
+
+        parsing_buffer[(*parsing_buffer_i)] = document->source[(*i)];
+        (*parsing_buffer_i)++;
+        (*i)++;
+    }
+    parsing_buffer[(*parsing_buffer_i)] = '\0';
+
+    // checking comment
+    if (!strcmp(parsing_buffer, "<!--")) {
+        while (ends_with(parsing_buffer, "-->") == FALSE) {
+            if ((*i) >= size - 1) {
+                logIt("ERROR - You have unclosed comment in your XML file");
+                return FALSE;
+            }
+            parsing_buffer[(*parsing_buffer_i)] = document->source[(*i)];
+            (*parsing_buffer_i)++;
+            (*i)++;
+        }
+        parsing_buffer[(*parsing_buffer_i)] = '\0';
+        printf("Found comment : \n|%s|\n\n\n", parsing_buffer);
+        reset_parsing_buffer(parsing_buffer, parsing_buffer_i);
+        (*i)++;
+        return TRUE;
+    }*/
+
+    if (index_out_of_range((*i) + 3, size) || document->source[(*i) + 2] != '-' || document->source[(*i) + 3] != '-') {
+        logIt("ERROR - Syntax error with special node <!");
+        return FALSE;
+    }
+
+    char *closing = strstr(document->source + (*i), "-->");
+    if (!closing) {
+        (*i) = size - 1;
+        logIt("WARNING - Unclosed comment");
+        return TRUE;
+    }
+    strncpy(parsing_buffer, document->source + (*i), (closing + 3) - (document->source + (*i)));
+    parsing_buffer[(closing + 3) - (document->source + (*i))] = '\0';
+    sprintf(message_buffer, "COMMENT - %s", parsing_buffer);
+    logIt(message_buffer);
+    (*i) += strlen(parsing_buffer) + 1;
+    reset_parsing_buffer(parsing_buffer, parsing_buffer_i);
+    return TRUE;
+}
+
 void xml_document_free(xml_document *document) {
     if (document) {
         free(document->source);
@@ -214,6 +268,11 @@ void xml_document_free(xml_document *document) {
         }
         xml_node_free(document->root_node);
     }
+}
+
+void reset_parsing_buffer(char *parsing_buffer, int *parsing_buffer_i) {
+    (*parsing_buffer_i) = 0;
+    parsing_buffer[0] = '\0';
 }
 
 xml_node *xml_node_new(xml_node *parent) {
@@ -357,7 +416,7 @@ parse_attributes(const char *source, int *i, char *parsing_buffer, int *parsing_
         if (source[(*i)] == '"' || source[(*i)] == '\'') {
             if (!current_attribute.key) {
                 logIt("ERROR - attribute's value has no key");
-                exit(FALSE);
+                return ERROR_PARSING;
             }
 
             char choosen_quote = source[(*i)];
@@ -370,7 +429,7 @@ parse_attributes(const char *source, int *i, char *parsing_buffer, int *parsing_
                             "ERROR - You forgot to close quote on your attribute '%s' in your tag '%s'",
                             current_attribute.key, current_node->tag);
                     logIt(message_buffer);
-                    exit(FALSE);
+                    return ERROR_PARSING;
                 }
 
                 parsing_buffer[(*parsing_buffer_i)] = source[(*i)];

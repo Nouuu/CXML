@@ -61,7 +61,8 @@ struct xml_document_s {
 
 enum tag_type_e {
     START_TAG,
-    INLINE_TAG
+    INLINE_TAG,
+    ERROR_PARSING
 };
 
 char *strcat_realloc(char *str_1, char *str_2);
@@ -78,10 +79,21 @@ tag_type
 parse_attributes(const char *source, int *i, char *parsing_buffer, int *parsing_buffer_i, xml_node *current_node,
                  size_t size);
 
+int index_out_of_range(int i, int size);
+
 int parse_xml_file(xml_document *document, size_t size);
 
 int parse_xml_carret_open(xml_document *document, int *i, int *parsing_buffer_i, xml_node **current_node,
                           char *parsing_buffer, char *message_buffer, size_t size);
+
+int parse_xml_inner_text(int *parsing_buffer_i, char *parsing_buffer, xml_node **current_node, char *message_buffer);
+
+int parse_xml_ending_node(xml_document *document, int *i, int *parsing_buffer_i, char *parsing_buffer,
+                          xml_node **current_node, char *message_buffer, int size);
+
+int parse_xml_comment(xml_document *document, int *i, int *parsing_buffer_i, char *parsing_buffer,
+                      char *message_buffer, int size);
+void reset_parsing_buffer(char *parsing_buffer, int *parsing_buffer_i);
 
 void xml_attribute_free(xml_attribute *attribute);
 
