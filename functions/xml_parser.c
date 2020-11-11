@@ -89,7 +89,6 @@ int parse_xml_carret_open(xml_document *document, int *i, int *parsing_buffer_i,
 
     //xml spec tag
     if (document->source[(*i) + 1] == '?') {
-        //TODO check if it is at line 1
         while (!isspace(document->source[(*i)]) && document->source[(*i)] != '>') {
             parsing_buffer[(*parsing_buffer_i)] = document->source[(*i)];
             (*parsing_buffer_i)++;
@@ -99,6 +98,7 @@ int parse_xml_carret_open(xml_document *document, int *i, int *parsing_buffer_i,
 
         // checking xml special tag
         if (!strcmp(parsing_buffer, "<?xml")) {
+            //TODO check if it is at line 1
             return parse_xml_doctype(document, i, parsing_buffer_i, parsing_buffer, size);
         }
     }
@@ -183,7 +183,7 @@ int parse_xml_inner_text(int *parsing_buffer_i, char *parsing_buffer, xml_node *
 int parse_xml_ending_node(xml_document *document, int *i, int *parsing_buffer_i, char *parsing_buffer,
                           xml_node **current_node, char *message_buffer, int size) {
 
-    if (*parsing_buffer_i == 0) {
+    if (!strlen(parsing_buffer) && !(*current_node)->children.size) {
         sprintf(message_buffer, "ERROR - |%s| node content is empty and not inline", (*current_node)->tag);
         logIt(message_buffer);
         return FALSE;
