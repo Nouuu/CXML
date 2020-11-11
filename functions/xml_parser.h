@@ -26,6 +26,9 @@ typedef struct xml_attribute_list_s xml_attribute_list;
 typedef struct xml_node_list_s xml_node_list;
 typedef enum tag_type_e tag_type;
 
+static int line;
+static int column;
+
 struct xml_attribute_s {
     char *key;
     char *value;
@@ -64,6 +67,10 @@ enum tag_type_e {
     ERROR_PARSING
 };
 
+void inc_column(int count, const char *source, int i);
+
+void newline();
+
 char *strcat_realloc(char *str_1, char *str_2);
 
 char *xml_node_attribute_value(xml_node *node, const char *key);
@@ -94,6 +101,8 @@ int parse_xml_comment(xml_document *document, int *i, int *parsing_buffer_i, cha
                       char *message_buffer, int size);
 
 int parse_xml_doctype(xml_document *document, int *i, int *parsing_buffer_i, char *parsing_buffer, int size);
+
+int valid_tag_name(const char *tag);
 
 void reset_parsing_buffer(char *parsing_buffer, int *parsing_buffer_i);
 

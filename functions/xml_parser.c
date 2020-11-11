@@ -38,6 +38,8 @@ int parse_xml_file(xml_document *document, size_t size) {
     char parsing_buffer[500] = {0};
     int parsing_buffer_i = 0;
     int i = 0;
+    column = 1;
+    line = 1;
 
     xml_node *current_node = NULL;
 
@@ -57,6 +59,7 @@ int parse_xml_file(xml_document *document, size_t size) {
             parsing_buffer[parsing_buffer_i] = document->source[i];
             parsing_buffer_i++;
             i++;
+            inc_column(1, document->source, i);
         }
     }
     return TRUE;
@@ -93,6 +96,7 @@ int parse_xml_carret_open(xml_document *document, int *i, int *parsing_buffer_i,
             parsing_buffer[(*parsing_buffer_i)] = document->source[(*i)];
             (*parsing_buffer_i)++;
             (*i)++;
+            inc_column(1, document->source, *i);
         }
         parsing_buffer[(*parsing_buffer_i)] = '\0';
 
@@ -106,8 +110,9 @@ int parse_xml_carret_open(xml_document *document, int *i, int *parsing_buffer_i,
     // setting current node
     if (!(*current_node)) {
         if (document->root_node->tag) {
-            sprintf(message_buffer, "ERROR - Document already have root tag |%s| and cannot have a second one !",
-                    document->root_node->tag);
+            sprintf(message_buffer,
+                    "ERROR line %d column %d - Document already have root tag |%s| and cannot have a second one !",
+                    line, column, document->root_node->tag);
             logIt(message_buffer, 1);
             return FALSE;
         }
@@ -118,11 +123,13 @@ int parse_xml_carret_open(xml_document *document, int *i, int *parsing_buffer_i,
 
     // getting tag name beginning
     (*i)++;
+    inc_column(1, document->source, *i);
     tag_type tagType = parse_attributes(document->source, i, parsing_buffer, parsing_buffer_i, (*current_node),
                                         size);
     if (tagType == INLINE_TAG) {
         (*current_node) = (*current_node)->parent;
         (*i)++;
+        inc_column(1, document->source, *i);
         (*parsing_buffer_i) = 0;
         parsing_buffer[(*parsing_buffer_i)] = '\0';
         return TRUE;
@@ -132,7 +139,11 @@ int parse_xml_carret_open(xml_document *document, int *i, int *parsing_buffer_i,
 
     // Set tag name if none
     parsing_buffer[(*parsing_buffer_i)] = '\0';
+
     if (!(*current_node)->tag) {
+        if (!valid_tag_name(parsing_buffer)) {
+            return FALSE;
+        }
         (*current_node)->tag = strdup(parsing_buffer);
     }
 
@@ -140,6 +151,7 @@ int parse_xml_carret_open(xml_document *document, int *i, int *parsing_buffer_i,
     (*parsing_buffer_i) = 0;
     parsing_buffer[(*parsing_buffer_i)] = '\0';
     (*i)++;
+    inc_column(1, document->source, *i);
     return TRUE;
 }
 
@@ -147,7 +159,7 @@ int parse_xml_doctype(xml_document *document, int *i, int *parsing_buffer_i, cha
     reset_parsing_buffer(parsing_buffer, parsing_buffer_i);
 
     xml_node *specifications = xml_node_new(NULL);
-    tag_type tagType = parse_attributes(document->source, &(*i), parsing_buffer, &(*parsing_buffer_i), specifications,
+    tag_type tagType = parse_attributes(document->source, i, parsing_buffer, parsing_buffer_i, specifications,
                                         size);
     if (tagType == ERROR_PARSING) {
         return FALSE;
@@ -160,12 +172,14 @@ int parse_xml_doctype(xml_document *document, int *i, int *parsing_buffer_i, cha
     xml_node_free(specifications);
     (*parsing_buffer_i) = 0;
     (*i)++;
+    inc_column(1, document->source, *i);
     return TRUE;
 }
 
 int parse_xml_inner_text(int *parsing_buffer_i, char *parsing_buffer, xml_node **current_node, char *message_buffer) {
     if (!(*current_node)) {
-        sprintf(message_buffer, "ERROR - Text outside of document : '%s'", parsing_buffer);
+        sprintf(message_buffer, "ERROR line %d column %d - Text outside of document : '%s'", line, column,
+                parsing_buffer);
         logIt(message_buffer, 1);
         return FALSE;
     }
@@ -184,15 +198,19 @@ int parse_xml_ending_node(xml_document *document, int *i, int *parsing_buffer_i,
                           xml_node **current_node, char *message_buffer, int size) {
 
     if (!strlen(parsing_buffer) && !(*current_node)->children.size) {
-        sprintf(message_buffer, "ERROR - |%s| node content is empty and not inline", (*current_node)->tag);
+        sprintf(message_buffer, "ERROR line %d column %d - |%s| node content is empty and not inline", line, column,
+                (*current_node)->tag);
         logIt(message_buffer, 1);
         return FALSE;
     }
 
     (*i) += 2;
+    inc_column(2, document->source, *i);
 
     if (index_out_of_range(*i, size)) {
-        logIt("ERROR - Reached end of document but seems incomplete !", 1);
+        sprintf(message_buffer, "ERROR line %d column %d - Reached end of document but seems incomplete !", line,
+                column);
+        logIt(message_buffer, 1);
         return FALSE;
     }
 
@@ -200,21 +218,25 @@ int parse_xml_ending_node(xml_document *document, int *i, int *parsing_buffer_i,
         parsing_buffer[(*parsing_buffer_i)] = document->source[(*i)];
         (*parsing_buffer_i)++;
         (*i)++;
+        inc_column(1, document->source, *i);
         if (index_out_of_range(*i, size)) {
-            logIt("ERROR - Reached end of document but seems incomplete !", 1);
+            sprintf(message_buffer, "ERROR line %d column %d - Reached end of document but seems incomplete !", line,
+                    column);
+            logIt(message_buffer, 1);
             return FALSE;
         }
     }
     parsing_buffer[(*parsing_buffer_i)] = '\0';
 
     if (!(*current_node)) {
-        logIt("ERROR - You are already at the root of document", 1);
+        sprintf(message_buffer, "ERROR line %d column %d - You are already at the root of document", line, column);
+        logIt(message_buffer, 1);
         return FALSE;
     }
     if (strcmp((*current_node)->tag, parsing_buffer) != 0) {
         sprintf(message_buffer,
-                "ERROR - Closing tag don't match with opening tag. Expected :'%s', got :'%s'",
-                (*current_node)->tag, parsing_buffer);
+                "ERROR line %d column %d - Closing tag don't match with opening tag. Expected :'%s', got :'%s'",
+                line, column, (*current_node)->tag, parsing_buffer);
         logIt(message_buffer, 1);
         return FALSE;
     }
@@ -224,6 +246,7 @@ int parse_xml_ending_node(xml_document *document, int *i, int *parsing_buffer_i,
     (*parsing_buffer_i) = 0;
     parsing_buffer[(*parsing_buffer_i)] = '\0';
     (*i)++;
+    inc_column(1, document->source, *i);
     return TRUE;
 }
 
@@ -260,21 +283,24 @@ int parse_xml_comment(xml_document *document, int *i, int *parsing_buffer_i, cha
     }*/
 
     if (index_out_of_range((*i) + 3, size) || document->source[(*i) + 2] != '-' || document->source[(*i) + 3] != '-') {
-        logIt("ERROR - Syntax error with special node <!", 1);
+        sprintf(message_buffer, "ERROR line %d column %d - Syntax error with special node <!", line, column);
+        logIt(message_buffer, 1);
         return FALSE;
     }
 
     char *closing = strstr(document->source + (*i), "-->");
     if (!closing) {
         (*i) = size - 1;
-        logIt("WARNING - Unclosed comment", 1);
+        sprintf(message_buffer, "WARNING line %d column %d - Unclosed comment", line, column);
+        logIt(message_buffer, 1);
         return TRUE;
     }
     strncpy(parsing_buffer, document->source + (*i), (closing + 3) - (document->source + (*i)));
     parsing_buffer[(closing + 3) - (document->source + (*i))] = '\0';
-    sprintf(message_buffer, "COMMENT - %s", parsing_buffer);
+    sprintf(message_buffer, "COMMENT line %d column %d - %s", line, column, parsing_buffer);
     logIt(message_buffer, 0);
     (*i) += strlen(parsing_buffer) + 1;
+    inc_column(strlen(parsing_buffer) + 1, document->source, *i);
     reset_parsing_buffer(parsing_buffer, parsing_buffer_i);
     return TRUE;
 }
@@ -378,7 +404,9 @@ void xml_node_list_add(xml_node_list *node_list, xml_node *node) {
 xml_node *xml_node_child(xml_node *parent, int index) {
     char message[255] = {0};
     if (index >= parent->children.size) {
-        sprintf(message, "ERROR - Trying to get node child out of range. parent node '%s' child index '%d'", parent->tag,
+        sprintf(message,
+                "ERROR line %d column %d - Trying to get node child out of range. parent node '%s' child index '%d'",
+                line, column, parent->tag,
                 index);
         logIt(message, 1);
         return NULL;
@@ -411,13 +439,18 @@ parse_attributes(const char *source, int *i, char *parsing_buffer, int *parsing_
         parsing_buffer[(*parsing_buffer_i)] = source[(*i)];
         (*parsing_buffer_i)++;
         (*i)++;
+        inc_column(1, source, *i);
 
         //Tag name ending
         if (isspace(source[(*i)]) && !current_node->tag) {
             parsing_buffer[(*parsing_buffer_i)] = '\0';
+            if (!valid_tag_name(parsing_buffer)) {
+                return FALSE;
+            }
             current_node->tag = strdup(parsing_buffer);
             (*parsing_buffer_i) = 0;
             (*i)++;
+            inc_column(1, source, *i);
             continue;
         }
 
@@ -438,6 +471,7 @@ parse_attributes(const char *source, int *i, char *parsing_buffer, int *parsing_
         //getting attribute value
         if (source[(*i)] == '\"' || source[(*i)] == '\'') {
             if (!current_attribute.key) {
+                sprintf(message_buffer, "ERROR line %d column %d - attribute's value has no key", line, column);
                 logIt("ERROR - attribute's value has no key", 1);
                 return ERROR_PARSING;
             }
@@ -445,18 +479,20 @@ parse_attributes(const char *source, int *i, char *parsing_buffer, int *parsing_
             char choosen_quote = source[(*i)];
             (*parsing_buffer_i) = 0;
             (*i)++;
+            inc_column(1, source, *i);
 
             while (source[(*i)] != choosen_quote) {
                 if (index_out_of_range(*i, size)) {
                     sprintf(message_buffer,
-                            "ERROR - You forgot to close quote on your attribute '%s' in your tag '%s'",
-                            current_attribute.key, current_node->tag);
+                            "ERROR line %d column %d - You forgot to close quote on your attribute '%s' in your tag '%s'",
+                            line, column, current_attribute.key, current_node->tag);
                     logIt(message_buffer, 1);
                     return ERROR_PARSING;
                 }
                 parsing_buffer[(*parsing_buffer_i)] = source[(*i)];
                 (*parsing_buffer_i)++;
                 (*i)++;
+                inc_column(1, source, *i);
             }
 
             parsing_buffer[(*parsing_buffer_i)] = '\0';
@@ -468,15 +504,20 @@ parse_attributes(const char *source, int *i, char *parsing_buffer, int *parsing_
 
             (*parsing_buffer_i) = 0;
             (*i)++;
+            inc_column(1, source, *i);
             continue;
         }
     }
     if (source[(*i) - 1] == '/') {
         parsing_buffer[(*parsing_buffer_i) - 1] = '\0';
         if (!current_node->tag) {
+            if (!valid_tag_name(parsing_buffer)) {
+                return FALSE;
+            }
             current_node->tag = strdup(parsing_buffer);
         }
         (*i)++;
+        inc_column(1, source, *i);
         return INLINE_TAG;
     }
     return START_TAG;
@@ -492,7 +533,8 @@ char *xml_node_attribute_value(xml_node *node, const char *key) {
         }
     }
     if (strcmp(key, "encoding") != 0 && strcmp(key, "version") != 0) {
-        sprintf(message, "Cannot find attribute '%s' on node '%s'", key, node->tag);
+        sprintf(message, "ERROR line %d column %d - Cannot find attribute '%s' on node '%s'", line, column, key,
+                node->tag);
         logIt(message, 1);
     }
     return NULL;
@@ -507,7 +549,7 @@ xml_attribute *xml_node_attribute(xml_node *node, const char *key) {
             return attribute;
         }
     }
-    sprintf(message, "Cannot find attribute '%s' on node '%s'", key, node->tag);
+    sprintf(message, "ERROR line %d column %d - Cannot find attribute '%s' on node '%s'", line, column, key, node->tag);
     logIt(message, 1);
     return NULL;
 }
@@ -515,7 +557,7 @@ xml_attribute *xml_node_attribute(xml_node *node, const char *key) {
 xml_node *xml_node_get(xml_node_list node_list, int index) {
     char message[255] = {0};
     if (index >= node_list.size) {
-        sprintf(message, "Trying to get node out of range. index '%d'", index);
+        sprintf(message, "ERROR line %d column %d - Trying to get node out of range. index '%d'", line, column, index);
         logIt(message, 1);
         return NULL;
     }
@@ -566,4 +608,42 @@ char *strcat_realloc(char *str_1, char *str_2) {
     strcat(str_1, temp);
     free(temp);
     return str_1;
+}
+
+void inc_column(int count, const char *source, int i) {
+    for (int j = 0; j < count; ++j) {
+        column++;
+        if (source[i - count + j] == '\n') {
+            newline();
+        }
+    }
+}
+
+void newline() {
+    line++;
+    column = 1;
+}
+
+int valid_tag_name(const char *tag) {
+    char message_buffer[255] = {0};
+    if (!tag || !strlen(tag)) {
+        sprintf(message_buffer, "ERROR line %d column %d - Wrong tag name", line, column);
+        logIt(message_buffer, 1);
+        return FALSE;
+    }
+    if (!isalpha(tag[0])) {
+        sprintf(message_buffer, "ERROR line %d column %d - |%s| is not a valid tag name", line, column, tag);
+        logIt(message_buffer, 1);
+        return FALSE;
+    }
+
+    for (int i = 1; i < strlen(tag); ++i) {
+        if (!isalnum(tag[i]) && tag[i] != '-' && tag[i] != '_') {
+            sprintf(message_buffer, "ERROR line %d column %d - |%s| is not a valid tag name", line, column, tag);
+            logIt(message_buffer, 1);
+            return FALSE;
+        }
+    }
+
+    return TRUE;
 }
