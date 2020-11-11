@@ -175,6 +175,13 @@ int parse_xml_inner_text(int *parsing_buffer_i, char *parsing_buffer, xml_node *
 
 int parse_xml_ending_node(xml_document *document, int *i, int *parsing_buffer_i, char *parsing_buffer,
                           xml_node **current_node, char *message_buffer, int size) {
+
+    if (*parsing_buffer_i == 0) {
+        sprintf(message_buffer, "ERROR - |%s| node content is empty and not inline", (*current_node)->tag);
+        logIt(message_buffer);
+        return FALSE;
+    }
+
     (*i) += 2;
 
     if (index_out_of_range(*i, size)) {
