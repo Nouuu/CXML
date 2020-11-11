@@ -35,13 +35,17 @@ void run_xml_parse_test() {
 
     run_test_3("tests/test_3.xml");
 
+    run_test_5("tests/test_5.xml");
+
+    run_test_6("tests/test_6.xml");
+
     printf("\n---- All tests passed ! ----------\n");
 
     reset_console_color();
 }
 
 void run_test_1(const char *path) {
-    printf("Running test 1\n");
+    printf("---- Running test 1\n");
     xml_document document;
     check_document_load(&document, path);
 
@@ -69,11 +73,11 @@ void run_test_1(const char *path) {
     free_string_array(children_inner_text, 4);
 
     xml_document_free(&document);
-    printf("Test 1 passed\n\n");
+    printf("---- Test 1 passed\n\n");
 }
 
 void run_test_2(const char *path) {
-    printf("Running test 2\n");
+    printf("---- Running test 2\n");
     xml_document document;
     check_document_load(&document, path);
 
@@ -113,11 +117,11 @@ void run_test_2(const char *path) {
     free_string_array(attribute_values, 1);
 
     xml_document_free(&document);
-    printf("Test 2 passed\n\n");
+    printf("---- Test 2 passed\n\n");
 }
 
 void run_test_3(const char *path) {
-    printf("Running test 3\n");
+    printf("---- Running test 3\n");
     xml_document document;
     check_document_load(&document, path);
 
@@ -196,20 +200,41 @@ void run_test_3(const char *path) {
     check_node_children_tag_name(document.root_node->children.data[1]->children.data[0]->children.data[0], 0, NULL);
 
     xml_document_free(&document);
-    printf("Test 3 passed\n\n");
+    printf("---- Test 3 passed\n\n");
 }
+
 //
 //void run_test_4(const char *path);
 //
-//void run_test_5(const char *path);
-//
-//void run_test_6(const char *path);
-//
+void run_test_5(const char *path) {
+    printf("---- Running test 5\n");
+    xml_document document;
+    check_document_load_syntax_error(&document, path);
+
+    xml_document_free(&document);
+    printf("---- Test 5 passed\n\n");
+}
+
+void run_test_6(const char *path) {
+    printf("---- Running test 6\n");
+    xml_document document;
+    check_document_load_syntax_error(&document, path);
+
+    xml_document_free(&document);
+    printf("---- Test 6 passed\n\n");
+}
+
 //void run_test_7(const char *path);
 
 void check_document_load(xml_document *document, const char *path) {
     printf("\tParsing document %s\n", path);
     assert(xml_document_load(document, path));
+}
+
+void check_document_load_syntax_error(xml_document *document, const char *path) {
+    printf("\tParsing document %s, expecting syntax error\n", path);
+    assert(!xml_document_load(document, path));
+
 }
 
 void check_document_version(xml_document document, const char *version) {

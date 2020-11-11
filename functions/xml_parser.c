@@ -51,8 +51,6 @@ int parse_xml_file(xml_document *document, size_t size) {
                                                     size);
             if (return_code == FALSE) {
                 return FALSE;
-            } else if (return_code == 2) {
-                continue;
             }
         } else {
             parsing_buffer[parsing_buffer_i] = document->source[i];
@@ -115,7 +113,7 @@ int parse_xml_carret_open(xml_document *document, int *i, int *parsing_buffer_i,
         (*parsing_buffer_i) = 0;
         parsing_buffer[(*parsing_buffer_i)] = '\0';
         (*i)++;
-        return CONTINUE;
+        return TRUE;
     }
 
 
@@ -143,7 +141,7 @@ int parse_xml_carret_open(xml_document *document, int *i, int *parsing_buffer_i,
             printf("Found comment : \n|%s|\n\n\n", parsing_buffer);
 
 //                    (*i)++;
-            return CONTINUE;
+            return TRUE;
         }
     }
 
@@ -171,7 +169,7 @@ int parse_xml_carret_open(xml_document *document, int *i, int *parsing_buffer_i,
             xml_node_free(specifications);
             (*parsing_buffer_i) = 0;
             (*i)++;
-            return CONTINUE;
+            return TRUE;
         }
     }
     // setting current node
@@ -189,7 +187,7 @@ int parse_xml_carret_open(xml_document *document, int *i, int *parsing_buffer_i,
         (*i)++;
         (*parsing_buffer_i) = 0;
         parsing_buffer[(*parsing_buffer_i)] = '\0';
-        return CONTINUE;
+        return TRUE;
     }
 
     // Set tag name if none
@@ -202,18 +200,20 @@ int parse_xml_carret_open(xml_document *document, int *i, int *parsing_buffer_i,
     (*parsing_buffer_i) = 0;
     parsing_buffer[(*parsing_buffer_i)] = '\0';
     (*i)++;
-    return CONTINUE;
+    return TRUE;
 }
 
 void xml_document_free(xml_document *document) {
-    free(document->source);
-    if (document->version) {
-        free(document->version);
+    if (document) {
+        free(document->source);
+        if (document->version) {
+            free(document->version);
+        }
+        if (document->encoding) {
+            free(document->encoding);
+        }
+        xml_node_free(document->root_node);
     }
-    if (document->encoding) {
-        free(document->encoding);
-    }
-    xml_node_free(document->root_node);
 }
 
 xml_node *xml_node_new(xml_node *parent) {

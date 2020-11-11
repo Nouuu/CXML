@@ -34,13 +34,15 @@ void run_test_3(const char *path);
 
 //void run_test_4(const char *path);
 //
-//void run_test_5(const char *path);
-//
-//void run_test_6(const char *path);
-//
+void run_test_5(const char *path);
+
+void run_test_6(const char *path);
+
 //void run_test_7(const char *path);
 
 void check_document_load(xml_document *document, const char *path);
+
+void check_document_load_syntax_error(xml_document *document, const char *path);
 
 void check_document_version(xml_document document, const char *version);
 
