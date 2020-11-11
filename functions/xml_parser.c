@@ -20,11 +20,12 @@ int xml_document_load(xml_document *document, const char *path) {
     size = ftell(fp);
     fseek(fp, 0, SEEK_SET);
 
-    document->source = malloc(sizeof(char) * (size + 1));
+    document->source = calloc((size + 1), sizeof(char));
     fread(document->source, sizeof(char), size, fp);
     fclose(fp);
 
     document->source[size] = '\0';
+
     document->root_node = xml_node_new(NULL);
     document->encoding = NULL;
     document->version = NULL;
@@ -123,7 +124,7 @@ int parse_xml_carret_open(xml_document *document, int *i, int *parsing_buffer_i,
 
     // getting tag name beginning
     (*i)++;
-    tag_type tagType = parse_attributes(document->source, &(*i), parsing_buffer, &(*parsing_buffer_i), (*current_node),
+    tag_type tagType = parse_attributes(document->source, i, parsing_buffer, parsing_buffer_i, (*current_node),
                                         size);
     if (tagType == INLINE_TAG) {
         (*current_node) = (*current_node)->parent;
@@ -276,7 +277,7 @@ void reset_parsing_buffer(char *parsing_buffer, int *parsing_buffer_i) {
 }
 
 xml_node *xml_node_new(xml_node *parent) {
-    xml_node *node = malloc(sizeof(xml_node));
+    xml_node *node = calloc(1, sizeof(xml_node));
     node->tag = NULL;
     node->inner_text = NULL;
     node->parent = parent;
@@ -322,7 +323,7 @@ void xml_attribute_free(xml_attribute *attribute) {
 void xml_attribute_list_init(xml_attribute_list *attribute_list) {
     attribute_list->capacity = 1;
     attribute_list->size = 0;
-    attribute_list->data = malloc(sizeof(xml_attribute) * attribute_list->capacity);
+    attribute_list->data = calloc(attribute_list->capacity, sizeof(xml_attribute));
 }
 
 void xml_attribute_list_add(xml_attribute_list *attribute_list, xml_attribute *attribute) {
@@ -338,7 +339,7 @@ void xml_attribute_list_add(xml_attribute_list *attribute_list, xml_attribute *a
 void xml_node_list_init(xml_node_list *node_list) {
     node_list->capacity = 1;
     node_list->size = 0;
-    node_list->data = malloc(sizeof(xml_node) * node_list->capacity);
+    node_list->data = calloc(node_list->capacity, sizeof(xml_node));
 
 }
 
@@ -384,7 +385,8 @@ parse_attributes(const char *source, int *i, char *parsing_buffer, int *parsing_
     current_attribute.key = NULL;
     current_attribute.value = NULL;
 
-    while (source[(*i)] != '>' && (*i) < size) {
+    while (source[(*i)] != '>' && !index_out_of_range(*i, size)) {
+
         parsing_buffer[(*parsing_buffer_i)] = source[(*i)];
         (*parsing_buffer_i)++;
         (*i)++;
@@ -413,7 +415,7 @@ parse_attributes(const char *source, int *i, char *parsing_buffer, int *parsing_
         }
 
         //getting attribute value
-        if (source[(*i)] == '"' || source[(*i)] == '\'') {
+        if (source[(*i)] == '\"' || source[(*i)] == '\'') {
             if (!current_attribute.key) {
                 logIt("ERROR - attribute's value has no key");
                 return ERROR_PARSING;
@@ -424,14 +426,13 @@ parse_attributes(const char *source, int *i, char *parsing_buffer, int *parsing_
             (*i)++;
 
             while (source[(*i)] != choosen_quote) {
-                if ((*i) == size - 1) {
+                if (index_out_of_range(*i, size)) {
                     sprintf(message_buffer,
                             "ERROR - You forgot to close quote on your attribute '%s' in your tag '%s'",
                             current_attribute.key, current_node->tag);
                     logIt(message_buffer);
                     return ERROR_PARSING;
                 }
-
                 parsing_buffer[(*parsing_buffer_i)] = source[(*i)];
                 (*parsing_buffer_i)++;
                 (*i)++;
@@ -515,7 +516,7 @@ void xml_node_list_free(xml_node_list *node_list) {
 xml_node_list *xml_node_children_by_tagname(xml_node *parent, const char *tag) {
     int i;
     xml_node *child = NULL;
-    xml_node_list *list = malloc(sizeof(xml_node_list));
+    xml_node_list *list = calloc(1, sizeof(xml_node_list));
     xml_node_list_init(list);
 
     for (i = 0; i < parent->children.size; i++) {

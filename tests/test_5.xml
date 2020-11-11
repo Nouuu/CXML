@@ -2,7 +2,8 @@
 
 <!-- xml for dtd_example_1.dtd file (incorrect) -->
 
-<classrooms key="key>
+
+<classrooms key=">
     <classroom>AL</classroom>
     <classroom>IABD</classroom>
     <classroom>MOC</classroom>

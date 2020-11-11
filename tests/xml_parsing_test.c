@@ -34,8 +34,8 @@ void run_xml_parse_test() {
     run_test_2("tests/test_2.xml");
 
     run_test_3("tests/test_3.xml");
-
     run_test_5("tests/test_5.xml");
+
 
     run_test_6("tests/test_6.xml");
 
