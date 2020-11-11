@@ -93,6 +93,9 @@ int parse_xml_ending_node(xml_document *document, int *i, int *parsing_buffer_i,
 
 int parse_xml_comment(xml_document *document, int *i, int *parsing_buffer_i, char *parsing_buffer,
                       char *message_buffer, int size);
+
+int parse_xml_doctype(xml_document *document, int *i, int *parsing_buffer_i, char *parsing_buffer, int size);
+
 void reset_parsing_buffer(char *parsing_buffer, int *parsing_buffer_i);
 
 void xml_attribute_free(xml_attribute *attribute);

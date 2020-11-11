@@ -99,20 +99,7 @@ int parse_xml_carret_open(xml_document *document, int *i, int *parsing_buffer_i,
 
         // checking xml special tag
         if (!strcmp(parsing_buffer, "<?xml")) {
-            (*parsing_buffer_i) = 0;
-
-            xml_node *specifications = xml_node_new(NULL);
-            parse_attributes(document->source, &(*i), parsing_buffer, &(*parsing_buffer_i), specifications, size);
-
-            document->version = xml_node_attribute_value(specifications, "version") == NULL ?
-                                NULL : strdup(xml_node_attribute_value(specifications, "version"));
-            document->encoding = xml_node_attribute_value(specifications, "encoding") == NULL ?
-                                 NULL : strdup(xml_node_attribute_value(specifications, "encoding"));
-
-            xml_node_free(specifications);
-            (*parsing_buffer_i) = 0;
-            (*i)++;
-            return TRUE;
+            return parse_xml_doctype(document, i, parsing_buffer_i, parsing_buffer, size);
         }
     }
     // setting current node
@@ -145,6 +132,26 @@ int parse_xml_carret_open(xml_document *document, int *i, int *parsing_buffer_i,
     // resetting parsing buffer
     (*parsing_buffer_i) = 0;
     parsing_buffer[(*parsing_buffer_i)] = '\0';
+    (*i)++;
+    return TRUE;
+}
+
+int parse_xml_doctype(xml_document *document, int *i, int *parsing_buffer_i, char *parsing_buffer, int size) {
+    reset_parsing_buffer(parsing_buffer, parsing_buffer_i);
+
+    xml_node *specifications = xml_node_new(NULL);
+    tag_type tagType = parse_attributes(document->source, &(*i), parsing_buffer, &(*parsing_buffer_i), specifications,
+                                        size);
+    if (tagType == ERROR_PARSING) {
+        return FALSE;
+    }
+    document->version = xml_node_attribute_value(specifications, "version") == NULL ?
+                        NULL : strdup(xml_node_attribute_value(specifications, "version"));
+    document->encoding = xml_node_attribute_value(specifications, "encoding") == NULL ?
+                         NULL : strdup(xml_node_attribute_value(specifications, "encoding"));
+
+    xml_node_free(specifications);
+    (*parsing_buffer_i) = 0;
     (*i)++;
     return TRUE;
 }
