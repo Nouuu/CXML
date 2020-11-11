@@ -102,8 +102,15 @@ int parse_xml_carret_open(xml_document *document, int *i, int *parsing_buffer_i,
             return parse_xml_doctype(document, i, parsing_buffer_i, parsing_buffer, size);
         }
     }
+
     // setting current node
     if (!(*current_node)) {
+        if (document->root_node->tag) {
+            sprintf(message_buffer, "ERROR - Document already have root tag |%s| and cannot have a second one !",
+                    document->root_node->tag);
+            logIt(message_buffer);
+            return FALSE;
+        }
         (*current_node) = document->root_node;
     } else {
         (*current_node) = xml_node_new((*current_node));
