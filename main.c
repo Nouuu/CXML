@@ -18,7 +18,7 @@ int main(int argc, char **argv) {
     run_xml_parse_test();
     /////////////////////
 
-
+/*
     xml_document document;
     xml_document_load(&document, "xml_files/xml_example_1.xml");
 
