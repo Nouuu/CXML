@@ -12,6 +12,6 @@
 
 int setLogFileName(char *filename);
 
-void logIt(char *message);
+void logIt(char *message, int error);
 
 #endif //CXML_LOG_H

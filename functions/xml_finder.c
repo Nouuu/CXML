@@ -7,7 +7,7 @@
 
 xml_node_list *get_nodes(const char *name, xml_document document) {
     if (document.root_node == NULL || name == NULL || !strlen(name)) {
-        logIt("ERROR - You are trying to find nodes with empty name or with empty document");
+        logIt("ERROR - You are trying to find nodes with empty name or with empty document", 0);
         return NULL;
     }
     xml_node_list *list = malloc(sizeof(xml_node_list));

@@ -51,7 +51,6 @@ struct xml_node_s {
     xml_node_list children;
 };
 
-
 struct xml_document_s {
     char *source;
     char *version;

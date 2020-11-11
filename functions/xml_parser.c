@@ -11,8 +11,8 @@ int xml_document_load(xml_document *document, const char *path) {
 
     fp = fopen(path, "r");
     if (!fp) {
-        sprintf(message_buffer, "Could not load file from '%s'", path);
-        logIt(message_buffer);
+        sprintf(message_buffer, "ERROR - Could not load file from '%s'", path);
+        logIt(message_buffer, 1);
         return FALSE;
     }
 
@@ -108,7 +108,7 @@ int parse_xml_carret_open(xml_document *document, int *i, int *parsing_buffer_i,
         if (document->root_node->tag) {
             sprintf(message_buffer, "ERROR - Document already have root tag |%s| and cannot have a second one !",
                     document->root_node->tag);
-            logIt(message_buffer);
+            logIt(message_buffer, 1);
             return FALSE;
         }
         (*current_node) = document->root_node;
@@ -166,7 +166,7 @@ int parse_xml_doctype(xml_document *document, int *i, int *parsing_buffer_i, cha
 int parse_xml_inner_text(int *parsing_buffer_i, char *parsing_buffer, xml_node **current_node, char *message_buffer) {
     if (!(*current_node)) {
         sprintf(message_buffer, "ERROR - Text outside of document : '%s'", parsing_buffer);
-        logIt(message_buffer);
+        logIt(message_buffer, 1);
         return FALSE;
     }
 
@@ -185,14 +185,14 @@ int parse_xml_ending_node(xml_document *document, int *i, int *parsing_buffer_i,
 
     if (!strlen(parsing_buffer) && !(*current_node)->children.size) {
         sprintf(message_buffer, "ERROR - |%s| node content is empty and not inline", (*current_node)->tag);
-        logIt(message_buffer);
+        logIt(message_buffer, 1);
         return FALSE;
     }
 
     (*i) += 2;
 
     if (index_out_of_range(*i, size)) {
-        logIt("ERROR - Reached end of document but seems incomplete !");
+        logIt("ERROR - Reached end of document but seems incomplete !", 1);
         return FALSE;
     }
 
@@ -201,21 +201,21 @@ int parse_xml_ending_node(xml_document *document, int *i, int *parsing_buffer_i,
         (*parsing_buffer_i)++;
         (*i)++;
         if (index_out_of_range(*i, size)) {
-            logIt("ERROR - Reached end of document but seems incomplete !");
+            logIt("ERROR - Reached end of document but seems incomplete !", 1);
             return FALSE;
         }
     }
     parsing_buffer[(*parsing_buffer_i)] = '\0';
 
     if (!(*current_node)) {
-        logIt("ERROR - You are already at the root of document");
+        logIt("ERROR - You are already at the root of document", 1);
         return FALSE;
     }
     if (strcmp((*current_node)->tag, parsing_buffer) != 0) {
         sprintf(message_buffer,
                 "ERROR - Closing tag don't match with opening tag. Expected :'%s', got :'%s'",
                 (*current_node)->tag, parsing_buffer);
-        logIt(message_buffer);
+        logIt(message_buffer, 1);
         return FALSE;
     }
 
@@ -260,20 +260,20 @@ int parse_xml_comment(xml_document *document, int *i, int *parsing_buffer_i, cha
     }*/
 
     if (index_out_of_range((*i) + 3, size) || document->source[(*i) + 2] != '-' || document->source[(*i) + 3] != '-') {
-        logIt("ERROR - Syntax error with special node <!");
+        logIt("ERROR - Syntax error with special node <!", 1);
         return FALSE;
     }
 
     char *closing = strstr(document->source + (*i), "-->");
     if (!closing) {
         (*i) = size - 1;
-        logIt("WARNING - Unclosed comment");
+        logIt("WARNING - Unclosed comment", 1);
         return TRUE;
     }
     strncpy(parsing_buffer, document->source + (*i), (closing + 3) - (document->source + (*i)));
     parsing_buffer[(closing + 3) - (document->source + (*i))] = '\0';
     sprintf(message_buffer, "COMMENT - %s", parsing_buffer);
-    logIt(message_buffer);
+    logIt(message_buffer, 0);
     (*i) += strlen(parsing_buffer) + 1;
     reset_parsing_buffer(parsing_buffer, parsing_buffer_i);
     return TRUE;
@@ -378,9 +378,9 @@ void xml_node_list_add(xml_node_list *node_list, xml_node *node) {
 xml_node *xml_node_child(xml_node *parent, int index) {
     char message[255] = {0};
     if (index >= parent->children.size) {
-        sprintf(message, "Trying to get node child out of range. parent node '%s' child index '%d'", parent->tag,
+        sprintf(message, "ERROR - Trying to get node child out of range. parent node '%s' child index '%d'", parent->tag,
                 index);
-        logIt(message);
+        logIt(message, 1);
         return NULL;
     }
     return parent->children.data[index];
@@ -438,7 +438,7 @@ parse_attributes(const char *source, int *i, char *parsing_buffer, int *parsing_
         //getting attribute value
         if (source[(*i)] == '\"' || source[(*i)] == '\'') {
             if (!current_attribute.key) {
-                logIt("ERROR - attribute's value has no key");
+                logIt("ERROR - attribute's value has no key", 1);
                 return ERROR_PARSING;
             }
 
@@ -451,7 +451,7 @@ parse_attributes(const char *source, int *i, char *parsing_buffer, int *parsing_
                     sprintf(message_buffer,
                             "ERROR - You forgot to close quote on your attribute '%s' in your tag '%s'",
                             current_attribute.key, current_node->tag);
-                    logIt(message_buffer);
+                    logIt(message_buffer, 1);
                     return ERROR_PARSING;
                 }
                 parsing_buffer[(*parsing_buffer_i)] = source[(*i)];
@@ -493,7 +493,7 @@ char *xml_node_attribute_value(xml_node *node, const char *key) {
     }
     if (strcmp(key, "encoding") != 0 && strcmp(key, "version") != 0) {
         sprintf(message, "Cannot find attribute '%s' on node '%s'", key, node->tag);
-        logIt(message);
+        logIt(message, 1);
     }
     return NULL;
 }
@@ -508,7 +508,7 @@ xml_attribute *xml_node_attribute(xml_node *node, const char *key) {
         }
     }
     sprintf(message, "Cannot find attribute '%s' on node '%s'", key, node->tag);
-    logIt(message);
+    logIt(message, 1);
     return NULL;
 }
 
@@ -516,7 +516,7 @@ xml_node *xml_node_get(xml_node_list node_list, int index) {
     char message[255] = {0};
     if (index >= node_list.size) {
         sprintf(message, "Trying to get node out of range. index '%d'", index);
-        logIt(message);
+        logIt(message, 1);
         return NULL;
     }
     return node_list.data[index];
@@ -567,6 +567,3 @@ char *strcat_realloc(char *str_1, char *str_2) {
     free(temp);
     return str_1;
 }
-
-
-

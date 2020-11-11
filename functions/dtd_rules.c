@@ -8,7 +8,7 @@ int pc_data(xml_node *xmlNode) {
     char message[200] = {0};
     if (xmlNode->children.size > 0) {
         sprintf(message, "%s node supposed to be pcdata but have children", xmlNode->tag);
-        logIt(message);
+        logIt(message, 0);
         return 0;
     }
 
@@ -17,7 +17,7 @@ int pc_data(xml_node *xmlNode) {
     }
 
     sprintf(message, "%s node is not pcdata", xmlNode->tag);
-    logIt(message);
+    logIt(message, 0);
     return 0;
 
 }
