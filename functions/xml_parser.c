@@ -156,6 +156,14 @@ int parse_xml_carret_open(xml_document *document, int *i, int *parsing_buffer_i,
 }
 
 int parse_xml_doctype(xml_document *document, int *i, int *parsing_buffer_i, char *parsing_buffer, int size) {
+    char message_buffer[100] = {0};
+    if (line != 1 || column != 6) {
+        sprintf(message_buffer, "ERROR line %d column %d - Xml declaration should precede all document content", line,
+                column - 5);
+        logIt(message_buffer, 1);
+        return FALSE;
+    }
+
     reset_parsing_buffer(parsing_buffer, parsing_buffer_i);
 
     xml_node *specifications = xml_node_new(NULL);
