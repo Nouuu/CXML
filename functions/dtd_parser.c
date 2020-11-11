@@ -46,7 +46,7 @@ void checkRootTag(char *dtd_str, char *xml_str) {
     sscanf(dtd_str, "<!DOCTYPE %[^ ]", dtd_root_tag);
 
     if (strlen(dtd_root_tag) <= 0) {
-        logIt("Wrong dtd root tag !");
+        logIt("Wrong dtd root tag !", 0);
         exit(1);
     }
 
@@ -54,17 +54,17 @@ void checkRootTag(char *dtd_str, char *xml_str) {
 
     char *xml_root_tag = getRootTag(xml_str);
     if (xml_root_tag == NULL) {
-        logIt("Wrong xml root tag !");
+        logIt("Wrong xml root tag !", 0);
         exit(1);
     }
 
     if (strcmp(dtd_root_tag, xml_root_tag) != 0) {
         sprintf(message, "Wrong root tag. Expected |%s|, got |%s|", dtd_root_tag, xml_root_tag);
-        logIt(message);
+        logIt(message, 0);
         exit(1);
     } else {
         sprintf(message, "Good root tag : |%s|", dtd_root_tag);
-        logIt(message);
+        logIt(message, 0);
     }
     free(xml_root_tag);
 }
@@ -91,7 +91,7 @@ char *getRootTag(char *xml_str) {
     sscanf(xml_str, "<?xml%[^\n]", buff);
 
     if (strlen(buff) <= 0) {
-        logIt("Can't find xml tag");
+        logIt("Can't find xml tag", 0);
         return NULL;
     }
     cursor += 5 + strlen(buff) + 1;
@@ -102,7 +102,7 @@ char *getRootTag(char *xml_str) {
 
     sscanf(xml_str + cursor, "<%[^>]", buff);
     if (strlen(buff) <= 0) {
-        logIt("Can't find root tag");
+        logIt("Can't find root tag", 0);
         return NULL;
     }
 
@@ -131,7 +131,7 @@ char *getBetween(char *xml_str, char *tag, size_t *end_pos) {
 
     len = strlen(xml_str);
     if (len <= 0) {
-        logIt("looking for empty tag!");
+        logIt("looking for empty tag!", 0);
         return NULL;
     }
     begin_tag = malloc(sizeof(char) * (len + 3));
@@ -142,14 +142,14 @@ char *getBetween(char *xml_str, char *tag, size_t *end_pos) {
     begin_tag_pos = strstr(xml_str, begin_tag);
     if (begin_tag_pos == NULL) {
         sprintf(message, "Cannot find %s tag", begin_tag);
-        logIt(message);
+        logIt(message, 0);
         return NULL;
     }
 
     end_tag_pos = strstr(xml_str, end_tag);
     if (end_tag_pos == NULL || end_tag_pos < begin_tag_pos) {
         sprintf(message, "Cannot find %s tag", end_tag);
-        logIt(message);
+        logIt(message, 0);
         return NULL;
     }
 
@@ -203,7 +203,7 @@ char *dtd_to_string(char *path) {
     FILE *fichier = NULL;
     fichier = fopen(path, "r");
     if (fichier == NULL) {
-        logIt("DTD file not found !");
+        logIt("DTD file not found !", 0);
         exit(1);
     }
 

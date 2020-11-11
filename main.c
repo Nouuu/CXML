@@ -15,8 +15,9 @@ int main(int argc, char **argv) {
     initLogFile();
 
     /////////////////////
-    //    run_xml_parse_test();
+    run_xml_parse_test();
     /////////////////////
+
 
     xml_document document;
     xml_document_load(&document, "xml_files/xml_example_1.xml");
@@ -43,7 +44,7 @@ int main(int argc, char **argv) {
     check_node_child_position(document.root_node, "classroom", 2);
 
     xml_document_free(&document);
-
+*/
     return 0;
 }
 

@@ -1,10 +1,11 @@
 <?xml version="1.0"?>
-<!--this is fine-->
-<classrooms>
-    <!--this is fine-->
+
+<!-- xml for dtd_example_1.dtd file (incorrect) -->
+
+
+<classrooms key=">
     <classroom>AL</classroom>
     <classroom>IABD</classroom>
-    <!--this is fine-->
     <classroom>MOC</classroom>
     <classroom>IBC</classroom>
 </classrooms>

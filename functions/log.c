@@ -19,7 +19,7 @@ int setLogFileName(char *filename) {
 }
 
 
-void logIt(char *message) {
+void logIt(char *message, int error) {
     char buff[20];
     struct tm *s_tm;
     FILE *fp = fopen(log_file_name, "a+");
@@ -36,7 +36,11 @@ void logIt(char *message) {
     s_tm = gmtime(&now);
     strftime(buff, sizeof(buff), "%d-%m-%Y %H:%M:%S", s_tm);
 
-    printf("[%s] %s\n", buff, message);
+    if (error) {
+        fprintf(stderr, "[%s] %s\n", buff, message);
+    } else {
+        printf("[%s] %s\n", buff, message);
+    }
     fprintf(fp, "[%s] %s\n", buff, message);
     fclose(fp);
 }
