@@ -29,15 +29,17 @@ void run_xml_parse_test() {
 
     printf("\n---- Running xml parsing test ----\n");
 
-    run_test_1("tests/test_1.xml");
+    run_test_1("xml_files/test_1.xml");
 
-    run_test_2("tests/test_2.xml");
+    run_test_2("xml_files/test_2.xml");
 
-    run_test_3("tests/test_3.xml");
-    run_test_5("tests/test_5.xml");
+    run_test_3("xml_files/test_3.xml");
 
+    run_test_4("xml_files/test_4.xml");
 
-    run_test_6("tests/test_6.xml");
+    run_test_5("xml_files/test_5.xml");
+
+    run_test_6("xml_files/test_6.xml");
 
     printf("\n---- All tests passed ! ----------\n");
 
@@ -203,9 +205,32 @@ void run_test_3(const char *path) {
     printf("---- Test 3 passed\n\n");
 }
 
-//
-//void run_test_4(const char *path);
-//
+void run_test_4(const char *path) {
+    printf("---- Running test 4 (incomplete)\n");
+    xml_document document;
+    check_document_load(&document, path);
+
+    check_document_version(document, "1.0");
+
+    check_encoding_version(document, NULL);
+
+    check_node_tag(document.root_node, "ecole");
+
+    char **children_tag = malloc(sizeof(char *));
+    children_tag[0] = strdup("classes");
+    check_node_children_tag_name(document.root_node, 1, children_tag);
+    free_string_array(children_tag, 1);
+
+
+    char **children_inner_text = malloc(sizeof(char *));
+    children_inner_text[0] = NULL;
+    check_node_children_inner_text(document.root_node, 1, children_inner_text);
+    free_string_array(children_inner_text, 1);
+
+    xml_document_free(&document);
+    printf("---- Test 4 passed\n\n");
+}
+
 void run_test_5(const char *path) {
     printf("---- Running test 5\n");
     xml_document document;

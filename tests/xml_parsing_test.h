@@ -32,8 +32,8 @@ void run_test_2(const char *path);
 
 void run_test_3(const char *path);
 
-//void run_test_4(const char *path);
-//
+void run_test_4(const char *path);
+
 void run_test_5(const char *path);
 
 void run_test_6(const char *path);
