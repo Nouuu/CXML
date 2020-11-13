@@ -1,0 +1,9 @@
+<?xml version = "1.0" ?>
+
+<employee id="1">
+    <name>Nou larlac</name>
+    <designation discipline="Pro developper">
+        Junior Engineer
+    </designation>
+    <email>noe@mail.com</email>
+</employee>
