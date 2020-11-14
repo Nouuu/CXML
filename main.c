@@ -16,13 +16,15 @@ int main(int argc, char **argv) {
     initLogFile();
 
     /////////////////////
-    run_xml_parse_test();
+//    run_xml_parse_test();
     /////////////////////
 
 
-    char *buffer = dtd_to_string("dtd_example_1.dtd");
-    linked_list *list = get_dtd_rules(buffer);
-    parse_line_elements(list);
+    char *buffer = dtd_to_string("dtd_files/dtd_example_1.dtd");
+
+    linked_list *list = NULL;
+    parse_dtd(buffer, list);
+//    parse_line_elements(list);
 
 /*
     xml_document document;
@@ -51,7 +53,7 @@ int main(int argc, char **argv) {
 
     xml_document_free(&document);
 
-    return 0;
+    return 0;*/
 }
 
 void initLogFile() {

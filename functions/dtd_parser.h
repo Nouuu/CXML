@@ -7,6 +7,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <ctype.h>
 #include <string.h>
 #include "log.h"
 
@@ -19,7 +20,6 @@ struct linked_list_s {
     char *tag_name;
     char *name;
     char *rule;
-    struct linked_list_s *previous;
     struct linked_list_s *next;
 };
 
@@ -27,13 +27,11 @@ char *dtd_to_string(char *path);
 
 linked_list *get_data(linked_list *list, int i);
 
-linked_list *get_dtd_rules(char *buf);
+int parse_dtd(char *buf, linked_list *list);
 
 linked_list *init_linked_list(char *data);
 
 void add_data_at_end(linked_list *list, char *data);
-
-void parse_line_elements(linked_list *linkedList);
 
 
 #endif //CXML_XML_H
