@@ -13,8 +13,6 @@ linked_list *init_linked_list(char *data) {
     linked_list *linked_list_1 = malloc(sizeof(linked_list));
 
     linked_list_1->next = NULL;
-    linked_list_1->previous = NULL;
-
     //TODO parser data en 3 éléments
 
     linked_list_1->data = strdup(data);
@@ -32,7 +30,6 @@ void add_data_at_end(linked_list *list, char *data) {
     linked_list *new = init_linked_list(data);
 
     list->next = new;
-    new->previous = list;
 }
 
 linked_list *get_data(linked_list *list, int i) {
@@ -69,7 +66,33 @@ char *dtd_to_string(char *path) {
     return buf;
 }
 
-linked_list *get_dtd_rules(char *buf) {
+int parse_dtd(char *buf, linked_list *list) {
+
+    char parsing_buffer[255] = {0};
+    int parsing_buffer_i = 0;
+    char *current_char = buf;
+
+    while (*current_char != '<') {
+        current_char++;
+    }
+    current_char++;
+
+    while (!isspace(*current_char)) {
+        parsing_buffer[parsing_buffer_i] = *current_char;
+        parsing_buffer_i++;
+        current_char++;
+    }
+    parsing_buffer[parsing_buffer_i] = '\0';
+
+    if (strcmp(parsing_buffer, "!DOCTYPE") != 0) {
+
+        logIt("First dtd node must be !DOCTYPE !", 1);
+        return 0;
+    }
+
+    return 1;
+
+/*
     linked_list *list = init_linked_list("<!ELEMENT classrooms (classroom+)>");
     int i = 1;
     int elem_linked_list = 0,start_index = 0,end_index = 0;
@@ -95,61 +118,9 @@ linked_list *get_dtd_rules(char *buf) {
         i++;
     }
     return list;
+*/
     //free(buf);
     //free(lines);
-}
-
-void parse_line_elements(linked_list *linkedList) {
-
-    int i = 0, start_tag_name_index = 1, end_tag_name_index = 0;
-    int start_name_index = 0, end_name_index = 0;
-    int start_rule_index = 0, end_rule_index = 0;
-    size_t sizeData = strlen(linkedList->data);
-
-    while (linkedList->next != NULL){
-        while (linkedList->data[i] != ' ' && i < sizeData) {
-            i++;
-        }
-        // TAG NAME
-        end_tag_name_index = i;
-        char *tag_names = malloc(sizeof(char) * (255 + 1));
-        strncpy(tag_names, linkedList->data + start_tag_name_index, (end_tag_name_index - start_tag_name_index) + 1);
-        tag_names[(end_tag_name_index - start_tag_name_index) + 1] = '\0';
-        linkedList->tag_name = tag_names;
-        //logIt(tag_names);
-        i++;
-
-        // NAME
-        start_name_index = i;
-        char *names = malloc(sizeof(char) * (255 + 1));
-        while (linkedList->data[i] != ' ' && i < sizeData) {
-            i++;
-        }
-        end_name_index = i;
-        strncpy(names, linkedList->data + start_name_index, (end_name_index - start_name_index) + 1);//TODO +1 ou pas ?
-        names[(end_name_index - start_name_index) + 1] = '\0';
-        linkedList->name = names;
-        //logIt(names);
-        i++;
-
-        // RULE
-        start_rule_index = i;
-        char *rules = malloc(sizeof(char) * (255 + 1));
-        while (linkedList->data[i] != ')' && i < sizeData){
-            i++;
-        }
-        end_rule_index = i + 1;
-        strncpy(rules, linkedList->data + start_rule_index,(end_rule_index - start_rule_index) + 1);
-        rules[(end_rule_index - start_rule_index) + 1] = '\0';
-        linkedList->rule = rules;
-        //logIt(rules);
-
-
-        // NEXT
-        linkedList = linkedList->next;
-        i = 0;
-    }
-
 }
 
 
