@@ -8,31 +8,30 @@
 #include <string.h>
 
 
-linked_list *init_linked_list(char *data) {
+dtd_node *init_linked_list() {
 
-    linked_list *linked_list_1 = malloc(sizeof(linked_list));
+    dtd_node *linked_list_1 = malloc(sizeof(dtd_node));
 
     linked_list_1->next = NULL;
     //TODO parser data en 3 éléments
 
-    linked_list_1->data = strdup(data);
     //linked_list_1->tag_name = strdup(tag_name);
 
     return linked_list_1;
 }
 
-void add_data_at_end(linked_list *list, char *data) {
+void add_data_at_end(dtd_node *list) {
 
     while (list->next != NULL) {
         list = list->next;
     }
 
-    linked_list *new = init_linked_list(data);
+    dtd_node *new = init_linked_list();
 
     list->next = new;
 }
 
-linked_list *get_data(linked_list *list, int i) {
+dtd_node *get_data(dtd_node *list, int i) {
     if (i < 0) {
         return NULL;
     }
@@ -45,7 +44,8 @@ linked_list *get_data(linked_list *list, int i) {
     return list;
 }
 
-char *dtd_to_string(char *path) {
+char *get_dtd_document_source(char *path) {
+
     size_t size;
     FILE *fichier = NULL;
     fichier = fopen(path, "r");
@@ -66,21 +66,25 @@ char *dtd_to_string(char *path) {
     return buf;
 }
 
-int parse_dtd(char *buf, linked_list *list) {
+int parse_dtd(dtd_document *document, dtd_node *list) {
 
     char parsing_buffer[255] = {0};
     int parsing_buffer_i = 0;
-    char *current_char = buf;
+    size_t size = strlen(document->source);
 
-    while (*current_char != '<') {
-        current_char++;
+    char *source = document->source;
+    size_t current_i = 0;
+
+    //////////// FIND !DOCTYPE //////////////
+    while (source[current_i] != '<') {
+        current_i++;
     }
-    current_char++;
+    current_i++;
 
-    while (!isspace(*current_char)) {
-        parsing_buffer[parsing_buffer_i] = *current_char;
+    while (!isspace(source[current_i])) {
+        parsing_buffer[parsing_buffer_i] = source[current_i];
         parsing_buffer_i++;
-        current_char++;
+        current_i++;
     }
     parsing_buffer[parsing_buffer_i] = '\0';
 
@@ -90,10 +94,43 @@ int parse_dtd(char *buf, linked_list *list) {
         return 0;
     }
 
+    //////////// FIND DOCTYPE NODE //////////////
+
+    while (isspace(source[current_i])) {
+        current_i++;
+    }
+
+    parsing_buffer_i = 0;
+    while (!isspace(source[current_i]) && source[current_i] != '[') {
+        parsing_buffer[parsing_buffer_i] = source[current_i];
+        parsing_buffer_i++;
+        current_i++;
+    }
+    parsing_buffer[parsing_buffer_i] = '\0';
+
+    document->root_node = strdup(parsing_buffer);
+
+    //////////// GO TO '[' //////////////
+
+    while (source[current_i] != '[') {
+        if (!isspace(source[current_i])) {
+            logIt("", 1);
+            return 0;
+        }
+    }
+
+    while (source[current_i] != ']') {
+        //TODO TEST si '<'
+            //TODO décomposer
+        //TODO TEST si '>
+
+    }
+
+
     return 1;
 
 /*
-    linked_list *list = init_linked_list("<!ELEMENT classrooms (classroom+)>");
+    dtd_node *list = init_linked_list("<!ELEMENT classrooms (classroom+)>");
     int i = 1;
     int elem_linked_list = 0,start_index = 0,end_index = 0;
     size_t size = 255;

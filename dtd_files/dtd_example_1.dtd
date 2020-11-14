@@ -1,6 +1,6 @@
 zkuighiz
 
-<!DOCTYPE ESGI [
+<!DOCTYPE ESGI g[
         <!ELEMENT classrooms (classroom+)>
         <!ELEMENT classroom (#PCDATA)>
         ]>

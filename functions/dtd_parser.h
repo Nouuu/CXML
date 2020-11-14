@@ -13,25 +13,32 @@
 
 
 // Structure
-typedef struct linked_list_s linked_list;
+typedef struct dtd_node_s dtd_node;
+typedef struct dtd_document_s dtd_document;
 
-struct linked_list_s {
-    char *data;
+
+struct dtd_node_s {
     char *tag_name;
     char *name;
     char *rule;
-    struct linked_list_s *next;
+    struct dtd_node_s *next;
 };
 
-char *dtd_to_string(char *path);
+struct dtd_document_s {
+    char *source;
+    char *root_node;
+    dtd_node *first_node;
+};
 
-linked_list *get_data(linked_list *list, int i);
+char *get_dtd_document_source(char *path);
 
-int parse_dtd(char *buf, linked_list *list);
+dtd_node *get_data(dtd_node *list, int i);
 
-linked_list *init_linked_list(char *data);
+int parse_dtd(dtd_document *document, dtd_node *list);
 
-void add_data_at_end(linked_list *list, char *data);
+dtd_node *init_linked_list();
+
+void add_data_at_end(dtd_node *list);
 
 
 #endif //CXML_XML_H
