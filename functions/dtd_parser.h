@@ -19,7 +19,7 @@ typedef struct dtd_document_s dtd_document;
 
 struct dtd_node_s {
     char *tag_name;
-    char *name;
+    char *rule_type;
     char *rule;
     struct dtd_node_s *next;
 };
@@ -36,7 +36,7 @@ dtd_node *get_data(dtd_node *list, int i);
 
 int parse_dtd(dtd_document *document, dtd_node *list);
 
-dtd_node *init_linked_list();
+dtd_node *init_dtd_node();
 
 void add_data_at_end(dtd_node **list, dtd_node *new_node);
 

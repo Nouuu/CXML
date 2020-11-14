@@ -8,13 +8,14 @@
 #include <string.h>
 
 
-dtd_node *init_linked_list() {
+dtd_node *init_dtd_node() {
 
     dtd_node *linked_list_1 = malloc(sizeof(dtd_node));
-    linked_list_1->next = NULL;
-    //TODO parser data en 3 éléments
 
-    //linked_list_1->tag_name = strdup(tag_name);
+    linked_list_1->next = NULL;
+    linked_list_1->rule_type = NULL;
+    linked_list_1->tag_name = NULL;
+    linked_list_1->rule = NULL;
 
     return linked_list_1;
 }
@@ -138,29 +139,59 @@ int parse_dtd(dtd_document *document, dtd_node *list) {
 
         //Start node
         if (*current_char == '<') {
-
+            dtd_node *current_node = init_dtd_node();
             current_i++;
             current_char++;
 
-            while (*current_char != '>') {
-                //TODO décomposer en 3
-
-                //TODO tag_name
+            //Parsing  !ELEMENT
+            parsing_buffer_i = 0;
+            while (!isspace(*current_char)) {
                 parsing_buffer[parsing_buffer_i] = *current_char;
                 parsing_buffer_i++;
                 current_i++;
                 current_char++;
-
-                //TODO name
-                //TODO rule
             }
-            //TODO TEST si '>
+            parsing_buffer[parsing_buffer_i] = '\0';
+            current_node->rule_type = strdup(parsing_buffer);
 
+            while (isspace(*current_char)) {
+                current_char++;
+                current_i++;
+            }
+
+            //Parsing node name
+            parsing_buffer_i = 0;
+            while (!isspace(*current_char)) {
+                parsing_buffer[parsing_buffer_i] = *current_char;
+                parsing_buffer_i++;
+                current_i++;
+                current_char++;
+            }
+            parsing_buffer[parsing_buffer_i] = '\0';
+            current_node->tag_name = strdup(parsing_buffer);
+
+            while (isspace(*current_char)) {
+                current_char++;
+                current_i++;
+            }
+
+            parsing_buffer_i = 0;
+            while (*current_char != '>') {
+                parsing_buffer[parsing_buffer_i] = *current_char;
+                parsing_buffer_i++;
+                current_i++;
+                current_char++;
+            }
+            parsing_buffer[parsing_buffer_i] = '\0';
+            current_node->rule = strdup(parsing_buffer);
+
+            add_data_at_end(&document->first_node, current_node);
 
             current_i++;
+            current_char++;
         }
-
         current_char++;
+        current_i++;
         if (current_i >= size) {
             logIt("Can't find endind array carracter", 1);
             return 0;
@@ -171,7 +202,7 @@ int parse_dtd(dtd_document *document, dtd_node *list) {
     return 1;
 
 /*
-    dtd_node *list = init_linked_list("<!ELEMENT classrooms (classroom+)>");
+    dtd_node *list = init_dtd_node("<!ELEMENT classrooms (classroom+)>");
     int i = 1;
     int elem_linked_list = 0,start_index = 0,end_index = 0;
     size_t size = 255;
