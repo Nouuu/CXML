@@ -38,7 +38,7 @@ int parse_dtd(dtd_document *document, dtd_node *list);
 
 dtd_node *init_linked_list();
 
-void add_data_at_end(dtd_node *list);
+void add_data_at_end(dtd_node **list, dtd_node *new_node);
 
 
 #endif //CXML_XML_H

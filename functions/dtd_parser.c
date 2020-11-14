@@ -11,7 +11,6 @@
 dtd_node *init_linked_list() {
 
     dtd_node *linked_list_1 = malloc(sizeof(dtd_node));
-
     linked_list_1->next = NULL;
     //TODO parser data en 3 éléments
 
@@ -20,15 +19,21 @@ dtd_node *init_linked_list() {
     return linked_list_1;
 }
 
-void add_data_at_end(dtd_node *list) {
+void add_data_at_end(dtd_node **list, dtd_node *new_node) {
 
-    while (list->next != NULL) {
-        list = list->next;
+    if (*list == NULL) {
+
+        *list = new_node;
+
+    } else {
+
+        dtd_node *current_node = *list;
+        while (current_node->next != NULL) {
+            current_node = current_node->next;
+        }
+        current_node->next = new_node;
+
     }
-
-    dtd_node *new = init_linked_list();
-
-    list->next = new;
 }
 
 dtd_node *get_data(dtd_node *list, int i) {
@@ -72,19 +77,22 @@ int parse_dtd(dtd_document *document, dtd_node *list) {
     int parsing_buffer_i = 0;
     size_t size = strlen(document->source);
 
-    char *source = document->source;
+    char *current_char = document->source;
     size_t current_i = 0;
 
     //////////// FIND !DOCTYPE //////////////
-    while (source[current_i] != '<') {
+    while (*current_char != '<') {
         current_i++;
+        current_char++;
     }
     current_i++;
+    current_char++;
 
-    while (!isspace(source[current_i])) {
-        parsing_buffer[parsing_buffer_i] = source[current_i];
+    while (!isspace(*current_char)) {
+        parsing_buffer[parsing_buffer_i] = *current_char;
         parsing_buffer_i++;
         current_i++;
+        current_char++;
     }
     parsing_buffer[parsing_buffer_i] = '\0';
 
@@ -96,58 +104,67 @@ int parse_dtd(dtd_document *document, dtd_node *list) {
 
     //////////// FIND DOCTYPE NODE //////////////
 
-    while (isspace(source[current_i])) {
+    while (isspace(*current_char)) {
         current_i++;
+        current_char++;
     }
 
     parsing_buffer_i = 0;
-    while (!isspace(source[current_i]) && source[current_i] != '[') {
-        parsing_buffer[parsing_buffer_i] = source[current_i];
+    while (!isspace(*current_char) && *current_char != '[') {
+        parsing_buffer[parsing_buffer_i] = *current_char;
         parsing_buffer_i++;
         current_i++;
+        current_char++;
     }
     parsing_buffer[parsing_buffer_i] = '\0';
 
     document->root_node = strdup(parsing_buffer);
 
     //////////// GO TO '[' //////////////
-    //TODO Vérifier le Root name !
-/*
-    while (source[current_i] != '[') {
-        if (!isspace(source[current_i])) {
-            logIt("", 1);
+
+    while (*current_char != '[') {
+        if (!isspace(*current_char)) {
+            logIt("DOCTYPE Node contain other things than juste root node name", 1);
             return 0;
         }
         current_i++;
+        current_char++;
     }
-*/
-    parsing_buffer_i = 0;
-    while (source[current_i] != '[') {
-        current_i++;
-    }
+
     current_i++;
+    current_char++;
 
-    while (source[current_i] != ']') {
-        //TODO TEST si '<'
-        while(source[current_i] != '<'){
+    while (*current_char != ']') {
+
+        //Start node
+        if (*current_char == '<') {
+
             current_i++;
-        }
-        current_i++;
+            current_char++;
 
-        while (source[current_i] != '>'){
-            //TODO décomposer en 3
+            while (*current_char != '>') {
+                //TODO décomposer en 3
 
                 //TODO tag_name
-                parsing_buffer[parsing_buffer_i] = source[current_i];
+                parsing_buffer[parsing_buffer_i] = *current_char;
                 parsing_buffer_i++;
                 current_i++;
+                current_char++;
 
                 //TODO name
                 //TODO rule
+            }
+            //TODO TEST si '>
+
+
+            current_i++;
         }
-        //TODO TEST si '>
-    current_i++;
-    parsing_buffer[parsing_buffer_i] = '\0';
+
+        current_char++;
+        if (current_i >= size) {
+            logIt("Can't find endind array carracter", 1);
+            return 0;
+        }
     }
 
 
