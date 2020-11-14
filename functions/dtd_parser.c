@@ -111,19 +111,43 @@ int parse_dtd(dtd_document *document, dtd_node *list) {
     document->root_node = strdup(parsing_buffer);
 
     //////////// GO TO '[' //////////////
-
+    //TODO Vérifier le Root name !
+/*
     while (source[current_i] != '[') {
         if (!isspace(source[current_i])) {
             logIt("", 1);
             return 0;
         }
+        current_i++;
     }
+*/
+    parsing_buffer_i = 0;
+    while (source[current_i] != '[') {
+        current_i++;
+    }
+    current_i++;
 
     while (source[current_i] != ']') {
         //TODO TEST si '<'
-            //TODO décomposer
-        //TODO TEST si '>
+        while(source[current_i] != '<'){
+            current_i++;
+        }
+        current_i++;
 
+        while (source[current_i] != '>'){
+            //TODO décomposer en 3
+
+                //TODO tag_name
+                parsing_buffer[parsing_buffer_i] = source[current_i];
+                parsing_buffer_i++;
+                current_i++;
+
+                //TODO name
+                //TODO rule
+        }
+        //TODO TEST si '>
+    current_i++;
+    parsing_buffer[parsing_buffer_i] = '\0';
     }
 
 
