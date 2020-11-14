@@ -99,29 +99,57 @@ linked_list *get_dtd_rules(char *buf) {
     //free(lines);
 }
 
-void parse_line_elements(linked_list *linkedList, const char *data) {
-// TAG NAME
+void parse_line_elements(linked_list *linkedList) {
+
     int i = 0, start_tag_name_index = 1, end_tag_name_index = 0;
+    int start_name_index = 0, end_name_index = 0;
+    int start_rule_index = 0, end_rule_index = 0;
     size_t sizeData = strlen(linkedList->data);
-    char *tag_names = malloc(sizeof(char) * (255 + 1));
+
     while (linkedList->next != NULL){
         while (linkedList->data[i] != ' ' && i < sizeData) {
             i++;
         }
+        // TAG NAME
         end_tag_name_index = i;
-
+        char *tag_names = malloc(sizeof(char) * (255 + 1));
         strncpy(tag_names, linkedList->data + start_tag_name_index, (end_tag_name_index - start_tag_name_index) + 1);
         tag_names[(end_tag_name_index - start_tag_name_index) + 1] = '\0';
+        linkedList->tag_name = tag_names;
+        //logIt(tag_names);
+        i++;
 
-        linkedList->tag_name = tag_names; //TODO a tester fréro
-        logIt(tag_names);
+        // NAME
+        start_name_index = i;
+        char *names = malloc(sizeof(char) * (255 + 1));
+        while (linkedList->data[i] != ' ' && i < sizeData) {
+            i++;
+        }
+        end_name_index = i;
+        strncpy(names, linkedList->data + start_name_index, (end_name_index - start_name_index) + 1);//TODO +1 ou pas ?
+        names[(end_name_index - start_name_index) + 1] = '\0';
+        linkedList->name = names;
+        //logIt(names);
+        i++;
+
+        // RULE
+        start_rule_index = i;
+        char *rules = malloc(sizeof(char) * (255 + 1));
+        while (linkedList->data[i] != ')' && i < sizeData){
+            i++;
+        }
+        end_rule_index = i + 1;
+        strncpy(rules, linkedList->data + start_rule_index,(end_rule_index - start_rule_index) + 1);
+        rules[(end_rule_index - start_rule_index) + 1] = '\0';
+        linkedList->rule = rules;
+        //logIt(rules);
+
+
+        // NEXT
         linkedList = linkedList->next;
+        i = 0;
     }
-// NAME
-   // int start_name_tag_index = 0, end_name_tag_index = 0;
-   // char *name_tag = malloc(sizeof(char) * (255 + 1));
 
-// RULE
 }
 
 

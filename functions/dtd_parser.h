@@ -33,7 +33,7 @@ linked_list *init_linked_list(char *data);
 
 void add_data_at_end(linked_list *list, char *data);
 
-void parse_line_elements(linked_list *linkedList, const char *data);
+void parse_line_elements(linked_list *linkedList);
 
 
 #endif //CXML_XML_H

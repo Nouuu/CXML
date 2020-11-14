@@ -16,7 +16,7 @@ int main(int argc, char **argv) {
 
     char *buffer = dtd_to_string("dtd_example_1.dtd");
     linked_list *list = get_dtd_rules(buffer);
-    parse_line_elements(list,list->data);
+    parse_line_elements(list);
 
 /*
     xml_document document;
