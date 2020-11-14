@@ -5,6 +5,7 @@
 #include "functions/xml_parser.h"
 #include "functions/xml_finder.h"
 #include "functions/dtd_rules.h"
+#include "functions/dtd_parser.h"
 #include "tests/xml_parsing_test.h"
 
 char *logFile = "log.txt";
@@ -18,9 +19,14 @@ int main(int argc, char **argv) {
     run_xml_parse_test();
     /////////////////////
 
+
+    char *buffer = dtd_to_string("dtd_example_1.dtd");
+    linked_list *list = get_dtd_rules(buffer);
+    parse_line_elements(list);
+
 /*
     xml_document document;
-    xml_document_load(&document, "xml_files/xml_example_1.xml");
+    xml_document_load(&document, "xml_example_1.xml");
 
     xml_node_list *fields = get_nodes("field", document);
 
@@ -44,7 +50,7 @@ int main(int argc, char **argv) {
     check_node_child_position(document.root_node, "classroom", 2);
 
     xml_document_free(&document);
-*/
+
     return 0;
 }
 

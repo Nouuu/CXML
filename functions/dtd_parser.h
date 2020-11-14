@@ -16,29 +16,24 @@ typedef struct linked_list_s linked_list;
 
 struct linked_list_s {
     char *data;
+    char *tag_name;
+    char *name;
+    char *rule;
     struct linked_list_s *previous;
     struct linked_list_s *next;
 };
-linked_list *init_linked_list(char *data);
-void add_data_at_end(linked_list *list, char *data);
-linked_list *get_data(linked_list *list, int i);
 
 char *dtd_to_string(char *path);
+
+linked_list *get_data(linked_list *list, int i);
+
 linked_list *get_dtd_rules(char *buf);
 
+linked_list *init_linked_list(char *data);
 
-void readXML(FILE *fp);
+void add_data_at_end(linked_list *list, char *data);
 
-void readDTD(FILE *dtd_file, FILE *xml_file);
-
-char *getBetween(char *xml_str, char *tag, size_t *end_pos);
-
-char *getRootTag(char *xml_str);
-
-char *getFileStr(FILE *fp);
-
-void checkRootTag(char *dtd_str, char *xml_str);
-
+void parse_line_elements(linked_list *linkedList);
 
 
 #endif //CXML_XML_H
