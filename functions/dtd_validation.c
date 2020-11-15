@@ -49,42 +49,99 @@ int validate_dtd(const char *xml_path, const char *dtd_path) {
                 if (previous_rule_sep == '|' && previous_rule_result) {
                     previous_rule_sep = current_rule->rule_sep;
                 } else {
-                    //On regarde quelle type de règle on a (+,*,?,rien)
-                    switch (current_rule->rule_spec) {
-                        case '+':
-                            if (j >= current_xml_node->children.size) {
-                                sprintf(message, "DTD Rule error - '%s%c' rule for '%s' element is out of range",
-                                        current_rule->rule_name, current_rule->rule_spec, current_dtd_node->tag_name);
+                    if (!strcmp(current_rule->rule_name, "#PCDATA")) {
+                        if (!pc_data(current_xml_node)) {
+                            if (current_rule->rule_sep == '|') {
+                                previous_rule_sep = current_rule->rule_sep;
+                                previous_rule_result = 0;
+                            } else {
+                                sprintf(message,
+                                        "DTD Rule error - '%s%c' rule for '%s' element is INVALID",
+                                        current_rule->rule_name, current_rule->rule_spec,
+                                        current_dtd_node->tag_name);
                                 logIt(message, 1);
                                 return FALSE;
                             }
-
-                            if (!check_node_child_position(current_xml_node, current_rule->rule_name, j)) {
-                                if (current_rule->rule_sep == '|') {
-                                    previous_rule_sep = current_rule->rule_sep;
-                                    previous_rule_result = 0;
-                                    break;
+                        }
+                    } else {
+                        //On regarde quelle type de règle on a (+,*,?,rien)
+                        switch (current_rule->rule_spec) {
+                            case '+':
+                                if (j >= current_xml_node->children.size) {
+                                    sprintf(message, "DTD Rule error - '%s%c' rule for '%s' element is out of range",
+                                            current_rule->rule_name, current_rule->rule_spec,
+                                            current_dtd_node->tag_name);
+                                    logIt(message, 1);
+                                    return FALSE;
                                 }
-                                sprintf(message, "DTD Rule error - '%s%c' rule for '%s' element is INVALID, got '%s'",
-                                        current_rule->rule_name, current_rule->rule_spec, current_dtd_node->tag_name,
-                                        current_xml_node->children.data[j]->tag);
-                                logIt(message, 1);
-                                return FALSE;
-                            }
-                            while (j < current_xml_node->children.size &&
-                                   check_node_child_position(current_xml_node, current_rule->rule_name, j)) {
+
+                                if (!check_node_child_position(current_xml_node, current_rule->rule_name, j)) {
+                                    if (current_rule->rule_sep == '|') {
+                                        previous_rule_sep = current_rule->rule_sep;
+                                        previous_rule_result = 0;
+                                        break;
+                                    }
+                                    sprintf(message,
+                                            "DTD Rule error - '%s%c' rule for '%s' element is INVALID, got '%s'",
+                                            current_rule->rule_name, current_rule->rule_spec,
+                                            current_dtd_node->tag_name,
+                                            current_xml_node->children.data[j]->tag);
+                                    logIt(message, 1);
+                                    return FALSE;
+                                }
+                                while (j < current_xml_node->children.size &&
+                                       check_node_child_position(current_xml_node, current_rule->rule_name, j)) {
+                                    j++;
+                                }
+                                previous_rule_result = 1;
+                                previous_rule_sep = current_rule->rule_sep;
+                                break;
+                            case '*':
+                                while (j < current_xml_node->children.size &&
+                                       check_node_child_position(current_xml_node, current_rule->rule_name, j)) {
+                                    j++;
+                                }
+                                previous_rule_result = 1;
+                                previous_rule_sep = current_rule->rule_sep;
+                                break;
+                            case '?':
+                                if (j < current_xml_node->children.size &&
+                                    check_node_child_position(current_xml_node, current_rule->rule_name, j)) {
+                                    j++;
+                                }
+                                previous_rule_result = 1;
+                                previous_rule_sep = current_rule->rule_sep;
+                                break;
+                            default:
+                                if (j >= current_xml_node->children.size) {
+                                    sprintf(message, "DTD Rule error - '%s%c' rule for '%s' element is out of range",
+                                            current_rule->rule_name, current_rule->rule_spec,
+                                            current_dtd_node->tag_name);
+                                    logIt(message, 1);
+                                    return FALSE;
+                                }
+
+                                if (!check_node_child_position(current_xml_node, current_rule->rule_name, j)) {
+                                    if (current_rule->rule_sep == '|') {
+                                        previous_rule_sep = current_rule->rule_sep;
+                                        previous_rule_result = 0;
+                                        break;
+                                    }
+                                    sprintf(message,
+                                            "DTD Rule error - '%s%c' rule for '%s' element is INVALID, got '%s'",
+                                            current_rule->rule_name, current_rule->rule_spec,
+                                            current_dtd_node->tag_name,
+                                            current_xml_node->children.data[j]->tag);
+                                    logIt(message, 1);
+                                    return FALSE;
+                                }
                                 j++;
-                            }
-                            break;
-                        case '*':
-                            break;
-                        case '?':
-                            break;
-                        default:
-                            break;
+                                previous_rule_result = 1;
+                                previous_rule_sep = current_rule->rule_sep;
+
+                                break;
+                        }
                     }
-                    previous_rule_result = 1;
-                    previous_rule_sep = current_rule->rule_sep;
                 }
 
                 current_rule = current_rule->next;
