@@ -19,11 +19,14 @@ int main(int argc, char **argv) {
 //    run_xml_parse_test();
     /////////////////////
 
+    dtd_document *document = malloc(sizeof(dtd_document));
 
-    char *buffer = dtd_to_string("dtd_files/dtd_example_1.dtd");
+    document->root_node = NULL;
+    document->first_node = NULL;
+    document->source = get_dtd_document_source("dtd_files/dtd_example_1.dtd");
 
-    linked_list *list = NULL;
-    parse_dtd(buffer, list);
+    dtd_node *list = NULL;
+    parse_dtd(document, list);
 //    parse_line_elements(list);
 
 /*

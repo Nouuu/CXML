@@ -102,7 +102,6 @@ int parse_xml_carret_open(xml_document *document, int *i, int *parsing_buffer_i,
 
         // checking xml special tag
         if (!strcmp(parsing_buffer, "<?xml")) {
-            //TODO check if it is at line 1
             return parse_xml_doctype(document, i, parsing_buffer_i, parsing_buffer, size);
         }
     }
