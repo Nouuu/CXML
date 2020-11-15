@@ -11,7 +11,7 @@ int xml_document_load(xml_document *document, const char *path) {
 
     fp = fopen(path, "r");
     if (!fp) {
-        sprintf(message_buffer, "ERROR - Could not load file from '%s'", path);
+        sprintf(message_buffer, "ERROR - Could not load xml file from '%s'", path);
         logIt(message_buffer, 1);
         return FALSE;
     }

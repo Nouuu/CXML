@@ -37,11 +37,13 @@ struct dtd_document_s {
     dtd_node *first_node;
 };
 
-char *get_dtd_document_source(char *path);
+int dtd_document_load(dtd_document *document, const char *path);
+
+char *get_dtd_document_source(const char *path);
 
 dtd_node *get_data(dtd_node *list, int i);
 
-int parse_dtd(dtd_document *document, dtd_node *list);
+int parse_dtd(dtd_document *document);
 
 dtd_node *init_dtd_node();
 
