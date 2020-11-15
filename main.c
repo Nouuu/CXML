@@ -2,71 +2,61 @@
 #include <stdlib.h>
 #include <string.h>
 #include "functions/log.h"
-#include "functions/xml.h"
+#include "functions/xml_parser.h"
+#include "functions/xml_finder.h"
+#include "functions/dtd_rules.h"
+#include "functions/dtd_parser.h"
+#include "tests/xml_parsing_test.h"
 
 char *logFile = "log.txt";
 
 void initLogFile();
 
-FILE *openXMLFile(int argc, char **argv);
-
-FILE *openDTDFile(int argc, char **argv);
-
 int main(int argc, char **argv) {
     initLogFile();
-    FILE *xml_file = openXMLFile(argc, argv);
-    readXML(xml_file);
 
-    FILE *dtd_file = openDTDFile(argc, argv);
-    readDTD(dtd_file, xml_file);
+    /////////////////////
+//    run_xml_parse_test();
+    /////////////////////
 
-    fclose(xml_file);
-    fclose(dtd_file);
-    return 0;
-}
+    dtd_document *document = malloc(sizeof(dtd_document));
 
-FILE *openXMLFile(int argc, char **argv) {
-    FILE *fp = NULL;
-    char message[255];
-    if (argc == 3) {
-        sprintf(message, "Open XML File : %s...", argv[1]);
-        logIt(message);
+    document->root_node = NULL;
+    document->first_node = NULL;
+    document->source = get_dtd_document_source("dtd_files/dtd_example_1.dtd");
 
-        fp = fopen(argv[1], "r");
+    dtd_node *list = NULL;
+    parse_dtd(document, list);
+//    parse_line_elements(list);
 
-        if (fp == NULL) {
-            logIt("File not found !");
-            exit(1);
-        } else {
-            logIt("File opened");
-        }
-    } else {
-        logIt("Wrong arg number, you must provide XML and DTD file path in argument");
-        exit(1);
-    }
-    return fp;
-}
+/*
+    xml_document document;
+    xml_document_load(&document, "xml_example_1.xml");
 
-FILE *openDTDFile(int argc, char **argv) {
-    FILE *fp = NULL;
-    char message[255];
-    if (argc == 3) {
-        sprintf(message, "Open DTD File : %s...", argv[2]);
-        logIt(message);
+    xml_node_list *fields = get_nodes("field", document);
 
-        fp = fopen(argv[2], "r");
+    process_pc_data("classroom", document);
+    get_node_attribute("key", document.root_node);
+    node_contain_required_attribute("key", document.root_node);
 
-        if (fp == NULL) {
-            logIt("File not found !");
-            exit(1);
-        } else {
-            logIt("File opened");
-        }
-    } else {
-        logIt("Wrong arg number, you must provide XML and DTD file path in argument");
-        exit(1);
-    }
-    return fp;
+    char **children_tag = malloc(sizeof(char *) * 4);
+    children_tag[0] = strdup("classroom");
+    children_tag[1] = strdup("key");
+    children_tag[2] = strdup("test");
+    children_tag[3] = strdup("text");
+    attribute_contain_required_value(document.root_node->attribute_list.data, (const char **) children_tag,
+                                     4);
+
+    node_contain_only_children_optional(document.root_node, "classroom");
+    node_contain_only_one_child_required(document.root_node, "classroom");
+    node_contain_only_one_child_optional(document.root_node, "classroom");
+    node_contain_only_children_required(document.root_node, "classroom");
+
+    check_node_child_position(document.root_node, "classroom", 2);
+
+    xml_document_free(&document);
+
+    return 0;*/
 }
 
 void initLogFile() {

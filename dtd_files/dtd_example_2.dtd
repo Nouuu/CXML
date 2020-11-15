@@ -1,4 +1,6 @@
+<!-- dtd for xml_example_1.xml file (incorrect) -->
+
 <!DOCTYPE ESGI [
         <!ELEMENT classrooms (classroom)>
-        <!ELEMENT classrooms (#PCDATA)>
+        <!ELEMENT classroom (#PCDATA)>
         ]>
