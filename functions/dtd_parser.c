@@ -93,7 +93,7 @@ char *get_dtd_document_source(char *path) {
     size = ftell(fichier);
     fseek(fichier, 0, SEEK_SET);
 
-    char *buf = malloc(sizeof(char) * (size + 1));
+    char *buf = calloc(size + 1, sizeof(char));
     fread(buf, sizeof(char), size, fichier);
     buf[size] = '\0';
     fclose(fichier);
@@ -263,36 +263,6 @@ int parse_dtd(dtd_document *document, dtd_node *list) {
 
 
     return 1;
-
-/*
-    dtd_node *list = init_dtd_node("<!ELEMENT classrooms (classroom+)>");
-    int i = 1;
-    int elem_linked_list = 0,start_index = 0,end_index = 0;
-    size_t size = 255;
-    char *lines = malloc(sizeof(char) * (size + 1));
-    while (i < strlen(buf)) {
-        while (buf[i] != '<' && i < strlen(buf)) {
-            i++;
-        }
-        start_index = i;
-        while (buf[i] != '>' && i < strlen(buf)) {
-            i++;
-        }
-        end_index = i;
-
-        strncpy(lines, buf + start_index, (end_index - start_index) + 1);
-        lines[(end_index - start_index) + 1] = '\0';
-
-        //printf("%s\n", lines);
-        add_dtd_node_at_end(list, lines);
-
-        elem_linked_list++;
-        i++;
-    }
-    return list;
-*/
-    //free(buf);
-    //free(lines);
 }
 
 void foward_spaces(char **current_char, size_t *current_i) {
