@@ -162,6 +162,9 @@ int parse_dtd(dtd_document *document) {
 
     while (*current_char != '[') {
         if (!isspace(*current_char)) {
+            if (*current_char == '>') {
+                return 1;
+            }
             logIt("DOCTYPE Node contain other things than juste root node name", 1);
             return 0;
         }
