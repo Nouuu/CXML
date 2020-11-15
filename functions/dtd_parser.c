@@ -138,7 +138,7 @@ int parse_dtd(dtd_document *document) {
     parsing_buffer[parsing_buffer_i] = '\0';
 
     if (strcmp(parsing_buffer, "!DOCTYPE") != 0) {
-
+//TODO handle comments
         logIt("First dtd node must be !DOCTYPE !", 1);
         return 0;
     }

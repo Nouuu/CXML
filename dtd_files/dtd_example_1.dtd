@@ -1,5 +1,3 @@
-zkuighiz
-
 <!DOCTYPE ESGI [
         <!ELEMENT classrooms (classroom+)>
         <!ELEMENT classroom (#PCDATA)>
