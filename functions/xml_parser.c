@@ -127,8 +127,8 @@ int parse_xml_carret_open(xml_document *document, int *i, int *parsing_buffer_i,
                                         size);
     if (tagType == INLINE_TAG) {
         (*current_node) = (*current_node)->parent;
-        (*i)++;
-        inc_column(1, document->source, *i);
+//        (*i)++;
+//        inc_column(1, document->source, *i);
         (*parsing_buffer_i) = 0;
         parsing_buffer[(*parsing_buffer_i)] = '\0';
         return TRUE;
