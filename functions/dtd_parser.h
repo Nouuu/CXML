@@ -37,6 +37,14 @@ struct dtd_document_s {
     dtd_node *first_node;
 };
 
+int carret_open(dtd_document *document, size_t size, size_t current_i, const char *current_char);
+
+int doctype_process(dtd_document *document, size_t size, size_t current_i, const char *current_char);
+
+int no_doctype_process(dtd_document *document, size_t size, size_t current_i, const char *current_char);
+
+int is_doctype(dtd_document *document, size_t size);
+
 int dtd_document_load(dtd_document *document, const char *path);
 
 char *get_dtd_document_source(const char *path);
@@ -60,4 +68,5 @@ int is_special(char c);
 int is_delim(char c);
 
 int is_node_spec(char c);
+
 #endif //CXML_XML_H

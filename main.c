@@ -24,17 +24,6 @@ int main(int argc, char **argv) {
         printf("DTD Test 1 valided\n");
     }
 
-    if (validate_dtd("xml_files/xml_example_2.xml", "dtd_files/dtd_example_2.dtd")) {
-        printf("DTD Test 2 valided\n");
-    }
-
-    if (validate_dtd("xml_files/xml_example_3.xml", "dtd_files/dtd_example_3.dtd")) {
-        printf("DTD Test 3 valided\n");
-    }
-
-    if (validate_dtd("xml_files/xml_example_5.xml", "dtd_files/dtd_example_5.dtd")) {
-        printf("DTD Test 5 valided\n");
-    }
 
 //    parse_line_elements(list);
 
