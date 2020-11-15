@@ -79,14 +79,24 @@ dtd_node *get_data(dtd_node *list, int i) {
     return list;
 }
 
-char *get_dtd_document_source(char *path) {
+int dtd_document_load(dtd_document *document, const char *path) {
+    document->source = get_dtd_document_source(path);
+    if (document->source == NULL) {
+        return 0;
+    }
 
+    return parse_dtd(document);
+}
+
+char *get_dtd_document_source(const char *path) {
+    char message[255] = {0};
     size_t size;
     FILE *fichier = NULL;
     fichier = fopen(path, "r");
     if (fichier == NULL) {
-        logIt("DTD file not found !", 0);
-        exit(1);
+        sprintf(message, "DTD file '%s' not found !", path);
+        logIt(message, 1);
+        return NULL;
     }
 
     fseek(fichier, 0, SEEK_END);
@@ -101,7 +111,7 @@ char *get_dtd_document_source(char *path) {
     return buf;
 }
 
-int parse_dtd(dtd_document *document, dtd_node *list) {
+int parse_dtd(dtd_document *document) {
 
     char parsing_buffer[255] = {0};
     char message_buffer[255] = {0};
@@ -128,7 +138,7 @@ int parse_dtd(dtd_document *document, dtd_node *list) {
     parsing_buffer[parsing_buffer_i] = '\0';
 
     if (strcmp(parsing_buffer, "!DOCTYPE") != 0) {
-
+//TODO handle comments
         logIt("First dtd node must be !DOCTYPE !", 1);
         return 0;
     }
@@ -152,6 +162,9 @@ int parse_dtd(dtd_document *document, dtd_node *list) {
 
     while (*current_char != '[') {
         if (!isspace(*current_char)) {
+            if (*current_char == '>') {
+                return 1;
+            }
             logIt("DOCTYPE Node contain other things than juste root node name", 1);
             return 0;
         }

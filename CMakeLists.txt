@@ -10,4 +10,5 @@ add_executable(CXML main.c
         functions/xml_parser.c
         functions/xml_finder.c
         tests/xml_parsing_test.c
-        functions/str_tools.c)
+        functions/str_tools.c
+        functions/dtd_validation.c)

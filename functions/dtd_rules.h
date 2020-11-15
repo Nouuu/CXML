@@ -14,7 +14,7 @@
 
 int pc_data(xml_node *xmlNode);
 
-int process_pc_data(const char *tag, xml_document document);
+int process_pc_data(const char *tag, xml_document *document);
 
 xml_attribute *get_node_attribute(const char *attribute_name, xml_node *xmlNode);
 
@@ -25,13 +25,13 @@ int node_contain_optional_attribute(const char *required, xml_node *xmlNode);
 int attribute_contain_required_value(xml_attribute *attribute, const char **str_list, int size);
 
 //e*
-int node_contain_only_children_optional(xml_node *node, const char *name);
+int node_contain_only_children_optional(xml_node *node, const char *name, int position);
 
 //e
-int node_contain_only_one_child_required(xml_node *node, const char *name);
+int node_contain_only_one_child_required(xml_node *node, const char *name, int position);
 
 //e?
-int node_contain_only_one_child_optional(xml_node *node, const char *name);
+int node_contain_only_one_child_optional(xml_node *node, const char *name, int position);
 
 //e+
 int node_contain_only_children_required(xml_node *node, const char *name);

@@ -11,7 +11,7 @@ int xml_document_load(xml_document *document, const char *path) {
 
     fp = fopen(path, "r");
     if (!fp) {
-        sprintf(message_buffer, "ERROR - Could not load file from '%s'", path);
+        sprintf(message_buffer, "ERROR - Could not load xml file from '%s'", path);
         logIt(message_buffer, 1);
         return FALSE;
     }
@@ -127,8 +127,8 @@ int parse_xml_carret_open(xml_document *document, int *i, int *parsing_buffer_i,
                                         size);
     if (tagType == INLINE_TAG) {
         (*current_node) = (*current_node)->parent;
-        (*i)++;
-        inc_column(1, document->source, *i);
+//        (*i)++;
+//        inc_column(1, document->source, *i);
         (*parsing_buffer_i) = 0;
         parsing_buffer[(*parsing_buffer_i)] = '\0';
         return TRUE;
