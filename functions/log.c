@@ -36,9 +36,12 @@ void logIt(char *message, int error) {
     s_tm = gmtime(&now);
     strftime(buff, sizeof(buff), "%d-%m-%Y %H:%M:%S", s_tm);
 
-    if (error) {
+    /*if (error) {
         fprintf(stderr, "[%s] %s\n", buff, message);
     } else {
+        printf("[%s] %s\n", buff, message);
+    }*/
+    if (error) {
         printf("[%s] %s\n", buff, message);
     }
     fprintf(fp, "[%s] %s\n", buff, message);
