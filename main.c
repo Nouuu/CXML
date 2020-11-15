@@ -6,6 +6,7 @@
 #include "functions/xml_finder.h"
 #include "functions/dtd_rules.h"
 #include "functions/dtd_parser.h"
+#include "functions/dtd_validation.h"
 #include "tests/xml_parsing_test.h"
 
 char *logFile = "log.txt";
@@ -19,14 +20,8 @@ int main(int argc, char **argv) {
 //    run_xml_parse_test();
     /////////////////////
 
-    dtd_document *document = malloc(sizeof(dtd_document));
+    validate_dtd("xml_files/xml_example_1.xml", "dtd_files/dtd_example_1.dtd");
 
-    document->root_node = NULL;
-    document->first_node = NULL;
-    document->source = get_dtd_document_source("dtd_files/dtd_example_1.dtd");
-
-    dtd_node *list = NULL;
-    parse_dtd(document, list);
 //    parse_line_elements(list);
 
 /*
