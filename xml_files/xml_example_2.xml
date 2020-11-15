@@ -1,38 +1,10 @@
-<!-- xml for dtd_example_4.dtd file (correct) -->
-
 <?xml version="1.0"?>
-<ecole>
-    <classes>
-        <eleves>
-            <nom>
-                DI VITO
-            </nom>
-            <prenom>
-                Audrey
-            </prenom>
-            <age>
-                21
-            </age>
-        </eleves>
-            <nom>
-                LARRIEU-LACOSTE
-            </nom>
-            <prenom>
-                Noé
-            </prenom>
-            <age>
-                21
-            </age>
-        <eleves>
-            <nom>
-                OUSLIMANE
-            </nom>
-            <prenom>
-                Isaac
-            </prenom>
-            <age>
-                21
-            </age>
-        </eleves>
-    </classes>
-</ecole>
+<!-- xml for dtd_example_4.dtd file (correct) -->
+<ESGI>
+    <classrooms key="key">
+        <classroom>AL</classroom>
+        <classroom>IABD</classroom>
+        <classroom>MOC</classroom>
+        <classroom>IBC</classroom>
+    </classrooms>
+</ESGI>
