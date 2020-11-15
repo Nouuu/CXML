@@ -21,7 +21,85 @@ int validate_dtd(const char *xml_path, const char *dtd_path) {
     if (strcmp(dtdDocument->root_node, xmlDocument->root_node->tag) != 0) {
         sprintf(message, "DTD Rule error - root node don't match. Expected '%s', got '%s'",
                 dtdDocument->root_node, xmlDocument->root_node->tag);
+        logIt(message, 1);
         return FALSE;
+    }
+
+    //On récupère la première balise DTD
+    dtd_node *current_dtd_node = dtdDocument->first_node;
+    while (current_dtd_node != NULL) {
+        //On part du principe pour le moment que current node est bien !ELEMENT
+
+        //On récupère dans le document xml toute les balises ayant le nom de la règle que l'on traite
+        xml_node_list *current_xml_node_list = get_nodes(current_dtd_node->tag_name, xmlDocument);
+
+        //On itère sur chacun des nodes récupérés pour valider la règle DTD
+        for (int i = 0; i < current_xml_node_list->size; ++i) {
+            //On récupère notre node
+            xml_node *current_xml_node = current_xml_node_list->data[i];
+
+            //On récupère la première règle DTD
+            dtd_rule *current_rule = current_dtd_node->first_rule;
+
+            //On itère tant qu'on trouve un élément
+            char previous_rule_sep = 0;
+            char previous_rule_result = 0;
+            int j = 0;
+            while (current_rule != NULL) {
+                if (previous_rule_sep == '|' && previous_rule_result) {
+                    previous_rule_sep = current_rule->rule_sep;
+                } else {
+                    //On regarde quelle type de règle on a (+,*,?,rien)
+                    switch (current_rule->rule_spec) {
+                        case '+':
+                            if (j >= current_xml_node->children.size) {
+                                sprintf(message, "DTD Rule error - '%s%c' rule for '%s' element is out of range",
+                                        current_rule->rule_name, current_rule->rule_spec, current_dtd_node->tag_name);
+                                logIt(message, 1);
+                                return FALSE;
+                            }
+
+                            if (!check_node_child_position(current_xml_node, current_rule->rule_name, j)) {
+                                if (current_rule->rule_sep == '|') {
+                                    previous_rule_sep = current_rule->rule_sep;
+                                    previous_rule_result = 0;
+                                    break;
+                                }
+                                sprintf(message, "DTD Rule error - '%s%c' rule for '%s' element is INVALID, got '%s'",
+                                        current_rule->rule_name, current_rule->rule_spec, current_dtd_node->tag_name,
+                                        current_xml_node->children.data[j]->tag);
+                                logIt(message, 1);
+                                return FALSE;
+                            }
+                            while (j < current_xml_node->children.size &&
+                                   check_node_child_position(current_xml_node, current_rule->rule_name, j)) {
+                                j++;
+                            }
+                            break;
+                        case '*':
+                            break;
+                        case '?':
+                            break;
+                        default:
+                            break;
+                    }
+                    previous_rule_result = 1;
+                    previous_rule_sep = current_rule->rule_sep;
+                }
+
+                current_rule = current_rule->next;
+            }
+            if (j < current_xml_node->children.size) {
+                sprintf(message,
+                        "DTD Rule error - '%s' element, '%s' child at position %d not supposed to be here",
+                        current_dtd_node->tag_name, current_xml_node->children.data[0]->tag, j + 1);
+                logIt(message, 1);
+                return FALSE;
+
+            }
+        }
+
+        current_dtd_node = current_dtd_node->next;
     }
 
     return TRUE;

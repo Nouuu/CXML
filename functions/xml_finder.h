@@ -12,7 +12,7 @@
 #include "log.h"
 #include "xml_parser.h"
 
-xml_node_list * get_nodes(const char *name, xml_document document);
+xml_node_list * get_nodes(const char *name, xml_document *document);
 
 void get_nodes_rec(xml_node_list *list, xml_node *node, const char *name);
 
