@@ -20,7 +20,19 @@ dtd_attribute *init_dtd_attribute(){
 };
 
 void add_dtd_node_attribute_at_end(dtd_attribute **list, dtd_attribute *new_node){
+    if (*list == NULL) {
 
+        *list = new_node;
+
+    } else {
+
+        dtd_attribute *current_node = *list;
+        while (current_node->next != NULL) {
+            current_node = current_node->next;
+        }
+        current_node->next = new_node;
+
+    }
 };
 
 dtd_node *init_dtd_node() {
@@ -35,7 +47,7 @@ dtd_node *init_dtd_node() {
     return linked_list_1;
 }
 
-void add_dtd_node_at_end(dtd_node **list, dtd_node *new_node) {
+void add_dtd_element_node_at_end(dtd_node **list, dtd_node *new_node) {
 
     if (*list == NULL) {
 
@@ -276,7 +288,7 @@ int parse_dtd(dtd_document *document) {
 
 
             /////////////////////////////////////////////////////////
-            add_dtd_node_at_end(&document->element_node, current_node);
+            add_dtd_element_node_at_end(&document->element_node, current_node);
 
             current_i++;
             current_char++;

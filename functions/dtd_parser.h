@@ -61,7 +61,7 @@ void add_dtd_node_attribute_at_end(dtd_attribute **list, dtd_attribute *new_node
 
 dtd_node *init_dtd_node();
 
-void add_dtd_node_at_end(dtd_node **list, dtd_node *new_node);
+void add_dtd_element_node_at_end(dtd_node **list, dtd_node *new_node);
 
 dtd_rule *init_dtd_rule();
 
