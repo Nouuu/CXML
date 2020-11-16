@@ -16,6 +16,7 @@
 typedef struct dtd_node_s dtd_node;
 typedef struct dtd_document_s dtd_document;
 typedef struct dtd_rule_s dtd_rule;
+typedef struct dtd_attribute_s dtd_attribute;
 
 struct dtd_node_s {
     char *tag_name;
@@ -35,6 +36,15 @@ struct dtd_document_s {
     char *source;
     char *root_node;
     dtd_node *first_node;
+    dtd_attribute *node;
+};
+
+struct dtd_attribute_s{
+    char *element_name;
+    char *attribute_name;
+    char *attribute_type;
+    char *attribute_value;
+    struct dtd_attribute_s *next;
 };
 
 int dtd_document_load(dtd_document *document, const char *path);
