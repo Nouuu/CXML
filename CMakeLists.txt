@@ -3,7 +3,7 @@ project(CXML C)
 
 set(CMAKE_C_STANDARD 99)
 
-add_executable(CXML main.c
+add_executable(CXML main2.c
         functions/log.c
         functions/dtd_parser.c
         functions/dtd_rules.c

@@ -3,70 +3,144 @@
 //
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <libgen.h>
+#include <ctype.h>
 
-char **menu();
+int menu(char **xmlpath, char **dtdpath);
+
+int getPath(char **path);
+
 int verif_xml(char *xml_file);
+
 int verif_dtd(char *dtd_file);
 
+int endFunc(int code, char *buffer);
+
+char *trimwhitespace(char *str);
+
 int main(int argc, char **argv) {
-    if(argc == 3) {
-        printf("%s", *argv);
+    if (argc == 3) {
+        printf("%s", argv[1]);
+        printf("%s", argv[2]);
     } else {
-        argv = menu();
+//        argv = menu();
+        menu((char **)argv[1], (char **)argv[2]);
     }
 
     printf("%s", *argv);
     return 0;
 }
 
-char **menu() {
-    char **files_name;
-    char *dtd_file, *xml_file;
-    int cpt = 0, choice = 0;
+int menu(char **xmlpath, char **dtdpath) {
 
-    printf("You don't put files in args so please, choose an option : \n");
+    char *buffer = malloc(sizeof(char) * 255 * 255 + 1);
+
+// https://www.dummies.com/programming/c/how-to-use-the-fgets-function-for-text-input-in-c-programming/
+// https://www.tutorialspoint.com/c_standard_library/c_function_fgets.htm
+// https://linux.die.net/man/3/fgets
+
+    printf("You did not put files in args so please provide it: \n");
     do {
-        printf("1 - Select dtd file \n");
-        printf("2 - Select xml file \n");
+        printf("Enter dtd path :\n");
+        fflush(stdin);
+        fgets(buffer, 255, stdin);
+        buffer = strtok(buffer, "\n");
+        *dtdpath = buffer;
+        getPath(dtdpath);
+    } while (!verif_dtd(*dtdpath));
 
-        scanf("%i", &choice);
+    do {
+        printf("Enter xml path :\n");
+        fflush(stdin);
+        fgets(buffer, 255, stdin);
+        buffer = strtok(buffer, "\n");
+        *xmlpath = buffer;
+        getPath(xmlpath);
+    } while (!verif_xml(*xmlpath));
 
-        switch(choice) {
-            case 1: {
-                printf("What is the name of your dtd file ?");
-                scanf("%s", dtd_file);
-                cpt += verif_dtd(dtd_file);
-                break;
-            }
-            case 2: {
-                printf("What is the name of your xml file ?");
-                scanf("%s", xml_file);
-                cpt += verif_xml(xml_file);
-                break;
-            }
-            default: {
-                printf("You don't enter a good value");
-            }
-        }
-
-    } while (cpt < 2);
-
-    return files_name;
+    return 1;
 }
 
-int verif_dtd(char* dtd_file) {
-    char* verif = strchr(dtd_file, '.');
-    if(strcmp(verif,".dtd") == 0) {
-        return 1;
+int verif_dtd(char *dtd_file) {
+    if (dtd_file == NULL) {
+        return 0;
     }
+    char *bname = basename(dtd_file);
+    char *verif = strrchr(bname, '.');
+    if (!verif || verif == bname) {
+        return 0;
+    }
+    //ta chaine de base est pas bonne donc forcément
+    // Cad ? A cause du scanf ?
+
+    return strcmp(verif + 1, "dtd") == 0;
+}
+
+int verif_xml(char *xml_file) {
+    if (xml_file == NULL) {
+        return 0;
+    }
+    char *bname = basename(xml_file);
+    char *verif = strrchr(bname, '.');
+    if (!verif || verif == bname) {
+        return 0;
+    }
+    strcmp(verif + 1, "xml") == 0;
+}
+
+int getPath(char **path) {
+    char *buff = malloc(sizeof(char) * 255 * 255 + 1);
+    char *tmp;
+
+    printf("Enter directory path :\n");
+    fflush(stdin);
+    fflush(stdout);
+    if (fgets(buff, 255 * 255, stdin) == NULL) {
+        return endFunc(1, buff);
+    }
+    if (buff[0] == '\n') {
+        return endFunc(1, buff);
+    }
+
+    buff = strtok(buff, "\n");
+
+    tmp = trimwhitespace(buff);
+
+    if (strlen(tmp) == 0) {
+        return endFunc(1, buff);
+    }
+
+    *path = malloc(sizeof(char) * (strlen(tmp) + 1));
+    strcpy(*path, tmp);
+    free(buff);
+
+    printf("Path: |%s|\n", *path);
     return 0;
 }
 
-int verif_xml(char* xml_file) {
-    char* verif = strchr(xml_file, '.');
-    if(strcmp(verif,".xml") == 0) {
-        return 1;
+char *trimwhitespace(char *str) {
+    char *end;
+    // Trim leading space
+    while (isspace((unsigned char) *str)) str++;
+
+    if (*str == 0)  // All spaces?
+        return str;
+
+    // Trim trailing space
+    end = str + strlen(str) - 1;
+    while (end > str && isspace((unsigned char) *end)) end--;
+
+    // Write new null terminator character
+    end[1] = '\0';
+
+    return str;
+}
+
+int endFunc(int code, char *buffer) {
+    if (buffer != NULL) {
+        free(buffer);
     }
-    return 0;
+    return code;
 }
