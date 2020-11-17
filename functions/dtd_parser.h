@@ -49,11 +49,13 @@ struct attribute_node_s {
 
 int carret_open(dtd_document *document, size_t size, size_t current_i, const char *current_char);
 
-int doctype_process(dtd_document *document, size_t size, size_t current_i, const char *current_char);
+int doctype_process(dtd_document **document, size_t size);
 
-int no_doctype_process(dtd_document *document, size_t size, size_t current_i, const char *current_char);
+int no_doctype_process(dtd_document **document, size_t size, size_t *current_i, char **current_char);
 
 int is_doctype(dtd_document *document, size_t size);
+
+char *get_doctype(size_t size, size_t *current_i, char **current_char);
 
 int dtd_document_load(dtd_document *document, const char *path);
 

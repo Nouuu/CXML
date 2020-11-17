@@ -145,33 +145,37 @@ int parse_dtd(dtd_document *document) {
     size_t current_i = 0;
 
     //////////// FIND !DOCTYPE //////////////
-    while (*current_char != '<') {
+
+    if (is_doctype(document, size)) {
+        return doctype_process(&document, size);
+    } else {
+//        no_doctype_process(&document, size, &current_i, &current_char);
+    }
+
+    //////////// GO TO '[' //////////////
+    return 0;
+}
+
+int is_doctype(dtd_document *document, size_t size) {
+    char parsing_buffer[255] = {0};
+    int parsing_buffer_i = 0;
+
+    char *current_char = document->source;
+    size_t current_i = 0;
+
+    while (*current_char != '<' && current_i < size) {
         current_i++;
         current_char++;
     }
-    current_i++;
-    current_char++;
 
-    while (!isspace(*current_char)) {
-        parsing_buffer[parsing_buffer_i] = *current_char;
-        parsing_buffer_i++;
-        current_i++;
-        current_char++;
-    }
-    parsing_buffer[parsing_buffer_i] = '\0';
-
-    if (strcmp(parsing_buffer, "!DOCTYPE") != 0) {
-//TODO handle comments
-        logIt("First dtd node must be !DOCTYPE !", 1);
+    if (current_i >= size) {
         return 0;
     }
 
-    //////////// FIND DOCTYPE NODE //////////////
+    current_i++;
+    current_char++;
 
-    foward_spaces(&current_char, &current_i);
-
-    parsing_buffer_i = 0;
-    while (!isspace(*current_char) && *current_char != '[') {
+    while (!isspace(*current_char) && current_i < size) {
         parsing_buffer[parsing_buffer_i] = *current_char;
         parsing_buffer_i++;
         current_i++;
@@ -179,9 +183,60 @@ int parse_dtd(dtd_document *document) {
     }
     parsing_buffer[parsing_buffer_i] = '\0';
 
-    document->root_node = strdup(parsing_buffer);
+    if (!strcmp(parsing_buffer, "!DOCTYPE")) {
+        return 1;
+    }
+    return 0;
+}
 
-    //////////// GO TO '[' //////////////
+char *get_doctype(size_t size, size_t *current_i, char **current_char) {
+    char parsing_buffer[255] = {0};
+    int parsing_buffer_i = 0;
+
+    while (**current_char != '<' && (*current_i) < size) {
+        (*current_i)++;
+        (*current_char)++;
+    }
+
+    if ((*current_i) >= size) {
+        return 0;
+    }
+
+    (*current_i)++;
+    (*current_char)++;
+
+    while (!isspace(*(*current_char)) && (*current_i) < size) {
+        parsing_buffer[parsing_buffer_i] = *(*current_char);
+        parsing_buffer_i++;
+        (*current_i)++;
+        (*current_char)++;
+    }
+    parsing_buffer[parsing_buffer_i] = '\0';
+    foward_spaces(&(*current_char), &(*current_i));
+
+    parsing_buffer_i = 0;
+    while (!isspace(*(*current_char)) && *(*current_char) != '[') {
+        parsing_buffer[parsing_buffer_i] = *(*current_char);
+        parsing_buffer_i++;
+        (*current_i)++;
+        (*current_char)++;
+    }
+    parsing_buffer[parsing_buffer_i] = '\0';
+
+    return strdup(parsing_buffer);
+}
+
+int doctype_process(dtd_document **document, size_t size) {
+
+    char *current_char = (*document)->source;
+    size_t current_i = 0;
+
+    char parsing_buffer[255] = {0};
+    char message_buffer[255] = {0};
+    int parsing_buffer_i = 0;
+
+    (*document)->root_node = get_doctype(size, &current_i, &current_char);
+
 
     while (*current_char != '[') {
         if (!isspace(*current_char)) {
@@ -285,7 +340,7 @@ int parse_dtd(dtd_document *document) {
 
 
             /////////////////////////////////////////////////////////
-            add_dtd_element_node_at_end(&document->first_element_node, current_element_node);
+            add_dtd_element_node_at_end(&(*document)->first_element_node, current_element_node);
 
             current_i++;
             current_char++;
