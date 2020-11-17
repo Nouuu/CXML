@@ -47,11 +47,13 @@ struct attribute_node_s {
     struct attribute_node_s *next;
 };
 
-int carret_open(dtd_document *document, size_t size, size_t current_i, const char *current_char);
+int carret_open(dtd_document **document, size_t size, size_t *current_i, char **current_char);
+
+int element_node_parse(dtd_document **document, size_t size, size_t *current_i, char **current_char);
 
 int doctype_process(dtd_document **document, size_t size);
 
-int no_doctype_process(dtd_document **document, size_t size, size_t *current_i, char **current_char);
+int no_doctype_process(dtd_document **document, size_t size);
 
 int is_doctype(dtd_document *document, size_t size);
 

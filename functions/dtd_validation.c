@@ -18,11 +18,13 @@ int validate_dtd(const char *xml_path, const char *dtd_path) {
     }
 
     //Root node assertion
-    if (strcmp(dtdDocument->root_node, xmlDocument->root_node->tag) != 0) {
-        sprintf(message, "DTD Rule error - root node don't match. Expected '%s', got '%s'",
-                dtdDocument->root_node, xmlDocument->root_node->tag);
-        logIt(message, 1);
-        return FALSE;
+    if (dtdDocument->root_node) {
+        if (strcmp(dtdDocument->root_node, xmlDocument->root_node->tag) != 0) {
+            sprintf(message, "DTD Rule error - root node don't match. Expected '%s', got '%s'",
+                    dtdDocument->root_node, xmlDocument->root_node->tag);
+            logIt(message, 1);
+            return FALSE;
+        }
     }
 
     //On récupère la première balise DTD
