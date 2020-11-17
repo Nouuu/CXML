@@ -205,7 +205,7 @@ int parse_dtd(dtd_document *document) {
     while (*current_char != ']') {
 
         //Start element node
-        if (*current_char == '<' && *current_char + 1 == 'E') { //TODO Execution si Element
+        if (*current_char == '<') { //TODO Execution si Element (&& *current_char + 2 == 'E')
 
             dtd_node *current_node = init_dtd_node();
             current_i++;
@@ -293,90 +293,8 @@ int parse_dtd(dtd_document *document) {
 
             current_i++;
             current_char++;
-        } else if(*current_char == '<' && *current_char + 1 == 'A'){ //TODO Execution si Attribut
-
-            dtd_node *current_node = init_dtd_node();
-            current_i++;
-            current_char++;
-
-            //Parsing  !ATTLIST
-            parsing_buffer_i = 0;
-            while (!isspace(*current_char)) {
-                parsing_buffer[parsing_buffer_i] = *current_char;
-                parsing_buffer_i++;
-                current_i++;
-                current_char++;
-            }
-            parsing_buffer[parsing_buffer_i] = '\0';
-            current_node->rule_type = strdup(parsing_buffer); //!ATTLIST
-
-            foward_spaces(&current_char, &current_i);
-
-            //Parsing Attribut element_name
-            dtd_attribute *current_attribute = init_dtd_attribute();
-            parsing_buffer_i = 0;
-            while (!isspace(*current_char)) {
-                parsing_buffer[parsing_buffer_i] = *current_char;
-                parsing_buffer_i++;
-                current_i++;
-                current_char++;
-            }
-            parsing_buffer[parsing_buffer_i] = '\0';
-            current_attribute->element_name = strdup(parsing_buffer); // Element Name
-
-            foward_spaces(&current_char, &current_i);
-
-            //Parsing node rule
-            //TODO Gestion d'erreur
-            current_char++;
-            current_i++;
-
-            while (*current_char != ')') {
-
-                dtd_rule *current_rule = init_dtd_rule();
-                foward_spaces(&current_char, &current_i);
-
-                parsing_buffer_i = 0;
-                while (!is_special(*current_char)) {
-                    parsing_buffer[parsing_buffer_i] = *current_char;
-                    parsing_buffer_i++;
-                    current_char++;
-                    current_i++;
-                }
-                parsing_buffer[parsing_buffer_i] = '\0';
-                current_rule->rule_name = strdup(parsing_buffer);
-
-                foward_spaces(&current_char, &current_i);
-
-                if (is_node_spec(*current_char)) {
-                    current_rule->rule_spec = *current_char;
-                    current_char++;
-                    current_i++;
-                    foward_spaces(&current_char, &current_i);
-                }
-
-                if (!is_delim(*current_char)) {
-                    sprintf(message_buffer, "Error at %s node for %s node, %s have something wrong",
-                            current_node->rule_type, current_node->tag_name, current_rule->rule_name);
-                    return 0;
-                }
-                current_rule->rule_sep = *current_char;
-
-                add_dtd_rule_at_end(&current_node->rule, current_rule);
-
-                if (*current_char != ')') {
-                    current_char++;
-                    current_i++;
-                }
-            }
-
-
-            /////////////////////////////////////////////////////////
-            add_dtd_element_node_at_end(&document->element_node, current_node);
-
-            current_i++;
-            current_char++;
         }
+        //TODO PARSE ATTLIST (ATTRIBUT)
         current_char++;
         current_i++;
         if (current_i >= size) {
