@@ -26,7 +26,7 @@ int validate_dtd(const char *xml_path, const char *dtd_path) {
     }
 
     //On récupère la première balise DTD
-    dtd_node *current_dtd_node = dtdDocument->element_node;
+    element_node *current_dtd_node = dtdDocument->first_element_node;
     while (current_dtd_node != NULL) {
         //On part du principe pour le moment que current node est bien !ELEMENT
 

@@ -7,26 +7,26 @@
 #include <stdlib.h>
 #include <string.h>
 
-dtd_attribute *init_dtd_attribute(){
-    dtd_attribute *attribute = malloc(sizeof(dtd_attribute));
+attribute_node *init_dtd_attribute() {
+    attribute_node *attribute = malloc(sizeof(attribute_node));
 
     attribute->element_name = NULL;
     attribute->attribute_name = NULL;
     attribute->attribute_type = NULL;
-    attribute->attribute_value = NULL;
+    attribute->attribute_option = NULL;
     attribute->next = NULL;
 
     return attribute;
 };
 
-void add_dtd_node_attribute_at_end(dtd_attribute **list, dtd_attribute *new_node){
+void add_dtd_node_attribute_at_end(attribute_node **list, attribute_node *new_node) {
     if (*list == NULL) {
 
         *list = new_node;
 
     } else {
 
-        dtd_attribute *current_node = *list;
+        attribute_node *current_node = *list;
         while (current_node->next != NULL) {
             current_node = current_node->next;
         }
@@ -35,9 +35,9 @@ void add_dtd_node_attribute_at_end(dtd_attribute **list, dtd_attribute *new_node
     }
 };
 
-dtd_node *init_dtd_node() {
+element_node *init_dtd_node() {
 
-    dtd_node *linked_list_1 = malloc(sizeof(dtd_node));
+    element_node *linked_list_1 = malloc(sizeof(element_node));
 
     linked_list_1->next = NULL;
     linked_list_1->rule_type = NULL;
@@ -47,20 +47,16 @@ dtd_node *init_dtd_node() {
     return linked_list_1;
 }
 
-void add_dtd_element_node_at_end(dtd_node **list, dtd_node *new_node) {
+void add_dtd_element_node_at_end(element_node **list, element_node *new_node) {
 
     if (*list == NULL) {
-
         *list = new_node;
-
     } else {
-
-        dtd_node *current_node = *list;
+        element_node *current_node = *list;
         while (current_node->next != NULL) {
             current_node = current_node->next;
         }
         current_node->next = new_node;
-
     }
 }
 
@@ -93,7 +89,7 @@ void add_dtd_rule_at_end(dtd_rule **list, dtd_rule *new_rule) {
     }
 }
 
-dtd_node *get_data(dtd_node *list, int i) {
+element_node *get_data(element_node *list, int i) {
     if (i < 0) {
         return NULL;
     }
@@ -207,7 +203,7 @@ int parse_dtd(dtd_document *document) {
         //Start element node
         if (*current_char == '<') { //TODO Execution si Element (&& *current_char + 2 == 'E')
 
-            dtd_node *current_node = init_dtd_node();
+            element_node *current_element_node = init_dtd_node();
             current_i++;
             current_char++;
 
@@ -220,7 +216,7 @@ int parse_dtd(dtd_document *document) {
                 current_char++;
             }
             parsing_buffer[parsing_buffer_i] = '\0';
-            current_node->rule_type = strdup(parsing_buffer);
+            current_element_node->rule_type = strdup(parsing_buffer);
 
             foward_spaces(&current_char, &current_i);
 
@@ -233,14 +229,14 @@ int parse_dtd(dtd_document *document) {
                 current_char++;
             }
             parsing_buffer[parsing_buffer_i] = '\0';
-            current_node->tag_name = strdup(parsing_buffer);
+            current_element_node->tag_name = strdup(parsing_buffer);
 
             foward_spaces(&current_char, &current_i);
 
             //Parsing node rule
             if (*current_char != '(') {
                 sprintf(message_buffer, "Error at %s node for %s node, can't parse rule(s)",
-                        current_node->rule_type, current_node->tag_name);
+                        current_element_node->rule_type, current_element_node->tag_name);
                 logIt(message_buffer, 1);
                 return 0;
             }
@@ -274,12 +270,12 @@ int parse_dtd(dtd_document *document) {
 
                 if (!is_delim(*current_char)) {
                     sprintf(message_buffer, "Error at %s node for %s node, %s have something wrong",
-                            current_node->rule_type, current_node->tag_name, current_rule->rule_name);
+                            current_element_node->rule_type, current_element_node->tag_name, current_rule->rule_name);
                     return 0;
                 }
                 current_rule->rule_sep = *current_char;
 
-                add_dtd_rule_at_end(&current_node->rule, current_rule);
+                add_dtd_rule_at_end(&current_element_node->rule, current_rule);
 
                 if (*current_char != ')') {
                     current_char++;
@@ -289,7 +285,7 @@ int parse_dtd(dtd_document *document) {
 
 
             /////////////////////////////////////////////////////////
-            add_dtd_element_node_at_end(&document->element_node, current_node);
+            add_dtd_element_node_at_end(&document->first_element_node, current_element_node);
 
             current_i++;
             current_char++;
