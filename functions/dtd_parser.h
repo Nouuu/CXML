@@ -40,6 +40,7 @@ struct dtd_rule_s {
 };
 
 struct attribute_node_s {
+    char *type; //!ATTLIST
     char *element_name;
     char *attribute_name;
     char *attribute_type;

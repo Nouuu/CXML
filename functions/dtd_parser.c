@@ -413,7 +413,43 @@ int element_node_parse(dtd_document **document, size_t size, size_t *current_i, 
 }
 
 int attribut_node_parse(dtd_document **document, size_t size, size_t *current_i, char **current_char){
+    char parsing_buffer[255] = {0};
+    char message_buffer[255] = {0};
+    int parsing_buffer_i = 0;
 
+    attribute_node *current_attribute_node = init_dtd_attribute();
+    current_attribute_node->type = strdup(parsing_buffer); //TODO !ATTLIST ???
+
+    foward_spaces(current_char, current_i);
+    //Parsing attribut_node element_name
+    while (!isspace(**current_char)) {
+        parsing_buffer[parsing_buffer_i] = **current_char;
+        parsing_buffer_i++;
+        (*current_i)++;
+        (*current_char)++;
+    }
+
+    parsing_buffer[parsing_buffer_i] = '\0';
+    current_attribute_node->element_name = strdup(parsing_buffer);
+
+    foward_spaces(current_char, current_i);
+    parsing_buffer_i = 0;
+
+
+    //Parsing attribut_node attribut_name
+    while (!isspace(**current_char)) {
+        parsing_buffer[parsing_buffer_i] = **current_char;
+        parsing_buffer_i++;
+        (*current_i)++;
+        (*current_char)++;
+    }
+
+    parsing_buffer[parsing_buffer_i] = '\0';
+    current_attribute_node->attribute_name = strdup(parsing_buffer);
+
+    foward_spaces(current_char, current_i);
+
+    //return 0;
 }
 
 void foward_spaces(char **current_char, size_t *current_i) {

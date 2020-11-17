@@ -20,7 +20,7 @@ int main(int argc, char **argv) {
 //    run_xml_parse_test();
     /////////////////////
 
-    if (validate_dtd("xml_files/xml_example_1.xml", "dtd_files/dtd_example_1.dtd")) {
+    if (validate_dtd("xml_files/xml_example_6.xml", "dtd_files/dtd_example_6.dtd")) {
         printf("DTD Test 1 valided\n");
     }
 
