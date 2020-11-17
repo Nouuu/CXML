@@ -15,6 +15,17 @@ add_executable(CXML main.c
         functions/str_tools.c
         functions/dtd_validation.c)
 
+add_executable(CXML_menu main2.c
+        functions/log.c
+        functions/dtd_parser.c
+        functions/dtd_rules.c
+        functions/xml_parser.c
+        functions/xml_finder.c
+        tests/xml_parsing_test.c
+        functions/str_tools.c
+        functions/dtd_validation.c)
+
+
 add_executable(CXML_1 part_1/main.c
         functions/log.c
         functions/dtd_parser.c
