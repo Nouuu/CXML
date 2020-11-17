@@ -308,7 +308,11 @@ int carret_open(dtd_document **document, size_t size, size_t *current_i, char **
 
     if (!strcmp(parsing_buffer, "!ELEMENT")) {
         return element_node_parse(document, size, current_i, current_char);
-    } else {
+    }
+    else if(!strcmp(parsing_buffer, "!ATTLIST")){
+        return attribut_node_parse(document, size, current_i,current_char);
+    }
+    else {
         printf("GROSSE ERREUR MAMENE");
         return 0;
     }
@@ -406,6 +410,10 @@ int element_node_parse(dtd_document **document, size_t size, size_t *current_i, 
     (*current_i)++;
     (*current_char)++;
     return 1;
+}
+
+int attribut_node_parse(dtd_document **document, size_t size, size_t *current_i, char **current_char){
+
 }
 
 void foward_spaces(char **current_char, size_t *current_i) {
