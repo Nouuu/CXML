@@ -22,6 +22,7 @@ struct dtd_node_s {
     char *tag_name;
     char *rule_type;
     dtd_rule *rule;
+    dtd_attribute *attribute;
     struct dtd_node_s *next;
 };
 
