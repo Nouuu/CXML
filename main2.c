@@ -7,10 +7,9 @@
 #include <string.h>
 #include <libgen.h>
 #include <ctype.h>
+#include "functions/str_tools.h"
 
 int menu(char **xmlpath, char **dtdpath);
-
-int getPath(char **path);
 
 int verif_xml(char *xml_file);
 
@@ -18,15 +17,13 @@ int verif_dtd(char *dtd_file);
 
 int endFunc(int code, char *buffer);
 
-char *trimwhitespace(char *str);
-
 int main(int argc, char **argv) {
     if (argc == 3) {
         printf("%s", argv[1]);
         printf("%s", argv[2]);
     } else {
 //        argv = menu();
-        menu((char **)argv[1], (char **)argv[2]);
+        menu((char **) argv[1], (char **) argv[2]);
     }
 
     printf("%s", *argv);
@@ -35,7 +32,7 @@ int main(int argc, char **argv) {
 
 int menu(char **xmlpath, char **dtdpath) {
 
-    char *buffer = malloc(sizeof(char) * 255 * 255 + 1);
+    char *buffer = malloc(sizeof(char) * 256);
 
 // https://www.dummies.com/programming/c/how-to-use-the-fgets-function-for-text-input-in-c-programming/
 // https://www.tutorialspoint.com/c_standard_library/c_function_fgets.htm
@@ -46,19 +43,51 @@ int menu(char **xmlpath, char **dtdpath) {
         printf("Enter dtd path :\n");
         fflush(stdin);
         fgets(buffer, 255, stdin);
-        buffer = strtok(buffer, "\n");
-        *dtdpath = buffer;
-        getPath(dtdpath);
-    } while (!verif_dtd(*dtdpath));
+        char *return_char = strchr(buffer, '\n');
+        if (return_char) {
+            *return_char = '\0';
+        } else {
+            buffer[255] = '\0';
+        }
+    } while (!verif_dtd(buffer));
+
+    char *trimmed_dtd_path = strtrim_space(buffer);
+
+    FILE *fp_dtd = fopen(trimmed_dtd_path, "r");
+    if (!fp_dtd){
+        printf("Le fichier dtd demandé n'existe pas !");
+        return 0;
+    }
+    printf("Le fichier dtd demandé existe !");
+    fclose(fp_dtd);
+
+    // Segmentation Fault ici
+    (*dtdpath) = trimmed_dtd_path;
+    // --------------------------------------------------------------------------
 
     do {
         printf("Enter xml path :\n");
         fflush(stdin);
         fgets(buffer, 255, stdin);
-        buffer = strtok(buffer, "\n");
-        *xmlpath = buffer;
-        getPath(xmlpath);
-    } while (!verif_xml(*xmlpath));
+        char *return_char = strchr(buffer, '\n');
+        if (return_char) {
+            *return_char = '\0';
+        } else {
+            buffer[255] = '\0';
+        }
+    } while (!verif_xml(buffer));
+
+    char *trimmed_xml_path = strtrim_space(buffer);
+
+    FILE *fp_xml = fopen(trimmed_xml_path, "r");
+    if(!fp_xml) {
+        printf("Le fichier xml demandé n'existe pas !");
+        return 0;
+    }
+    printf("Le fichier xml demandé existe !");
+    fclose(fp_xml);
+
+    (*xmlpath) = trimmed_xml_path;
 
     return 1;
 }
@@ -67,15 +96,17 @@ int verif_dtd(char *dtd_file) {
     if (dtd_file == NULL) {
         return 0;
     }
-    char *bname = basename(dtd_file);
+    char *trimmed = strltrim(dtd_file, '.');
+    char *bname = basename(trimmed);
     char *verif = strrchr(bname, '.');
     if (!verif || verif == bname) {
+        free(trimmed);
         return 0;
     }
-    //ta chaine de base est pas bonne donc forcément
-    // Cad ? A cause du scanf ?
 
-    return strcmp(verif + 1, "dtd") == 0;
+    int return_code = !strcmp(verif + 1, "dtd");
+    free(trimmed);
+    return return_code;
 }
 
 int verif_xml(char *xml_file) {
@@ -88,54 +119,6 @@ int verif_xml(char *xml_file) {
         return 0;
     }
     strcmp(verif + 1, "xml") == 0;
-}
-
-int getPath(char **path) {
-    char *buff = malloc(sizeof(char) * 255 * 255 + 1);
-    char *tmp;
-
-    printf("Enter directory path :\n");
-    fflush(stdin);
-    fflush(stdout);
-    if (fgets(buff, 255 * 255, stdin) == NULL) {
-        return endFunc(1, buff);
-    }
-    if (buff[0] == '\n') {
-        return endFunc(1, buff);
-    }
-
-    buff = strtok(buff, "\n");
-
-    tmp = trimwhitespace(buff);
-
-    if (strlen(tmp) == 0) {
-        return endFunc(1, buff);
-    }
-
-    *path = malloc(sizeof(char) * (strlen(tmp) + 1));
-    strcpy(*path, tmp);
-    free(buff);
-
-    printf("Path: |%s|\n", *path);
-    return 0;
-}
-
-char *trimwhitespace(char *str) {
-    char *end;
-    // Trim leading space
-    while (isspace((unsigned char) *str)) str++;
-
-    if (*str == 0)  // All spaces?
-        return str;
-
-    // Trim trailing space
-    end = str + strlen(str) - 1;
-    while (end > str && isspace((unsigned char) *end)) end--;
-
-    // Write new null terminator character
-    end[1] = '\0';
-
-    return str;
 }
 
 int endFunc(int code, char *buffer) {
