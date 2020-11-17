@@ -18,15 +18,17 @@ int validate_dtd(const char *xml_path, const char *dtd_path) {
     }
 
     //Root node assertion
-    if (strcmp(dtdDocument->root_node, xmlDocument->root_node->tag) != 0) {
-        sprintf(message, "DTD Rule error - root node don't match. Expected '%s', got '%s'",
-                dtdDocument->root_node, xmlDocument->root_node->tag);
-        logIt(message, 1);
-        return FALSE;
+    if (dtdDocument->root_node) {
+        if (strcmp(dtdDocument->root_node, xmlDocument->root_node->tag) != 0) {
+            sprintf(message, "DTD Rule error - root node don't match. Expected '%s', got '%s'",
+                    dtdDocument->root_node, xmlDocument->root_node->tag);
+            logIt(message, 1);
+            return FALSE;
+        }
     }
 
     //On récupère la première balise DTD
-    dtd_node *current_dtd_node = dtdDocument->first_node;
+    element_node *current_dtd_node = dtdDocument->first_element_node;
     while (current_dtd_node != NULL) {
         //On part du principe pour le moment que current node est bien !ELEMENT
 
@@ -39,7 +41,7 @@ int validate_dtd(const char *xml_path, const char *dtd_path) {
             xml_node *current_xml_node = current_xml_node_list->data[i];
 
             //On récupère la première règle DTD
-            dtd_rule *current_rule = current_dtd_node->first_rule;
+            dtd_rule *current_rule = current_dtd_node->rule;
 
             //On itère tant qu'on trouve un élément
             char previous_rule_sep = 0;

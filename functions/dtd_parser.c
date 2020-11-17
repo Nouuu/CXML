@@ -7,33 +7,56 @@
 #include <stdlib.h>
 #include <string.h>
 
+attribute_node *init_dtd_attribute() {
+    attribute_node *attribute = malloc(sizeof(attribute_node));
 
-dtd_node *init_dtd_node() {
+    attribute->element_name = NULL;
+    attribute->attribute_name = NULL;
+    attribute->attribute_type = NULL;
+    attribute->attribute_option = NULL;
+    attribute->next = NULL;
 
-    dtd_node *linked_list_1 = malloc(sizeof(dtd_node));
+    return attribute;
+};
 
-    linked_list_1->next = NULL;
-    linked_list_1->rule_type = NULL;
-    linked_list_1->tag_name = NULL;
-    linked_list_1->first_rule = NULL;
-
-    return linked_list_1;
-}
-
-void add_dtd_node_at_end(dtd_node **list, dtd_node *new_node) {
-
+void add_dtd_node_attribute_at_end(attribute_node **list, attribute_node *new_node) {
     if (*list == NULL) {
 
         *list = new_node;
 
     } else {
 
-        dtd_node *current_node = *list;
+        attribute_node *current_node = *list;
         while (current_node->next != NULL) {
             current_node = current_node->next;
         }
         current_node->next = new_node;
 
+    }
+};
+
+element_node *init_dtd_node() {
+
+    element_node *linked_list_1 = malloc(sizeof(element_node));
+
+    linked_list_1->next = NULL;
+    linked_list_1->rule_type = NULL;
+    linked_list_1->tag_name = NULL;
+    linked_list_1->rule = NULL;
+
+    return linked_list_1;
+}
+
+void add_dtd_element_node_at_end(element_node **list, element_node *new_node) {
+
+    if (*list == NULL) {
+        *list = new_node;
+    } else {
+        element_node *current_node = *list;
+        while (current_node->next != NULL) {
+            current_node = current_node->next;
+        }
+        current_node->next = new_node;
     }
 }
 
@@ -66,7 +89,7 @@ void add_dtd_rule_at_end(dtd_rule **list, dtd_rule *new_rule) {
     }
 }
 
-dtd_node *get_data(dtd_node *list, int i) {
+element_node *get_data(element_node *list, int i) {
     if (i < 0) {
         return NULL;
     }
@@ -122,33 +145,37 @@ int parse_dtd(dtd_document *document) {
     size_t current_i = 0;
 
     //////////// FIND !DOCTYPE //////////////
-    while (*current_char != '<') {
+
+    if (is_doctype(document, size)) {
+        return doctype_process(&document, size);
+    } else {
+        return no_doctype_process(&document, size);
+    }
+
+    //////////// GO TO '[' //////////////
+    return 0;
+}
+
+int is_doctype(dtd_document *document, size_t size) {
+    char parsing_buffer[255] = {0};
+    int parsing_buffer_i = 0;
+
+    char *current_char = document->source;
+    size_t current_i = 0;
+
+    while (*current_char != '<' && current_i < size) {
         current_i++;
         current_char++;
     }
-    current_i++;
-    current_char++;
 
-    while (!isspace(*current_char)) {
-        parsing_buffer[parsing_buffer_i] = *current_char;
-        parsing_buffer_i++;
-        current_i++;
-        current_char++;
-    }
-    parsing_buffer[parsing_buffer_i] = '\0';
-
-    if (strcmp(parsing_buffer, "!DOCTYPE") != 0) {
-//TODO handle comments
-        logIt("First dtd node must be !DOCTYPE !", 1);
+    if (current_i >= size) {
         return 0;
     }
 
-    //////////// FIND DOCTYPE NODE //////////////
+    current_i++;
+    current_char++;
 
-    foward_spaces(&current_char, &current_i);
-
-    parsing_buffer_i = 0;
-    while (!isspace(*current_char) && *current_char != '[') {
+    while (!isspace(*current_char) && current_i < size) {
         parsing_buffer[parsing_buffer_i] = *current_char;
         parsing_buffer_i++;
         current_i++;
@@ -156,9 +183,57 @@ int parse_dtd(dtd_document *document) {
     }
     parsing_buffer[parsing_buffer_i] = '\0';
 
-    document->root_node = strdup(parsing_buffer);
+    if (!strcmp(parsing_buffer, "!DOCTYPE")) {
+        return 1;
+    }
+    return 0;
+}
 
-    //////////// GO TO '[' //////////////
+char *get_doctype(size_t size, size_t *current_i, char **current_char) {
+    char parsing_buffer[255] = {0};
+    int parsing_buffer_i = 0;
+
+    while (**current_char != '<' && (*current_i) < size) {
+        (*current_i)++;
+        (*current_char)++;
+    }
+
+    if ((*current_i) >= size) {
+        return 0;
+    }
+
+    (*current_i)++;
+    (*current_char)++;
+
+    while (!isspace(*(*current_char)) && (*current_i) < size) {
+        parsing_buffer[parsing_buffer_i] = *(*current_char);
+        parsing_buffer_i++;
+        (*current_i)++;
+        (*current_char)++;
+    }
+    parsing_buffer[parsing_buffer_i] = '\0';
+    foward_spaces(&(*current_char), &(*current_i));
+
+    parsing_buffer_i = 0;
+    while (!isspace(*(*current_char)) && *(*current_char) != '[') {
+        parsing_buffer[parsing_buffer_i] = *(*current_char);
+        parsing_buffer_i++;
+        (*current_i)++;
+        (*current_char)++;
+    }
+    parsing_buffer[parsing_buffer_i] = '\0';
+
+    return strdup(parsing_buffer);
+}
+
+int doctype_process(dtd_document **document, size_t size) {
+
+    char *current_char = (*document)->source;
+    size_t current_i = 0;
+    char message_buffer[255] = {0};
+
+    (*document)->root_node = get_doctype(size, &current_i, &current_char);
+
 
     while (*current_char != '[') {
         if (!isspace(*current_char)) {
@@ -175,106 +250,161 @@ int parse_dtd(dtd_document *document) {
     current_i++;
     current_char++;
 
-    while (*current_char != ']') {
+    while (*current_char != ']' && current_i < size - 1) {
 
-        //Start node
+        //Start element node
         if (*current_char == '<') {
-            dtd_node *current_node = init_dtd_node();
-            current_i++;
-            current_char++;
-
-            //Parsing  !ELEMENT
-            parsing_buffer_i = 0;
-            while (!isspace(*current_char)) {
-                parsing_buffer[parsing_buffer_i] = *current_char;
-                parsing_buffer_i++;
-                current_i++;
-                current_char++;
-            }
-            parsing_buffer[parsing_buffer_i] = '\0';
-            current_node->rule_type = strdup(parsing_buffer);
-
-            foward_spaces(&current_char, &current_i);
-
-            //Parsing node name
-            parsing_buffer_i = 0;
-            while (!isspace(*current_char)) {
-                parsing_buffer[parsing_buffer_i] = *current_char;
-                parsing_buffer_i++;
-                current_i++;
-                current_char++;
-            }
-            parsing_buffer[parsing_buffer_i] = '\0';
-            current_node->tag_name = strdup(parsing_buffer);
-
-            foward_spaces(&current_char, &current_i);
-
-            //Parsing node rule
-            if (*current_char != '(') {
-                sprintf(message_buffer, "Error at %s node for %s node, can't parse rule(s)",
-                        current_node->rule_type, current_node->tag_name);
-                logIt(message_buffer, 1);
+            if (!carret_open(document, size, &current_i, &current_char)) {
                 return 0;
             }
-
+        } else {
             current_char++;
             current_i++;
-
-            while (*current_char != ')') {
-
-                dtd_rule *current_rule = init_dtd_rule();
-                foward_spaces(&current_char, &current_i);
-
-                parsing_buffer_i = 0;
-                while (!is_special(*current_char)) {
-                    parsing_buffer[parsing_buffer_i] = *current_char;
-                    parsing_buffer_i++;
-                    current_char++;
-                    current_i++;
-                }
-                parsing_buffer[parsing_buffer_i] = '\0';
-                current_rule->rule_name = strdup(parsing_buffer);
-
-                foward_spaces(&current_char, &current_i);
-
-                if (is_node_spec(*current_char)) {
-                    current_rule->rule_spec = *current_char;
-                    current_char++;
-                    current_i++;
-                    foward_spaces(&current_char, &current_i);
-                }
-
-                if (!is_delim(*current_char)) {
-                    sprintf(message_buffer, "Error at %s node for %s node, %s have something wrong",
-                            current_node->rule_type, current_node->tag_name, current_rule->rule_name);
-                    return 0;
-                }
-                current_rule->rule_sep = *current_char;
-
-                add_dtd_rule_at_end(&current_node->first_rule, current_rule);
-
-                if (*current_char != ')') {
-                    current_char++;
-                    current_i++;
-                }
-            }
-
-
-            /////////////////////////////////////////////////////////
-            add_dtd_node_at_end(&document->first_node, current_node);
-
-            current_i++;
-            current_char++;
         }
-        current_char++;
-        current_i++;
-        if (current_i >= size) {
+        /*if (current_i >= size) {
             logIt("Can't find endind array carracter", 1);
             return 0;
+        }*/
+    }
+
+    return 1;
+}
+
+int no_doctype_process(dtd_document **document, size_t size) {
+    char *current_char = (*document)->source;
+    size_t current_i = 0;
+
+    while (current_i < size) {
+
+        //Start element node
+        if (*current_char == '<') {
+            if (!carret_open(document, size, &current_i, &current_char)) {
+                return 0;
+            }
+        } else {
+            current_char++;
+            current_i++;
+        }
+    }
+    return 1;
+}
+
+int carret_open(dtd_document **document, size_t size, size_t *current_i, char **current_char) {
+    char parsing_buffer[255] = {0};
+    char message_buffer[255] = {0};
+    int parsing_buffer_i = 0;
+
+    (*current_i)++;
+    (*current_char)++;
+
+    //Parsing  !ELEMENT or ! ATTRIBUTE
+    while (!isspace(**current_char)) {
+        parsing_buffer[parsing_buffer_i] = *(*current_char);
+        parsing_buffer_i++;
+        (*current_i)++;
+        (*current_char)++;
+    }
+    parsing_buffer[parsing_buffer_i] = '\0';
+
+    if (!strcmp(parsing_buffer, "!ELEMENT")) {
+        return element_node_parse(document, size, current_i, current_char);
+    } else {
+        printf("GROSSE ERREUR MAMENE");
+        return 0;
+    }
+}
+
+int element_node_parse(dtd_document **document, size_t size, size_t *current_i, char **current_char) {
+    char parsing_buffer[255] = {0};
+    char message_buffer[255] = {0};
+    int parsing_buffer_i = 0;
+
+    element_node *current_element_node = init_dtd_node();
+    current_element_node->rule_type = strdup(parsing_buffer);
+
+    foward_spaces(current_char, current_i);
+
+    //Parsing node name
+    while (!isspace(**current_char)) {
+        parsing_buffer[parsing_buffer_i] = **current_char;
+        parsing_buffer_i++;
+        (*current_i)++;
+        (*current_char)++;
+    }
+    parsing_buffer[parsing_buffer_i] = '\0';
+    current_element_node->tag_name = strdup(parsing_buffer);
+
+    foward_spaces(current_char, current_i);
+
+    //Parsing node rule
+    if (**current_char != '(') {
+        sprintf(message_buffer, "Error at %s node for %s node, can't parse rule(s)",
+                current_element_node->rule_type, current_element_node->tag_name);
+        logIt(message_buffer, 1);
+        return 0;
+    }
+
+    (*current_char)++;
+    (*current_i)++;
+
+    while (**current_char != ')') {
+
+        dtd_rule *current_rule = init_dtd_rule();
+        foward_spaces(current_char, current_i);
+
+        parsing_buffer_i = 0;
+        while (!is_special(**current_char)) {
+            parsing_buffer[parsing_buffer_i] = **current_char;
+            parsing_buffer_i++;
+            (*current_char)++;
+            (*current_i)++;
+        }
+        parsing_buffer[parsing_buffer_i] = '\0';
+        current_rule->rule_name = strdup(parsing_buffer);
+
+        foward_spaces(current_char, current_i);
+
+        if (is_node_spec(**current_char)) {
+            current_rule->rule_spec = **current_char;
+            (*current_char)++;
+            (*current_i)++;
+            foward_spaces(current_char, current_i);
+        }
+
+        if (!is_delim(*(*current_char))) {
+            sprintf(message_buffer, "Error at %s node for %s node, %s have something wrong",
+                    current_element_node->rule_type, current_element_node->tag_name, current_rule->rule_name);
+            logIt(message_buffer, 1);
+            return 0;
+        }
+        current_rule->rule_sep = **current_char;
+
+        add_dtd_rule_at_end(&current_element_node->rule, current_rule);
+
+        if (**current_char != ')') {
+            (*current_char)++;
+            (*current_i)++;
         }
     }
 
 
+    /////////////////////////////////////////////////////////
+    add_dtd_element_node_at_end(&(*document)->first_element_node, current_element_node);
+
+    (*current_i)++;
+    (*current_char)++;
+
+    foward_spaces(current_char, current_i);
+
+    if (**current_char != '>') {
+        sprintf(message_buffer, "Error at %s node for %s node, rule do not close '>'",
+                current_element_node->rule_type, current_element_node->tag_name);
+        logIt(message_buffer, 1);
+        return 0;
+    }
+
+    (*current_i)++;
+    (*current_char)++;
     return 1;
 }
 
