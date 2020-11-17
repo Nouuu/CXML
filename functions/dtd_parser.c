@@ -324,7 +324,7 @@ int element_node_parse(dtd_document **document, size_t size, size_t *current_i, 
     int parsing_buffer_i = 0;
 
     element_node *current_element_node = init_dtd_node();
-    current_element_node->rule_type = strdup(parsing_buffer);
+    current_element_node->rule_type = strdup(parsing_buffer); //TODO ??
 
     foward_spaces(current_char, current_i);
 
@@ -450,6 +450,7 @@ int attribut_node_parse(dtd_document **document, size_t size, size_t *current_i,
     foward_spaces(current_char, current_i);
     parsing_buffer_i = 0;
 
+
     //Parsing attribute_type
         //TODO Parser en profondeur
         if(**current_char  == '('){
@@ -476,7 +477,34 @@ int attribut_node_parse(dtd_document **document, size_t size, size_t *current_i,
             current_attribute_node->attribute_type = strdup(parsing_buffer);
         }
 
-        
+    (*current_i)++;
+    (*current_char)++;
+    foward_spaces(current_char, current_i);
+    parsing_buffer_i = 0;
+    /*if (**current_char != '#') {
+        sprintf(message_buffer, "Error at %s node for %s node, the attribute value must start with '#'",
+                current_attribute_node->att, current_attribute_node->attribute_option);
+        logIt(message_buffer, 1);
+        return 0;
+    }*/
+    if(**current_char == '#') {
+        parsing_buffer[parsing_buffer_i] = **current_char;
+        parsing_buffer_i++;
+        (*current_i)++;
+        (*current_char)++;
+        while (isupper(**current_char)) {
+            parsing_buffer[parsing_buffer_i] = **current_char;
+            parsing_buffer_i++;
+            (*current_i)++;
+            (*current_char)++;
+        }
+    }
+    parsing_buffer[parsing_buffer_i] = '\0';
+    current_attribute_node->attribute_option = strdup(parsing_buffer);
+
+    add_dtd_node_attribute_at_end(&(*document)->first_attribute_node,current_attribute_node);
+
+
     return 0;
 }
 
