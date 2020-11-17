@@ -421,7 +421,7 @@ int attribut_node_parse(dtd_document **document, size_t size, size_t *current_i,
     current_attribute_node->type = strdup(parsing_buffer); //TODO !ATTLIST ???
 
     foward_spaces(current_char, current_i);
-    //Parsing attribut_node element_name
+    //Parsing element_name
     while (!isspace(**current_char)) {
         parsing_buffer[parsing_buffer_i] = **current_char;
         parsing_buffer_i++;
@@ -436,7 +436,7 @@ int attribut_node_parse(dtd_document **document, size_t size, size_t *current_i,
     parsing_buffer_i = 0;
 
 
-    //Parsing attribut_node attribut_name
+    //Parsing attribut_name
     while (!isspace(**current_char)) {
         parsing_buffer[parsing_buffer_i] = **current_char;
         parsing_buffer_i++;
@@ -448,8 +448,36 @@ int attribut_node_parse(dtd_document **document, size_t size, size_t *current_i,
     current_attribute_node->attribute_name = strdup(parsing_buffer);
 
     foward_spaces(current_char, current_i);
+    parsing_buffer_i = 0;
 
-    //return 0;
+    //Parsing attribute_type
+        //TODO Parser en profondeur
+        if(**current_char  == '('){
+            // Parsing attribute_type with option
+            (*current_i)++;
+            (*current_char)++;
+            while (**current_char != ')') {
+                parsing_buffer[parsing_buffer_i] = **current_char;
+                parsing_buffer_i++;
+                (*current_i)++;
+                (*current_char)++;
+            }
+            parsing_buffer[parsing_buffer_i] = '\0';
+            current_attribute_node->attribute_type = strdup(parsing_buffer);
+        }else{
+            // Parsing attribute_type without option
+            while (!isspace(**current_char)) {
+                parsing_buffer[parsing_buffer_i] = **current_char;
+                parsing_buffer_i++;
+                (*current_i)++;
+                (*current_char)++;
+            }
+            parsing_buffer[parsing_buffer_i] = '\0';
+            current_attribute_node->attribute_type = strdup(parsing_buffer);
+        }
+
+        
+    return 0;
 }
 
 void foward_spaces(char **current_char, size_t *current_i) {
