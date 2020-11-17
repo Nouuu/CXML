@@ -481,12 +481,7 @@ int attribut_node_parse(dtd_document **document, size_t size, size_t *current_i,
     (*current_char)++;
     foward_spaces(current_char, current_i);
     parsing_buffer_i = 0;
-    /*if (**current_char != '#') {
-        sprintf(message_buffer, "Error at %s node for %s node, the attribute value must start with '#'",
-                current_attribute_node->att, current_attribute_node->attribute_option);
-        logIt(message_buffer, 1);
-        return 0;
-    }*/
+
     if(**current_char == '#') {
         parsing_buffer[parsing_buffer_i] = **current_char;
         parsing_buffer_i++;
@@ -498,14 +493,34 @@ int attribut_node_parse(dtd_document **document, size_t size, size_t *current_i,
             (*current_i)++;
             (*current_char)++;
         }
+    }else{ /*sprintf(message_buffer, "Error at %s node for %s node, the attribute value must start with '#'",
+                   current_attribute_node->att, current_attribute_node->attribute_option);
+        logIt(message_buffer, 1);
+        return 0;
+        */
+    printf("NON");
     }
     parsing_buffer[parsing_buffer_i] = '\0';
     current_attribute_node->attribute_option = strdup(parsing_buffer);
 
     add_dtd_node_attribute_at_end(&(*document)->first_attribute_node,current_attribute_node);
 
+    (*current_i)++;
+    (*current_char)++;
 
-    return 0;
+    foward_spaces(current_char, current_i);
+
+    /*if (**current_char != '>') {
+        sprintf(message_buffer, "Error at %s node for %s node, rule do not close '>'",
+                current_attribute_node->, current_attribute_node->tag_name);
+        logIt(message_buffer, 1);
+        return 0;
+    }*/
+
+
+    (*current_i)++;
+    (*current_char)++;
+    return 1;
 }
 
 void foward_spaces(char **current_char, size_t *current_i) {
