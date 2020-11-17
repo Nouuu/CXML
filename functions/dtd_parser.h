@@ -16,11 +16,13 @@
 typedef struct dtd_node_s dtd_node;
 typedef struct dtd_document_s dtd_document;
 typedef struct dtd_rule_s dtd_rule;
+typedef struct dtd_attribute_s dtd_attribute;
 
 struct dtd_node_s {
     char *tag_name;
     char *rule_type;
-    dtd_rule *first_rule;
+    dtd_rule *rule;
+    dtd_attribute *attribute;
     struct dtd_node_s *next;
 };
 
@@ -34,7 +36,16 @@ struct dtd_rule_s {
 struct dtd_document_s {
     char *source;
     char *root_node;
-    dtd_node *first_node;
+    dtd_node *element_node;
+    dtd_attribute *attribute_node;
+};
+
+struct dtd_attribute_s{
+    char *element_name;
+    char *attribute_name;
+    char *attribute_type;
+    char *attribute_value;
+    struct dtd_attribute_s *next;
 };
 
 int carret_open(dtd_document *document, size_t size, size_t current_i, const char *current_char);
@@ -53,9 +64,13 @@ dtd_node *get_data(dtd_node *list, int i);
 
 int parse_dtd(dtd_document *document);
 
+dtd_attribute *init_dtd_attribute();
+
+void add_dtd_node_attribute_at_end(dtd_attribute **list, dtd_attribute *new_node);
+
 dtd_node *init_dtd_node();
 
-void add_dtd_node_at_end(dtd_node **list, dtd_node *new_node);
+void add_dtd_element_node_at_end(dtd_node **list, dtd_node *new_node);
 
 dtd_rule *init_dtd_rule();
 

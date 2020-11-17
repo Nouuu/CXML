@@ -7,6 +7,33 @@
 #include <stdlib.h>
 #include <string.h>
 
+dtd_attribute *init_dtd_attribute(){
+    dtd_attribute *attribute = malloc(sizeof(dtd_attribute));
+
+    attribute->element_name = NULL;
+    attribute->attribute_name = NULL;
+    attribute->attribute_type = NULL;
+    attribute->attribute_value = NULL;
+    attribute->next = NULL;
+
+    return attribute;
+};
+
+void add_dtd_node_attribute_at_end(dtd_attribute **list, dtd_attribute *new_node){
+    if (*list == NULL) {
+
+        *list = new_node;
+
+    } else {
+
+        dtd_attribute *current_node = *list;
+        while (current_node->next != NULL) {
+            current_node = current_node->next;
+        }
+        current_node->next = new_node;
+
+    }
+};
 
 dtd_node *init_dtd_node() {
 
@@ -15,12 +42,12 @@ dtd_node *init_dtd_node() {
     linked_list_1->next = NULL;
     linked_list_1->rule_type = NULL;
     linked_list_1->tag_name = NULL;
-    linked_list_1->first_rule = NULL;
+    linked_list_1->rule = NULL;
 
     return linked_list_1;
 }
 
-void add_dtd_node_at_end(dtd_node **list, dtd_node *new_node) {
+void add_dtd_element_node_at_end(dtd_node **list, dtd_node *new_node) {
 
     if (*list == NULL) {
 
@@ -177,8 +204,9 @@ int parse_dtd(dtd_document *document) {
 
     while (*current_char != ']') {
 
-        //Start node
-        if (*current_char == '<') {
+        //Start element node
+        if (*current_char == '<') { //TODO Execution si Element (&& *current_char + 2 == 'E')
+
             dtd_node *current_node = init_dtd_node();
             current_i++;
             current_char++;
@@ -251,7 +279,7 @@ int parse_dtd(dtd_document *document) {
                 }
                 current_rule->rule_sep = *current_char;
 
-                add_dtd_rule_at_end(&current_node->first_rule, current_rule);
+                add_dtd_rule_at_end(&current_node->rule, current_rule);
 
                 if (*current_char != ')') {
                     current_char++;
@@ -261,11 +289,12 @@ int parse_dtd(dtd_document *document) {
 
 
             /////////////////////////////////////////////////////////
-            add_dtd_node_at_end(&document->first_node, current_node);
+            add_dtd_element_node_at_end(&document->element_node, current_node);
 
             current_i++;
             current_char++;
         }
+        //TODO PARSE ATTLIST (ATTRIBUT)
         current_char++;
         current_i++;
         if (current_i >= size) {
