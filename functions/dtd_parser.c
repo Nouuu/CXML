@@ -136,13 +136,7 @@ char *get_dtd_document_source(const char *path) {
 
 int parse_dtd(dtd_document *document) {
 
-    char parsing_buffer[255] = {0};
-    char message_buffer[255] = {0};
-    int parsing_buffer_i = 0;
     size_t size = strlen(document->source);
-
-    char *current_char = document->source;
-    size_t current_i = 0;
 
     //////////// FIND !DOCTYPE //////////////
 
@@ -230,7 +224,6 @@ int doctype_process(dtd_document **document, size_t size) {
 
     char *current_char = (*document)->source;
     size_t current_i = 0;
-    char message_buffer[255] = {0};
 
     (*document)->root_node = get_doctype(size, &current_i, &current_char);
 
