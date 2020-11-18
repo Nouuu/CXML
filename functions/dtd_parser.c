@@ -8,6 +8,7 @@
 #include <string.h>
 
 attribute_node *init_dtd_attribute() {
+    /*
     attribute_node *attribute = malloc(sizeof(attribute_node));
 
     attribute->element_name = NULL;
@@ -15,6 +16,9 @@ attribute_node *init_dtd_attribute() {
     attribute->attribute_type = NULL;
     attribute->attribute_option = NULL;
     attribute->next = NULL;
+     */
+
+    attribute_node *attribute = calloc(sizeof(attribute_node), 1);
 
     return attribute;
 };
@@ -301,11 +305,9 @@ int carret_open(dtd_document **document, size_t size, size_t *current_i, char **
 
     if (!strcmp(parsing_buffer, "!ELEMENT")) {
         return element_node_parse(document, size, current_i, current_char);
-    }
-    else if(!strcmp(parsing_buffer, "!ATTLIST")){
-        return attribut_node_parse(document, size, current_i,current_char);
-    }
-    else {
+    } else if (!strcmp(parsing_buffer, "!ATTLIST")) {
+        return attribut_node_parse(document, size, current_i, current_char);
+    } else {
         printf("GROSSE ERREUR MAMENE");
         return 0;
     }
@@ -405,13 +407,13 @@ int element_node_parse(dtd_document **document, size_t size, size_t *current_i, 
     return 1;
 }
 
-int attribut_node_parse(dtd_document **document, size_t size, size_t *current_i, char **current_char){
+int attribut_node_parse(dtd_document **document, size_t size, size_t *current_i, char **current_char) {
     char parsing_buffer[255] = {0};
     char message_buffer[255] = {0};
     int parsing_buffer_i = 0;
 
     attribute_node *current_attribute_node = init_dtd_attribute();
-    current_attribute_node->type = strdup("!ATTLIST"); //TODO type ????
+    current_attribute_node->rule_type = strdup("!ATTLIST");
 
     foward_spaces(current_char, current_i);
     //Parsing element_name
@@ -445,30 +447,34 @@ int attribut_node_parse(dtd_document **document, size_t size, size_t *current_i,
 
 
     //Parsing attribute_type
-        //TODO Parser en profondeur
-        if(**current_char  == '('){
-            // Parsing attribute_type with option
+    if (**current_char == '(') {
+        // Parsing attribute_type with option
+/*        (*current_i)++;
+        (*current_char)++;*/
+        while (**current_char != ')') {
+            parsing_buffer[parsing_buffer_i] = **current_char;
+            parsing_buffer_i++;
             (*current_i)++;
             (*current_char)++;
-            while (**current_char != ')') {
-                parsing_buffer[parsing_buffer_i] = **current_char;
-                parsing_buffer_i++;
-                (*current_i)++;
-                (*current_char)++;
-            }
-            parsing_buffer[parsing_buffer_i] = '\0';
-            current_attribute_node->attribute_type = strdup(parsing_buffer);
-        }else{
-            // Parsing attribute_type without option
-            while (!isspace(**current_char)) {
-                parsing_buffer[parsing_buffer_i] = **current_char;
-                parsing_buffer_i++;
-                (*current_i)++;
-                (*current_char)++;
-            }
-            parsing_buffer[parsing_buffer_i] = '\0';
-            current_attribute_node->attribute_type = strdup(parsing_buffer);
         }
+        parsing_buffer[parsing_buffer_i] = **current_char;
+        parsing_buffer_i++;
+        (*current_i)++;
+        (*current_char)++;
+
+        parsing_buffer[parsing_buffer_i] = '\0';
+        current_attribute_node->attribute_type = strdup(parsing_buffer);
+    } else {
+        // Parsing attribute_type without option
+        while (!isspace(**current_char)) {
+            parsing_buffer[parsing_buffer_i] = **current_char;
+            parsing_buffer_i++;
+            (*current_i)++;
+            (*current_char)++;
+        }
+        parsing_buffer[parsing_buffer_i] = '\0';
+        current_attribute_node->attribute_type = strdup(parsing_buffer);
+    }
 
     //(*current_i)++;
     //(*current_char)++;
@@ -477,7 +483,7 @@ int attribut_node_parse(dtd_document **document, size_t size, size_t *current_i,
 
 
     //Parsing Attribut option
-    if(**current_char == '#') {
+    if (**current_char == '#') {
         parsing_buffer[parsing_buffer_i] = **current_char;
         parsing_buffer_i++;
         (*current_i)++;
@@ -489,33 +495,53 @@ int attribut_node_parse(dtd_document **document, size_t size, size_t *current_i,
             (*current_char)++;
         }
         parsing_buffer[parsing_buffer_i] = '\0';
+
+        if (strcmp(parsing_buffer, "#REQUIRED") != 0 && strcmp(parsing_buffer, "#IMPLIED") != 0 &&
+            strcmp(parsing_buffer, "#FIXED") != 0) {
+            sprintf(message_buffer,
+                    "Error at %s node for %s node with %s attribute's, the attribute option is INVALID",
+                    current_attribute_node->rule_type, current_attribute_node->element_name,
+                    current_attribute_node->attribute_name);
+            logIt(message_buffer, 1);
+            return 0;
+        }
+
         current_attribute_node->attribute_option = strdup(parsing_buffer);
-    }else{
-        sprintf(message_buffer, "Error at %s node for %s node, the attribute value must start with '#'",
-                   current_attribute_node->attribute_option, current_attribute_node->attribute_option);
+    } else {
+        sprintf(message_buffer,
+                "Error at %s node for %s node with %s attribute's, the attribute option must start with '#'",
+                current_attribute_node->rule_type, current_attribute_node->element_name,
+                current_attribute_node->attribute_name);
         logIt(message_buffer, 1);
         return 0;
+    }
 
+    if (isalpha(**current_char) && isspace(**current_char)) {
+        sprintf(message_buffer,
+                "Error at %s node for %s node with %s attribute's, the attribute option is INVALID",
+                current_attribute_node->rule_type, current_attribute_node->element_name,
+                current_attribute_node->attribute_name);
+        logIt(message_buffer, 1);
+        return 0;
     }
 
 
-    add_dtd_node_attribute_at_end(&(*document)->first_attribute_node,current_attribute_node);
-
-    (*current_i)++;
-    (*current_char)++;
+    add_dtd_node_attribute_at_end(&(*document)->first_attribute_node, current_attribute_node);
 
     foward_spaces(current_char, current_i);
 
-    /*if (**current_char != '>') {
-        sprintf(message_buffer, "Error at %s node for %s node, rule do not close '>'",
-                current_attribute_node->, current_attribute_node->tag_name);
+    if (**current_char != '>') {
+        sprintf(message_buffer, "Error at %s node for %s node, %s attribute's rule do not close '>' \n"
+                                "or there is something unwanted after attribute option",
+                current_attribute_node->rule_type, current_attribute_node->element_name,
+                current_attribute_node->attribute_name);
         logIt(message_buffer, 1);
         return 0;
-    }*/
-
+    }
 
     (*current_i)++;
     (*current_char)++;
+
     return 1;
 }
 
