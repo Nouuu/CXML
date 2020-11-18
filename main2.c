@@ -11,9 +11,9 @@
 
 int menu(char **xmlpath, char **dtdpath);
 
-int verif_xml(char *xml_file);
+int verif_file_extension(char *file_path, const char *extension);
 
-int verif_dtd(char *dtd_file);
+int file_exist(char *file_path);
 
 int endFunc(int code, char *buffer);
 
@@ -50,7 +50,7 @@ int menu(char **xmlpath, char **dtdpath) {
         } else {
             buffer[255] = '\0';
         }
-    } while (!verif_dtd(buffer));
+    } while (!verif_file_extension(buffer, "dtd"));
 
     char *trimmed_dtd_path = strtrim_space(buffer);
 
@@ -90,27 +90,29 @@ int menu(char **xmlpath, char **dtdpath) {
 
     *xmlpath = trimmed_xml_path;
 
+*/
     return 1;
 }
 
-int verif_dtd(char *dtd_file) {
-    if (dtd_file == NULL) {
+int verif_file_extension(char *file_path, const char *extension) {
+    if (file_path == NULL) {
         return 0;
     }
-    char *trimmed = strltrim(dtd_file, '.');
+    char *trimmed = strltrim(file_path, '.');
     char *bname = basename(trimmed);
     char *verif = strrchr(bname, '.');
+
     if (!verif || verif == bname) {
+        printf("File '%s' don't have extension !\n", bname);
         free(trimmed);
-        printf("Wrong file extension !\n");
         return 0;
     }
 
-    int return_code = !strcmp(verif + 1, "dtd");
-    free(trimmed);
+    int return_code = !strcmp(verif + 1, extension);
     if (!return_code) {
-        printf("Wrong file extension !\n");
+        printf("Wrong file extension, expected '%s' but founded '%s' !\n", extension, (verif + 1));
     }
+    free(trimmed);
     return return_code;
 }
 
