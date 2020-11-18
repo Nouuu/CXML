@@ -23,7 +23,6 @@ int main(int argc, char **argv) {
         printf("%s", argv[2]);
     } else {
 //        argv = menu();
-// HERE
         menu((char **) argv[1], (char **) argv[2]);
     }
 
@@ -65,6 +64,7 @@ int menu(char **xmlpath, char **dtdpath) {
     // Segmentation Fault ici
     (*dtdpath) = trimmed_dtd_path;
     // --------------------------------------------------------------------------
+/*
 
     do {
         printf("Enter xml path :\n");
@@ -116,21 +116,6 @@ int verif_file_extension(char *file_path, const char *extension) {
     return return_code;
 }
 
-int verif_xml(char *xml_file) {
-    if (xml_file == NULL) {
-        return 0;
-    }
-    char *bname = basename(xml_file);
-    char *verif = strrchr(bname, '.');
-    if (!verif || verif == bname) {
-        return 0;
-    }
-    strcmp(verif + 1, "xml") == 0;
-}
-
-int endFunc(int code, char *buffer) {
-    if (buffer != NULL) {
-        free(buffer);
-    }
-    return code;
+int file_exist(char *file_path) {
+    return 0;
 }
