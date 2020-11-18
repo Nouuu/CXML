@@ -15,18 +15,27 @@ int verif_file_extension(char *file_path, const char *extension);
 
 int file_exist(char *file_path);
 
-int endFunc(int code, char *buffer);
+int check_file_exist_and_extension(char *trimmed_file_path, const char *extension);
+
+char *get_user_input_trimmed_file_path();
 
 int main(int argc, char **argv) {
+    char *xml_file_path = NULL;
+    char *dtd_file_path = NULL;
+
     if (argc == 3) {
-        printf("%s", argv[1]);
-        printf("%s", argv[2]);
-    } else {
-//        argv = menu();
-        menu((char **) argv[1], (char **) argv[2]);
+        printf("Given arguments\n");
+        printf("\txml : %s\n", argv[1]);
+        printf("\tdtd : %s\n", argv[2]);
+        xml_file_path = strdup(argv[1]);
+        dtd_file_path = strdup(argv[2]);
     }
 
-    printf("%s", *argv);
+    while (!menu(&xml_file_path, &dtd_file_path));
+
+    printf("Here should be final and valid path :\n");
+    printf("\txml : %s\n", xml_file_path);
+    printf("\tdtd : %s\n", dtd_file_path);
     return 0;
 }
 
@@ -94,17 +103,16 @@ int menu(char **xmlpath, char **dtdpath) {
     return 1;
 }
 
-int verif_file_extension(char *file_path, const char *extension) {
-    if (file_path == NULL) {
+int verif_file_extension(char *trimmed_file_path, const char *extension) {
+    printf("Tesing '%' extension... Should be '%s'", trimmed_file_path, extension);
+    if (trimmed_file_path == NULL) {
         return 0;
     }
-    char *trimmed = strltrim(file_path, '.');
-    char *bname = basename(trimmed);
+    char *bname = basename(trimmed_file_path);
     char *verif = strrchr(bname, '.');
 
     if (!verif || verif == bname) {
         printf("File '%s' don't have extension !\n", bname);
-        free(trimmed);
         return 0;
     }
 
@@ -112,10 +120,9 @@ int verif_file_extension(char *file_path, const char *extension) {
     if (!return_code) {
         printf("Wrong file extension, expected '%s' but founded '%s' !\n", extension, (verif + 1));
     }
-    free(trimmed);
     return return_code;
 }
 
-int file_exist(char *file_path) {
+char *get_user_input_trimmed_file_path() {
     return 0;
 }
