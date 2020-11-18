@@ -40,6 +40,7 @@ struct dtd_rule_s {
 };
 
 struct attribute_node_s {
+    char *rule_type;
     char *element_name;
     char *attribute_name;
     char *attribute_type;
@@ -50,6 +51,8 @@ struct attribute_node_s {
 int carret_open(dtd_document **document, size_t size, size_t *current_i, char **current_char);
 
 int element_node_parse(dtd_document **document, size_t size, size_t *current_i, char **current_char);
+
+int attribut_node_parse(dtd_document **document, size_t size, size_t *current_i, char **current_char);
 
 int doctype_process(dtd_document **document, size_t size);
 
