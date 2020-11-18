@@ -1,46 +1,8 @@
 //
-// Created by audre on 15/11/2020.
+// Created by Unknow on 18/11/2020.
 //
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <libgen.h>
-#include <ctype.h>
-#include "functions/str_tools.h"
-
-int menu(char **xml_path, char **dtd_path);
-
-int verif_file_extension(char *trimmed_file_path, const char *extension);
-
-int file_exist(char *trimmed_file_path);
-
-int check_file_exist_and_extension(char *trimmed_file_path, const char *extension);
-
-char *get_user_input_trimmed_file_path();
-
-int main(int argc, char **argv) {
-    char *xml_file_path = NULL;
-    char *dtd_file_path = NULL;
-
-    if (argc == 3) {
-        printf("Given arguments\n");
-        printf("\txml : %s\n", argv[1]);
-        printf("\tdtd : %s\n", argv[2]);
-        xml_file_path = strdup(argv[1]);
-        dtd_file_path = strdup(argv[2]);
-    }
-
-    menu(&xml_file_path, &dtd_file_path);
-
-    printf("Here should be final and valid path :\n");
-    printf("\txml : %s\n", xml_file_path);
-    printf("\tdtd : %s\n", dtd_file_path);
-
-    free(xml_file_path);
-    free(dtd_file_path);
-    return 0;
-}
+#include "cli_menu.h"
 
 int menu(char **xml_path, char **dtd_path) {
 
@@ -103,7 +65,16 @@ int verif_file_extension(char *trimmed_file_path, const char *extension) {
         return 0;
     }
 
-    printf("Testing '%s' file extension... Should be '%s'\n", trimmed_file_path, extension);
+    printf("Testing '");
+    change_console_color(blue);
+    printf("%s", trimmed_file_path);
+    reset_console_color();
+    printf("' file extension... Should be '");
+    change_console_color(green);
+    printf("%s", extension);
+    reset_console_color();
+    printf("'\n");
+
     if (trimmed_file_path == NULL) {
         return 0;
     }
@@ -111,13 +82,21 @@ int verif_file_extension(char *trimmed_file_path, const char *extension) {
     char *verif = strrchr(bname, '.');
 
     if (!verif || verif == bname) {
-        printf("File '%s' don't have extension !\n", bname);
+        change_console_color(red);
+        printf("File '%s' don't have extension !\n\n", bname);
+        reset_console_color();
         return 0;
     }
 
     int return_code = !strcmp(verif + 1, extension);
     if (!return_code) {
-        printf("Wrong file extension, expected '%s' but founded '%s' !\n", extension, (verif + 1));
+        change_console_color(red);
+        printf("Wrong file extension, expected '%s' but founded '%s' !\n\n", extension, (verif + 1));
+        reset_console_color();
+    } else {
+        change_console_color(green);
+        printf("Extension is valid !\n\n");
+        reset_console_color();
     }
     return return_code;
 }
@@ -127,15 +106,24 @@ int file_exist(char *trimmed_file_path) {
         return 0;
     }
 
-    printf("Testing if '%s' exists...\n", trimmed_file_path);
+    printf("Testing if '");
+    change_console_color(blue);
+    printf("%s", trimmed_file_path);
+    reset_console_color();
+    printf("' exists...\n");
 
     FILE *fp_dtd = fopen(trimmed_file_path, "r");
     if (!fp_dtd) {
-        printf("File don't exist !\n");
+        change_console_color(red);
+        printf("File don't exist !\n\n");
+        reset_console_color();
         return 0;
     }
-    printf("File exists !\n");
+
+    change_console_color(green);
+    printf("File exists !\n\n");
+    reset_console_color();
+
     fclose(fp_dtd);
     return 1;
 }
-
