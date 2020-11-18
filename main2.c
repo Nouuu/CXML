@@ -9,7 +9,7 @@
 #include <ctype.h>
 #include "functions/str_tools.h"
 
-int menu(char **xmlpath, char **dtdpath);
+int menu(char **xml_path, char **dtd_path);
 
 int verif_file_extension(char *trimmed_file_path, const char *extension);
 
@@ -131,7 +131,11 @@ int check_file_exist_and_extension(char *trimmed_file_path, const char *extensio
 }
 
 int verif_file_extension(char *trimmed_file_path, const char *extension) {
-    printf("Tesing '%' extension... Should be '%s'", trimmed_file_path, extension);
+    if (!trimmed_file_path) {
+        return 0;
+    }
+
+    printf("Testing '%s' file extension... Should be '%s'\n", trimmed_file_path, extension);
     if (trimmed_file_path == NULL) {
         return 0;
     }
@@ -151,6 +155,10 @@ int verif_file_extension(char *trimmed_file_path, const char *extension) {
 }
 
 int file_exist(char *trimmed_file_path) {
+    if (!trimmed_file_path) {
+        return 0;
+    }
+
     printf("Testing if '%s' exists...\n", trimmed_file_path);
 
     FILE *fp_dtd = fopen(trimmed_file_path, "r");
