@@ -103,6 +103,30 @@ int menu(char **xmlpath, char **dtdpath) {
     return 1;
 }
 
+char *get_user_input_trimmed_file_path() {
+    char *buffer = calloc(sizeof(char), 501);
+
+    fflush(stdin);
+    fgets(buffer, 500, stdin);
+
+    //remove end '\n' from user input
+    char *return_char = strchr(buffer, '\n');
+    if (return_char) {
+        *return_char = '\0';
+    } else {
+        buffer[500] = '\0';
+    }
+
+    char *trimmed_string = strtrim_space(buffer);
+    free(buffer);
+    return trimmed_string;
+}
+
+int check_file_exist_and_extension(char *trimmed_file_path, const char *extension) {
+    return verif_file_extension(trimmed_file_path, extension)
+           && file_exist(trimmed_file_path);
+}
+
 int verif_file_extension(char *trimmed_file_path, const char *extension) {
     printf("Tesing '%' extension... Should be '%s'", trimmed_file_path, extension);
     if (trimmed_file_path == NULL) {
@@ -123,25 +147,6 @@ int verif_file_extension(char *trimmed_file_path, const char *extension) {
     return return_code;
 }
 
-char *get_user_input_trimmed_file_path() {
-    char *buffer = calloc(sizeof(char), 501);
-
-    fflush(stdin);
-    fgets(buffer, 500, stdin);
-
-    //remove end '\n' from user input
-    char *return_char = strchr(buffer, '\n');
-    if (return_char) {
-        *return_char = '\0';
-    } else {
-        buffer[500] = '\0';
-    }
-
-    char *trimmed_string = strtrim_space(buffer);
-    free(buffer);
-    return trimmed_string;
-}
-
 int file_exist(char *trimmed_file_path) {
     printf("Testing if '%s' exists...\n", trimmed_file_path);
 
@@ -154,3 +159,4 @@ int file_exist(char *trimmed_file_path) {
     fclose(fp_dtd);
     return 1;
 }
+
