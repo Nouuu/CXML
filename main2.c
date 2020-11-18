@@ -54,7 +54,7 @@ int menu(char **xmlpath, char **dtdpath) {
     char *trimmed_dtd_path = strtrim_space(buffer);
 
     FILE *fp_dtd = fopen(trimmed_dtd_path, "r");
-    if (!fp_dtd){
+    if (!fp_dtd) {
         printf("Le fichier dtd demandé n'existe pas !");
         return 0;
     }
@@ -80,14 +80,14 @@ int menu(char **xmlpath, char **dtdpath) {
     char *trimmed_xml_path = strtrim_space(buffer);
 
     FILE *fp_xml = fopen(trimmed_xml_path, "r");
-    if(!fp_xml) {
+    if (!fp_xml) {
         printf("Le fichier xml demandé n'existe pas !");
         return 0;
     }
     printf("Le fichier xml demandé existe !");
     fclose(fp_xml);
 
-    (*xmlpath) = trimmed_xml_path;
+    *xmlpath = trimmed_xml_path;
 
     return 1;
 }
@@ -101,11 +101,15 @@ int verif_dtd(char *dtd_file) {
     char *verif = strrchr(bname, '.');
     if (!verif || verif == bname) {
         free(trimmed);
+        printf("Wrong file extension !\n");
         return 0;
     }
 
     int return_code = !strcmp(verif + 1, "dtd");
     free(trimmed);
+    if (!return_code) {
+        printf("Wrong file extension !\n");
+    }
     return return_code;
 }
 
