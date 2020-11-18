@@ -112,8 +112,8 @@ int file_exist(char *trimmed_file_path) {
     reset_console_color();
     printf("' exists...\n");
 
-    FILE *fp_dtd = fopen(trimmed_file_path, "r");
-    if (!fp_dtd) {
+    FILE *fp = fopen(trimmed_file_path, "r");
+    if (!fp) {
         change_console_color(red);
         printf("File don't exist !\n\n");
         reset_console_color();
@@ -124,6 +124,6 @@ int file_exist(char *trimmed_file_path) {
     printf("File exists !\n\n");
     reset_console_color();
 
-    fclose(fp_dtd);
+    fclose(fp);
     return 1;
 }
