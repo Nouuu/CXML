@@ -23,6 +23,7 @@ int main(int argc, char **argv) {
         printf("%s", argv[2]);
     } else {
 //        argv = menu();
+// HERE
         menu((char **) argv[1], (char **) argv[2]);
     }
 
