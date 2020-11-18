@@ -317,7 +317,7 @@ int element_node_parse(dtd_document **document, size_t size, size_t *current_i, 
     int parsing_buffer_i = 0;
 
     element_node *current_element_node = init_dtd_node();
-    current_element_node->rule_type = strdup(parsing_buffer); //TODO ??
+    current_element_node->rule_type = strdup("!ELEMENT");
 
     foward_spaces(current_char, current_i);
 
@@ -411,7 +411,7 @@ int attribut_node_parse(dtd_document **document, size_t size, size_t *current_i,
     int parsing_buffer_i = 0;
 
     attribute_node *current_attribute_node = init_dtd_attribute();
-    current_attribute_node->type = strdup(parsing_buffer); //TODO !ATTLIST ???
+    current_attribute_node->type = strdup("!ATTLIST"); //TODO type ????
 
     foward_spaces(current_char, current_i);
     //Parsing element_name
@@ -470,11 +470,13 @@ int attribut_node_parse(dtd_document **document, size_t size, size_t *current_i,
             current_attribute_node->attribute_type = strdup(parsing_buffer);
         }
 
-    (*current_i)++;
-    (*current_char)++;
+    //(*current_i)++;
+    //(*current_char)++;
     foward_spaces(current_char, current_i);
     parsing_buffer_i = 0;
 
+
+    //Parsing Attribut option
     if(**current_char == '#') {
         parsing_buffer[parsing_buffer_i] = **current_char;
         parsing_buffer_i++;
@@ -486,15 +488,16 @@ int attribut_node_parse(dtd_document **document, size_t size, size_t *current_i,
             (*current_i)++;
             (*current_char)++;
         }
-    }else{ /*sprintf(message_buffer, "Error at %s node for %s node, the attribute value must start with '#'",
-                   current_attribute_node->att, current_attribute_node->attribute_option);
+        parsing_buffer[parsing_buffer_i] = '\0';
+        current_attribute_node->attribute_option = strdup(parsing_buffer);
+    }else{
+        sprintf(message_buffer, "Error at %s node for %s node, the attribute value must start with '#'",
+                   current_attribute_node->attribute_option, current_attribute_node->attribute_option);
         logIt(message_buffer, 1);
         return 0;
-        */
-    printf("NON");
+
     }
-    parsing_buffer[parsing_buffer_i] = '\0';
-    current_attribute_node->attribute_option = strdup(parsing_buffer);
+
 
     add_dtd_node_attribute_at_end(&(*document)->first_attribute_node,current_attribute_node);
 
