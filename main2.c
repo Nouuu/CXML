@@ -42,67 +42,35 @@ int main(int argc, char **argv) {
     return 0;
 }
 
-int menu(char **xmlpath, char **dtdpath) {
+int menu(char **xml_path, char **dtd_path) {
 
-    char *buffer = malloc(sizeof(char) * 256);
-
-// https://www.dummies.com/programming/c/how-to-use-the-fgets-function-for-text-input-in-c-programming/
-// https://www.tutorialspoint.com/c_standard_library/c_function_fgets.htm
-// https://linux.die.net/man/3/fgets
-
-    printf("You did not put files in args so please provide it: \n");
-    do {
-        printf("Enter dtd path :\n");
-        fflush(stdin);
-        fgets(buffer, 255, stdin);
-        char *return_char = strchr(buffer, '\n');
-        if (return_char) {
-            *return_char = '\0';
-        } else {
-            buffer[255] = '\0';
-        }
-    } while (!verif_file_extension(buffer, "dtd"));
-
-    char *trimmed_dtd_path = strtrim_space(buffer);
-
-    FILE *fp_dtd = fopen(trimmed_dtd_path, "r");
-    if (!fp_dtd) {
-        printf("Le fichier dtd demandé n'existe pas !");
-        return 0;
+    char *temp = *xml_path;
+    *xml_path = strtrim_space(*xml_path);
+    if (temp) {
+        free(temp);
     }
-    printf("Le fichier dtd demandé existe !");
-    fclose(fp_dtd);
-
-    // Segmentation Fault ici
-    (*dtdpath) = trimmed_dtd_path;
-    // --------------------------------------------------------------------------
-/*
-
-    do {
-        printf("Enter xml path :\n");
-        fflush(stdin);
-        fgets(buffer, 255, stdin);
-        char *return_char = strchr(buffer, '\n');
-        if (return_char) {
-            *return_char = '\0';
-        } else {
-            buffer[255] = '\0';
-        }
-    } while (!verif_xml(buffer));
-
-    char *trimmed_xml_path = strtrim_space(buffer);
-
-    FILE *fp_xml = fopen(trimmed_xml_path, "r");
-    if (!fp_xml) {
-        printf("Le fichier xml demandé n'existe pas !");
-        return 0;
+    temp = *dtd_path;
+    *dtd_path = strtrim_space(*dtd_path);
+    if (temp) {
+        free(temp);
     }
-    printf("Le fichier xml demandé existe !");
-    fclose(fp_xml);
 
-    *xmlpath = trimmed_xml_path;
+    while (!check_file_exist_and_extension(*xml_path, "xml")) {
+        printf("Please enter xml file path (relative or absolute) :\n");
+        if (*xml_path) {
+            free(*xml_path);
+        }
+        *xml_path = get_user_input_trimmed_file_path();
+    }
 
-*/
+    while (!check_file_exist_and_extension(*dtd_path, "dtd")) {
+        printf("Please enter dtd file path (relative or absolute) :\n");
+        if (*dtd_path) {
+            free(*dtd_path);
+        }
+        *dtd_path = get_user_input_trimmed_file_path();
+    }
+
     return 1;
 }
 
