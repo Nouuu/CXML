@@ -31,11 +31,14 @@ int main(int argc, char **argv) {
         dtd_file_path = strdup(argv[2]);
     }
 
-    while (!menu(&xml_file_path, &dtd_file_path));
+    menu(&xml_file_path, &dtd_file_path);
 
     printf("Here should be final and valid path :\n");
     printf("\txml : %s\n", xml_file_path);
     printf("\tdtd : %s\n", dtd_file_path);
+
+    free(xml_file_path);
+    free(dtd_file_path);
     return 0;
 }
 
