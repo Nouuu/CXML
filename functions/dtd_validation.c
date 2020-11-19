@@ -187,6 +187,7 @@ int validate_current_xml_node_dtd_element_current_rule(
 }
 
 int validate_current_xml_node_dtd_attribute_rule(attribute_node *current_dtd_node, xml_node *current_xml_node) {
+
     xml_attribute *attribute = get_node_attribute(current_dtd_node->attribute_name, current_xml_node);
 
     //Vérifie si l'attribue n'est pas présent et si il était obligatoire
@@ -206,7 +207,13 @@ int validate_current_xml_node_dtd_attribute_rule(attribute_node *current_dtd_nod
         printf("TODO (a | b | c) !\n");
         return TRUE;
     } else if (!strcmp(current_dtd_node->attribute_type, "CDATA")) {
-        printf("TODO CDATA !\n");
+
+        if (strlen(attribute->value) == 0) {
+            sprintf(message, "DTD Rule error - attribute '%s' on '%s' node should be CDATA but look empty",
+                    current_dtd_node->attribute_name, current_dtd_node->element_name);
+            logIt(message, 1);
+            return FALSE;
+        }
         return TRUE;
 
         //TODO juste vérifier que c'est po vide
