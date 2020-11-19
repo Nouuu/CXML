@@ -69,15 +69,47 @@ int validate_dtd_element(element_node *current_dtd_node, xml_document *xmlDocume
         xml_node *current_xml_node = current_xml_node_list->data[i];
 
         if (!validate_current_xml_node_dtd_element_rules(current_dtd_node, current_xml_node)) {
+
             return FALSE;
         }
     }
+    free(current_xml_node_list);
     return TRUE;
 }
 
 int validate_dtd_attributes(dtd_document *dtdDocument, xml_document *xmlDocument) {
-    //TODO validate attlist
-    return 1;
+
+    attribute_node *current_dtd_node = dtdDocument->first_attribute_node;
+    while (current_dtd_node != NULL) {
+        if (!validate_dtd_attlist(current_dtd_node, xmlDocument)) {
+            return FALSE;
+        }
+
+        current_dtd_node = current_dtd_node->next;
+    }
+    return TRUE;
+}
+
+int validate_dtd_attlist(attribute_node *current_dtd_node, xml_document *xmlDocument) {
+    xml_node_list *current_xml_node_list = get_nodes(current_dtd_node->element_name, xmlDocument);
+
+    if (!strcmp(current_dtd_node->attribute_type, "ID")) {
+        //TODO construire une méthode qui va récupérer tout les att, vérifier le #REQUIRED si un manquant
+        // recherche doublon sur la liste att
+        printf("TODO ID !\n");
+        return TRUE;
+    } else {
+        for (int i = 0; i < current_xml_node_list->size; ++i) {
+            xml_node *current_xml_node = current_xml_node_list->data[i];
+
+            if (!validate_current_xml_node_dtd_attribute_rule(current_dtd_node, current_xml_node)) {
+                return FALSE;
+            }
+        }
+    }
+
+    free(current_xml_node_list);
+    return TRUE;
 }
 
 int validate_current_xml_node_dtd_element_rules(element_node *current_dtd_node, xml_node *current_xml_node) {
@@ -151,6 +183,35 @@ int validate_current_xml_node_dtd_element_current_rule(
             }
         }
     }
+    return TRUE;
+}
+
+int validate_current_xml_node_dtd_attribute_rule(attribute_node *current_dtd_node, xml_node *current_xml_node) {
+    xml_attribute *attribute = get_node_attribute(current_dtd_node->attribute_name, current_xml_node);
+
+    //Vérifie si l'attribue n'est pas présent et si il était obligatoire
+    if (attribute == NULL) {
+        if (!strcmp(current_dtd_node->attribute_option, "#REQUIRED")) {
+            sprintf(message, "DTD Rule error - attribute '%s' is required on '%s' node",
+                    current_dtd_node->attribute_name, current_dtd_node->element_name);
+            logIt(message, 1);
+            return FALSE;
+        }
+        return TRUE;
+    }
+
+    if (current_dtd_node->attribute_type[0] == '(') {
+        // PIPE (h | f | m) TODO construire une méthode qui transforme ça en liste **str avec une size
+
+        printf("TODO (a | b | c) !\n");
+        return TRUE;
+    } else if (!strcmp(current_dtd_node->attribute_type, "CDATA")) {
+        printf("TODO CDATA !\n");
+        return TRUE;
+
+        //TODO juste vérifier que c'est po vide
+    }
+
     return TRUE;
 }
 

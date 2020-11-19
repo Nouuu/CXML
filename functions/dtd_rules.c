@@ -40,8 +40,8 @@ xml_attribute *get_node_attribute(const char *attribute_name, xml_node *xmlNode)
             return &xmlNode->attribute_list.data[i];
         }
     }
-    sprintf(message, "%s node not have |%s| key", xmlNode->tag, attribute_name);
-    logIt(message, 1);
+//    sprintf(message, "%s node not have |%s| key", xmlNode->tag, attribute_name);
+//    logIt(message, 1);
     return NULL;
 }
 
