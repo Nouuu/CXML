@@ -94,10 +94,7 @@ int validate_dtd_attlist(attribute_node *current_dtd_node, xml_document *xmlDocu
     xml_node_list *current_xml_node_list = get_nodes(current_dtd_node->element_name, xmlDocument);
 
     if (!strcmp(current_dtd_node->attribute_type, "ID")) {
-        //TODO construire une méthode qui va récupérer tout les att, vérifier le #REQUIRED si un manquant
-        // recherche doublon sur la liste att
-        printf("TODO ID !\n");
-        return TRUE;
+        return validate_attribute_id_rule(current_xml_node_list, current_dtd_node);
     } else {
         for (int i = 0; i < current_xml_node_list->size; ++i) {
             xml_node *current_xml_node = current_xml_node_list->data[i];
@@ -202,11 +199,9 @@ int validate_current_xml_node_dtd_attribute_rule(attribute_node *current_dtd_nod
     }
 
     if (current_dtd_node->attribute_type[0] == '(') {
-        // PIPE (h | f | m) TODO construire une méthode qui transforme ça en liste **str avec une size
-        if (!validate_attribute_rule_pipe(attribute, current_dtd_node->attribute_type)) {
+        if (!validate_attribute_pipe_rule(attribute, current_dtd_node->attribute_type)) {
             return FALSE;
         }
-        printf("TODO (a | b | c) !\n");
         return TRUE;
     } else if (!strcmp(current_dtd_node->attribute_type, "CDATA")) {
 
@@ -222,13 +217,13 @@ int validate_current_xml_node_dtd_attribute_rule(attribute_node *current_dtd_nod
     return TRUE;
 }
 
-int validate_attribute_rule_pipe(xml_attribute *attribute, char *attribute_authorized_values){
+int validate_attribute_pipe_rule(xml_attribute *attribute, char *attribute_authorized_values) {
     char *parsing_buffer = calloc(sizeof(char), 200);
     int parsing_buffer_i;
     //Step 1, count elements
     int size = 1;
     char *current_char = attribute_authorized_values;
-    while ((current_char = strchr(current_char,'|'))) {
+    while ((current_char = strchr(current_char, '|'))) {
         current_char++;
         size++;
     }
@@ -275,6 +270,49 @@ int validate_attribute_rule_pipe(xml_attribute *attribute, char *attribute_autho
                 attribute->key, attribute_authorized_values, attribute->value);
         logIt(message, 1);
         return FALSE;
+    }
+    return TRUE;
+}
+
+int validate_attribute_id_rule(xml_node_list *current_xml_node_list, attribute_node *current_dtd_node) {
+    xml_attribute *current_attribute = NULL;
+    xml_attribute *previous_attribute = NULL;
+
+    for (int i = 0; i < current_xml_node_list->size - 1; ++i) {
+        previous_attribute = get_node_attribute(current_dtd_node->attribute_name, current_xml_node_list->data[i]);
+        if (previous_attribute == NULL) {
+            if (strcmp(current_dtd_node->attribute_option, "#IMPLIED") != 0) {
+                sprintf(message, "DTD Rule error - attribute '%s' on node '%s' is required",
+                        current_dtd_node->attribute_name, current_xml_node_list->data[i]->tag);
+                logIt(message, 1);
+                return FALSE;
+            } else {
+                continue;
+            }
+        }
+
+        for (int j = i + 1; j < current_xml_node_list->size; ++j) {
+            current_attribute = get_node_attribute(current_dtd_node->attribute_name,
+                                                   current_xml_node_list->data[j]);
+            if (current_attribute == NULL) {
+                if (strcmp(current_dtd_node->attribute_option, "#IMPLIED") != 0) {
+                    sprintf(message, "DTD Rule error - attribute '%s' on node '%s' is required",
+                            current_dtd_node->attribute_name, current_xml_node_list->data[j]->tag);
+                    logIt(message, 1);
+                    return FALSE;
+                } else {
+                    continue;
+                }
+            }
+            if (!strcmp(previous_attribute->value, current_attribute->value)) {
+                sprintf(message,
+                        "DTD Rule error - attribute '%s' on node '%s' must be ID but you have duplicate value : '%s'",
+                        current_dtd_node->attribute_name, current_xml_node_list->data[j]->tag,
+                        current_attribute->value);
+                logIt(message, 1);
+                return FALSE;
+            }
+        }
     }
     return TRUE;
 }
@@ -338,8 +376,9 @@ int validate_optionnal_child_rule(dtd_rule *current_rule, xml_node *current_xml_
     return TRUE;
 }
 
-int validate_required_children_rule(element_node *current_dtd_node, dtd_rule *current_rule, xml_node *current_xml_node,
-                                    char *previous_rule_sep, char *previous_rule_result, int *j) {
+int
+validate_required_children_rule(element_node *current_dtd_node, dtd_rule *current_rule, xml_node *current_xml_node,
+                                char *previous_rule_sep, char *previous_rule_result, int *j) {
     if (*j >= current_xml_node->children.size) {
         sprintf(message, "DTD Rule error - '%s%c' rule for '%s' element is out of range",
                 current_rule->rule_name, current_rule->rule_spec,
