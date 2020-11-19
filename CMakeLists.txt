@@ -26,7 +26,7 @@ add_executable(CXML_menu main2.c
         functions/dtd_validation.c)
 
 
-add_executable(CXML_1_V2.5 part_1/main.c
+add_executable(CXML_2_V1.0 main_release_cli.c
         functions/log.c
         functions/dtd_parser.c
         functions/dtd_rules.c
