@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+
+<encyclopedie>
+    <personne datenaissance="1942-01-08" sexe="H">
+        <nom>HAWKING</nom>
+        <prenom>Stephen</prenom>
+        <publication>Une brève histoire du temps</publication>
+    </personne>
+    <personne datenaissance="1932-07-13" sexe="H">
+        <nom>REEVES</nom>
+        <prenom>Hubert</prenom>
+        <publication>L'Univers expliqué à mes petits-enfants</publication>
+        <publication>Patience dans l'azur, L'évolution cosmique</publication>
+        <publication>Poussières d'étoiles</publication>
+    </personne>
+    <personne datenaissance="1879-03-14" sexe="H">
+        <nom>EINSTEN</nom>
+        <prenom>Albert</prenom>
+        <publication>Des ondes gravitationnelles</publication>
+        <publication>Sur la théorie quantique du rayonnement</publication>
+    </personne>
+    <personne datenaissance="1867-11-07" sexe="F">
+        <nom>CURIE</nom>
+        <prenom>Marie</prenom>
+        <publication>traité de radioactivité</publication>
+    </personne>
+</encyclopedie>
