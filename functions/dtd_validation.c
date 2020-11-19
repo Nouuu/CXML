@@ -203,7 +203,9 @@ int validate_current_xml_node_dtd_attribute_rule(attribute_node *current_dtd_nod
 
     if (current_dtd_node->attribute_type[0] == '(') {
         // PIPE (h | f | m) TODO construire une méthode qui transforme ça en liste **str avec une size
-
+        if (!validate_attribute_rule_pipe(attribute, current_dtd_node->attribute_type)) {
+            return FALSE;
+        }
         printf("TODO (a | b | c) !\n");
         return TRUE;
     } else if (!strcmp(current_dtd_node->attribute_type, "CDATA")) {
@@ -215,10 +217,65 @@ int validate_current_xml_node_dtd_attribute_rule(attribute_node *current_dtd_nod
             return FALSE;
         }
         return TRUE;
-
-        //TODO juste vérifier que c'est po vide
     }
 
+    return TRUE;
+}
+
+int validate_attribute_rule_pipe(xml_attribute *attribute, char *attribute_authorized_values){
+    char *parsing_buffer = calloc(sizeof(char), 200);
+    int parsing_buffer_i;
+    //Step 1, count elements
+    int size = 1;
+    char *current_char = attribute_authorized_values;
+    while ((current_char = strchr(current_char,'|'))) {
+        current_char++;
+        size++;
+    }
+
+    //Step 2, build strlist
+    char **str_list = calloc(sizeof(char *), size);
+    current_char = attribute_authorized_values;
+    current_char++;
+    for (int i = 0; i < size; ++i) {
+        parsing_buffer_i = 0;
+        while (isspace(*current_char)) {
+            current_char++;
+        }
+        while (*current_char != '|' && *current_char != ')') {
+            parsing_buffer[parsing_buffer_i] = *current_char;
+            parsing_buffer_i++;
+            current_char++;
+        }
+        parsing_buffer[parsing_buffer_i] = '\0';
+        str_list[i] = strtrim_space(parsing_buffer);
+
+        if (*current_char == '|') {
+            current_char++;
+        }
+    }
+    free(parsing_buffer);
+
+    //Step 3, check if attribute contain at least one of these value
+    int founded = 0;
+    for (int i = 0; i < size; ++i) {
+        if (!strcmp(attribute->value, str_list[i])) {
+            founded = 1;
+            break;
+        }
+    }
+
+    for (int i = 0; i < size; ++i) {
+        free(str_list[i]);
+    }
+    free(str_list);
+
+    if (!founded) {
+        sprintf(message, "DTD Rule error - Attribute '%s' must have one of theses values %s, but have %s",
+                attribute->key, attribute_authorized_values, attribute->value);
+        logIt(message, 1);
+        return FALSE;
+    }
     return TRUE;
 }
 

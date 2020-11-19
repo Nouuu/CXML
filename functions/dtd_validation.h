@@ -15,6 +15,7 @@
 #include "dtd_rules.h"
 #include "dtd_parser.h"
 #include "log.h"
+#include "str_tools.h"
 
 static char message[500] = {0};
 
@@ -53,5 +54,6 @@ int validate_required_children_rule(element_node *current_dtd_node, dtd_rule *cu
 int validate_optionnal_children_rule(dtd_rule *current_rule, xml_node *current_xml_node, char *previous_rule_sep,
                                      char *previous_rule_result, int *j);
 
+int validate_attribute_rule_pipe(xml_attribute *attribute, char *attribute_authorized_values);
 
 #endif //CXML_DTD_VALIDATION_H
