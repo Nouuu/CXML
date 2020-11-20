@@ -3,6 +3,7 @@
 //
 
 #include "dtd_parser.h"
+#include "str_tools.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -449,8 +450,6 @@ int attribut_node_parse(dtd_document **document, size_t size, size_t *current_i,
     //Parsing attribute_type
     if (**current_char == '(') {
         // Parsing attribute_type with option
-/*        (*current_i)++;
-        (*current_char)++;*/
         while (**current_char != ')') {
             parsing_buffer[parsing_buffer_i] = **current_char;
             parsing_buffer_i++;
@@ -463,7 +462,35 @@ int attribut_node_parse(dtd_document **document, size_t size, size_t *current_i,
         (*current_char)++;
 
         parsing_buffer[parsing_buffer_i] = '\0';
-        current_attribute_node->attribute_type = strdup(parsing_buffer);
+        //TODO TEST : "()"
+        if(strlen(parsing_buffer) <= 2){
+            sprintf(message_buffer,
+                    "Error at %s node for %s node, it can't be empty",
+                    current_attribute_node->rule_type, current_attribute_node->attribute_type);
+            logIt(message_buffer, 1);
+            return 0;
+        }
+        //TODO TEST : "(   )"
+        char *trim_parsing_buffer = strdup(parsing_buffer);
+        int count = 0;
+        for (int i = 0; trim_parsing_buffer[i]; i++)
+            if (trim_parsing_buffer[i] != ' ')
+                trim_parsing_buffer[count++] = trim_parsing_buffer[i];
+        trim_parsing_buffer[count] = '\0';
+        if(strlen(trim_parsing_buffer) <= 2){
+            sprintf(message_buffer,
+                    "Error at %s node for %s node, it can't be empty",
+                    current_attribute_node->rule_type, current_attribute_node->attribute_type);
+            logIt(message_buffer, 1);
+            return 0;
+        }
+
+        //TODO TEST : "( H |  )"
+        //TODO TEST : "( H abc | F )"
+            current_attribute_node->attribute_type = strdup(parsing_buffer);
+
+
+
     } else {
         // Parsing attribute_type without option
         while (!isspace(**current_char)) {
@@ -564,3 +591,4 @@ int is_delim(char c) {
 int is_node_spec(char c) {
     return c == '+' || c == '*' || c == '?';
 }
+

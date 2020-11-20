@@ -90,4 +90,7 @@ int is_delim(char c);
 
 int is_node_spec(char c);
 
+
+
+
 #endif //CXML_XML_H
