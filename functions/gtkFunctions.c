@@ -50,12 +50,17 @@ void on_xmlFileChooserButton_file_set() {
 }
 
 G_MODULE_EXPORT void on_validateButton_clicked() {
-    console_clear();
-    console_writeline("Starting validation....");
+    console_writeline("--------------------------------------------------------");
+    console_writeline("Starting validation....\n");
 
-    //TODO put validate here
-
-    updateStatus("Valided !");
+    if (validate_dtd(xmlPath, dtdPath)) {
+        console_writeline("Your XML document is conform to given DTD !");
+        updateStatus("Your XML document is conform to given DTD !");
+    } else {
+        console_writeline("ERROR - Your xml document could not be valided !");
+        updateStatus("ERROR - Your xml document could not be valided !");
+    }
+    console_writeline("--------------------------------------------------------");
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

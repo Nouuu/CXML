@@ -42,11 +42,8 @@ void logIt(char *message, int error) {
         printf("[%s] %s\n", buff, message);
     }*/
     if (error) {
-#ifdef gtk_app
         console_writeline(message);
-#else
         printf("[%s] %s\n", buff, message);
-#endif
     }
     fprintf(fp, "[%s] %s\n", buff, message);
     fclose(fp);

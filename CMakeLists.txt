@@ -15,7 +15,8 @@ if (UNIX)
     set(CMAKE_EXE_LINKER_FLAGS "-Wl,-export-dynamic")
 endif (UNIX)
 
-set(required_files functions/log.c
+set(required_files
+        functions/log.c
         functions/dtd_parser.c
         functions/dtd_rules.c
         functions/xml_parser.c

@@ -8,8 +8,9 @@
 #include <gtk/gtk.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "log.h"
+#include "dtd_validation.h"
 #include "cli_menu.h"
+#include "log.h"
 
 static GtkBuilder *builder;
 

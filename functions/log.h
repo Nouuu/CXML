@@ -2,10 +2,8 @@
 // Created by Unknow on 24/10/2020.
 //
 
+
 #ifndef CXML_LOG_H
-
-#define gtk_app
-
 #define CXML_LOG_H
 
 
@@ -14,12 +12,11 @@
 #include <string.h>
 #include <time.h>
 
-#ifdef gtk_app
-#include "gtkFunctions.h"
-#endif
+//#include "gtkFunctions.h"
 
 int setLogFileName(char *filename);
 
 void logIt(char *message, int error);
 
+void console_writeline(const char *text);
 #endif //CXML_LOG_H

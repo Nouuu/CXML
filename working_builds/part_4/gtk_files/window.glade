@@ -3,41 +3,7 @@
 <interface>
   <requires lib="gtk+" version="3.20"/>
   <object class="GtkTextBuffer" id="consoleTextbuffer">
-    <property name="text" translatable="yes">bonj,our
-gdvsgv
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-tzte
-ztezt
-zt
-zet
-
-
-ztezet
-zet
-zet
-zetzte
-
-
-ztezt</property>
-  </object>
-  <object class="GtkAdjustment" id="scrollbar adjustement">
-    <property name="upper">100</property>
-    <property name="value">100</property>
-    <property name="step-increment">1</property>
-    <property name="page-increment">10</property>
+    <property name="text" translatable="yes">bonj,our</property>
   </object>
   <object class="GtkImage" id="spy">
     <property name="visible">True</property>
@@ -207,18 +173,13 @@ ztezt</property>
             <property name="height-request">350</property>
             <property name="visible">True</property>
             <property name="can-focus">True</property>
-            <property name="vadjustment">scrollbar adjustement</property>
-            <property name="vscrollbar-policy">always</property>
-            <property name="window-placement-set">False</property>
             <property name="shadow-type">in</property>
-            <property name="overlay-scrolling">False</property>
             <child>
               <object class="GtkTextView" id="consoleTextView">
                 <property name="width-request">760</property>
                 <property name="height-request">160</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
-                <property name="hscroll-policy">natural</property>
                 <property name="vscroll-policy">natural</property>
                 <property name="editable">False</property>
                 <property name="wrap-mode">word</property>
