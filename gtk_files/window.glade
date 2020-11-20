@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.38.1 -->
+<interface>
+  <requires lib="gtk+" version="3.20"/>
+  <object class="GtkTextBuffer" id="consoleTextbuffer">
+    <property name="text" translatable="yes">bonj,our</property>
+  </object>
+  <object class="GtkImage" id="spy">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="pixbuf">spy.png</property>
+  </object>
+  <object class="GtkWindow" id="window">
+    <property name="width-request">800</property>
+    <property name="height-request">500</property>
+    <property name="can-focus">False</property>
+    <property name="title" translatable="yes">CXML - Ultimate XML DTD validator</property>
+    <property name="resizable">False</property>
+    <property name="icon">CXML.png</property>
+    <child>
+      <object class="GtkFixed">
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <child>
+          <object class="GtkImage">
+            <property name="width-request">760</property>
+            <property name="height-request">100</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="pixbuf">banner.png</property>
+          </object>
+          <packing>
+            <property name="x">20</property>
+            <property name="y">20</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="spacing">20</property>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes">Choose XML file :</property>
+                <attributes>
+                  <attribute name="font-desc" value="Sans Bold 12"/>
+                  <attribute name="style" value="normal"/>
+                  <attribute name="underline" value="True"/>
+                </attributes>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkFileChooserButton" id="xmlFileChooserButton">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="create-folders">False</property>
+                <property name="title" translatable="yes">Choose file</property>
+                <property name="width-chars">15</property>
+                <signal name="file-set" handler="on_xmlFileChooserButton_file_set" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="x">20</property>
+            <property name="y">200</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="spacing">20</property>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes">Choose DTD file :</property>
+                <attributes>
+                  <attribute name="font-desc" value="Sans Bold 12"/>
+                  <attribute name="style" value="normal"/>
+                  <attribute name="underline" value="True"/>
+                </attributes>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkFileChooserButton" id="dtdFileChooserButton">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="create-folders">False</property>
+                <property name="show-hidden">True</property>
+                <property name="title" translatable="yes">Choose key</property>
+                <property name="width-chars">15</property>
+                <signal name="file-set" handler="on_dtdFileChooserButton_file_set" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="x">420</property>
+            <property name="y">200</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="height-request">50</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="spacing">20</property>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes">Status :</property>
+                <attributes>
+                  <attribute name="font-desc" value="Sans Bold 12"/>
+                  <attribute name="style" value="normal"/>
+                  <attribute name="underline" value="True"/>
+                </attributes>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="statusLabel">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="single-line-mode">True</property>
+                <property name="max-width-chars">83</property>
+                <attributes>
+                  <attribute name="font-desc" value="Sans Bold 12"/>
+                  <attribute name="foreground" value="#4e4e9a9a0606"/>
+                </attributes>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="x">20</property>
+            <property name="y">430</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkScrolledWindow">
+            <property name="width-request">760</property>
+            <property name="height-request">170</property>
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="shadow-type">in</property>
+            <child>
+              <object class="GtkTextView" id="consoleTextView">
+                <property name="width-request">760</property>
+                <property name="height-request">160</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="vscroll-policy">natural</property>
+                <property name="editable">False</property>
+                <property name="wrap-mode">word</property>
+                <property name="left-margin">5</property>
+                <property name="right-margin">5</property>
+                <property name="top-margin">5</property>
+                <property name="bottom-margin">5</property>
+                <property name="buffer">consoleTextbuffer</property>
+                <property name="input-purpose">terminal</property>
+                <property name="monospace">True</property>
+                <style>
+                  <class name="textview text {&#10;color : #8E3388;&#10;}"/>
+                </style>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="x">20</property>
+            <property name="y">250</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="validateButton">
+            <property name="label" translatable="yes">Validate document</property>
+            <property name="width-request">180</property>
+            <property name="height-request">50</property>
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+            <property name="image">spy</property>
+            <property name="always-show-image">True</property>
+            <signal name="clicked" handler="on_validateButton_clicked" swapped="no"/>
+          </object>
+          <packing>
+            <property name="x">600</property>
+            <property name="y">430</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

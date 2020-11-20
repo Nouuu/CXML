@@ -20,8 +20,8 @@ set(required_files functions/log.c
         functions/dtd_rules.c
         functions/xml_parser.c
         functions/xml_finder.c
-        tests/xml_parsing_test.c
         functions/str_tools.c
+        functions/console_color.c
         functions/dtd_validation.c)
 
 add_executable(CXML main.c
@@ -36,6 +36,7 @@ set(GTK_EXECUTABLE_NAME CXML_GTK_V1.0)
 
 add_executable(${GTK_EXECUTABLE_NAME} main_gtk.c
         functions/cli_menu.c
+        functions/gtkFunctions.c
         ${required_files})
 
 target_link_libraries(${GTK_EXECUTABLE_NAME} ${GTK3_LIBRARIES})
