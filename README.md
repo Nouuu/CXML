@@ -16,6 +16,7 @@
   * [Dependencies](#dependencies-1)
   * [Running](#running)
     + [Clion configuration](#clion-configuration)
+- [Get final executable](#get-final-executable)
 
 <!-- tocstop -->
 
