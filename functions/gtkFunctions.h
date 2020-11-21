@@ -27,6 +27,7 @@ typedef struct {
     GtkLabel *statusLabel;
     GtkTextBuffer *consoleTextBuffer;
     GtkTextView *consoleTextView;
+    GtkScrolledWindow *scrollableWindow;
 } App_widgets;
 
 
@@ -40,6 +41,8 @@ G_MODULE_EXPORT void on_xmlFileChooserButton_file_set();
 
 G_MODULE_EXPORT void on_validateButton_clicked();
 
+G_MODULE_EXPORT void on_scrollbarAdjustement_value_changed();
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void startGTK(int *argc, char ***argv, char *gladeFile);
@@ -48,7 +51,7 @@ void connectWidgets();
 
 void onDestroy();
 
-void updateStatus(const char *message);
+void updateStatus(const char *status_message, int type);
 
 void initTextBuffer();
 

@@ -2,37 +2,7 @@
 <!-- Generated with glade 3.38.1 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
-  <object class="GtkTextBuffer" id="consoleTextbuffer">
-    <property name="text" translatable="yes">bonj,our
-gdvsgv
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-tzte
-ztezt
-zt
-zet
-
-
-ztezet
-zet
-zet
-zetzte
-
-
-ztezt</property>
-  </object>
+  <object class="GtkTextBuffer" id="consoleTextbuffer"/>
   <object class="GtkAdjustment" id="scrollbarAdjustement">
     <property name="upper">100</property>
     <property name="value">100</property>
@@ -180,13 +150,13 @@ ztezt</property>
             </child>
             <child>
               <object class="GtkLabel" id="statusLabel">
+                <property name="name">label</property>
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
                 <property name="single-line-mode">True</property>
                 <property name="max-width-chars">83</property>
                 <attributes>
                   <attribute name="font-desc" value="Sans 10"/>
-                  <attribute name="foreground" value="#4e4e9a9a0606"/>
                 </attributes>
               </object>
               <packing>
@@ -202,7 +172,7 @@ ztezt</property>
           </packing>
         </child>
         <child>
-          <object class="GtkScrolledWindow">
+          <object class="GtkScrolledWindow" id="scrollableWindow">
             <property name="width-request">760</property>
             <property name="height-request">350</property>
             <property name="visible">True</property>

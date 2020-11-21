@@ -20,10 +20,10 @@ void on_dtdFileChooserButton_file_set() {
         }
         dtdPath = strdup(path);
         console_writeline("DTD file correct !");
-        updateStatus("DTD file loaded");
+        updateStatus("DTD file loaded", 1);
     } else {
         console_writeline("DTD file could not be loaded !");
-        updateStatus("DTD file incorrect !");
+        updateStatus("DTD file incorrect !", 2);
     }
     update_button_sensitive();
 }
@@ -41,10 +41,10 @@ void on_xmlFileChooserButton_file_set() {
         }
         xmlPath = strdup(path);
         console_writeline("XML file correct !");
-        updateStatus("XML file loaded");
+        updateStatus("XML file loaded", 1);
     } else {
         console_writeline("XML file could not be loaded !");
-        updateStatus("XML file incorrect !");
+        updateStatus("XML file incorrect !", 2);
     }
     update_button_sensitive();
 }
@@ -55,10 +55,10 @@ G_MODULE_EXPORT void on_validateButton_clicked() {
 
     if (validate_dtd(xmlPath, dtdPath)) {
         console_writeline("Your XML document is conform to given DTD !");
-        updateStatus("Your XML document is conform to given DTD !");
+        updateStatus("Your XML document is conform to given DTD !", 1);
     } else {
         console_writeline("ERROR - Your xml document could not be valided !");
-        updateStatus("ERROR - Your xml document could not be valided !");
+        updateStatus("ERROR - Your xml document could not be valided !", 2);
     }
     console_writeline("--------------------------------------------------------");
 }
@@ -94,17 +94,39 @@ void connectWidgets() {
     widgets->xmlFileChooserButton = GTK_FILE_CHOOSER_BUTTON(gtk_builder_get_object(builder, "xmlFileChooserButton"));
     widgets->dtdFileChooserButton = GTK_FILE_CHOOSER_BUTTON(gtk_builder_get_object(builder, "dtdFileChooserButton"));
     widgets->statusLabel = GTK_LABEL(gtk_builder_get_object(builder, "statusLabel"));
-    widgets->consoleTextBuffer = gtk_text_view_get_buffer(
-            GTK_TEXT_VIEW(gtk_builder_get_object(builder, "consoleTextView")));
     widgets->consoleTextView = GTK_TEXT_VIEW(gtk_builder_get_object(builder, "consoleTextView"));
+    widgets->consoleTextBuffer = gtk_text_view_get_buffer(widgets->consoleTextView);
+    widgets->scrollableWindow = GTK_SCROLLED_WINDOW(gtk_builder_get_object(builder, "scrollableWindow"));
 }
 
 void onDestroy() {
     gtk_main_quit();
 }
 
-void updateStatus(const char *message) {
-    gtk_label_set_text(widgets->statusLabel, message);
+void updateStatus(const char *status_message, int type) {
+    GtkCssProvider *provider = gtk_css_provider_new();
+    GtkStyleContext *context;
+    switch (type) {
+        case 1:
+            //SUCCESS color
+            gtk_css_provider_load_from_data(provider, "label { color: #00FF23;}", -1, NULL);
+            break;
+        case 2:
+            //ERROR color
+            gtk_css_provider_load_from_data(provider, "label { color: #FF0227;}", -1, NULL);
+            break;
+        default:
+            //DEFAULT color
+            gtk_css_provider_load_from_data(provider, "label { color: black;}", -1, NULL);
+            break;
+    }
+    context = gtk_widget_get_style_context(GTK_WIDGET(widgets->statusLabel));
+    gtk_style_context_add_provider(context,
+                                   GTK_STYLE_PROVIDER (provider),
+                                   GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+
+
+    gtk_label_set_text(widgets->statusLabel, status_message);
 }
 
 void initTextBuffer() {
@@ -123,7 +145,8 @@ void initTextBuffer() {
                                    GTK_STYLE_PROVIDER (provider),
                                    GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
     console_clear();
-    console_writeline("Console...");
+    console_writeline(
+            "Console...");
 }
 
 void console_clear() {
@@ -131,22 +154,26 @@ void console_clear() {
 }
 
 void console_write(const char *text) {
+    GtkAdjustment *vadjustment = gtk_scrolled_window_get_vadjustment(widgets->scrollableWindow);
 
     GtkTextIter *endIter = calloc(sizeof(GtkTextIter), 1);
     gtk_text_buffer_get_end_iter(widgets->consoleTextBuffer, endIter);
     gtk_text_buffer_insert(widgets->consoleTextBuffer, endIter, text, -1);
 
     g_free(endIter);
+
+    gtk_adjustment_clamp_page(vadjustment, 0., gtk_adjustment_get_upper(vadjustment));
+    gtk_adjustment_set_value(vadjustment, gtk_adjustment_get_upper(vadjustment));
 }
 
 void console_writeline(const char *text) {
     console_write(text);
+    console_write("\n");
 
-    GtkTextIter *endIter = calloc(sizeof(GtkTextIter), 1);
-    gtk_text_buffer_get_end_iter(widgets->consoleTextBuffer, endIter);
-    gtk_text_buffer_insert(widgets->consoleTextBuffer, endIter, "\n", -1);
-    g_free(endIter);
-
+//    GtkTextIter *endIter = calloc(sizeof(GtkTextIter), 1);
+//    gtk_text_buffer_get_end_iter(widgets->consoleTextBuffer, endIter);
+//    gtk_text_buffer_insert(widgets->consoleTextBuffer, endIter, "\n", -1);
+//    g_free(endIter);
 }
 
 void update_button_sensitive() {
