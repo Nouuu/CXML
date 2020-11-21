@@ -22,6 +22,7 @@ static char *dtdPath = NULL;
 typedef struct {
     GtkWidget *window;
     GtkButton *validateButton;
+    GtkButton *flushButton;
     GtkFileChooserButton *xmlFileChooserButton;
     GtkFileChooserButton *dtdFileChooserButton;
     GtkLabel *statusLabel;
@@ -41,7 +42,7 @@ G_MODULE_EXPORT void on_xmlFileChooserButton_file_set();
 
 G_MODULE_EXPORT void on_validateButton_clicked();
 
-G_MODULE_EXPORT void on_scrollbarAdjustement_value_changed();
+G_MODULE_EXPORT void on_flushButton_clicked();
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

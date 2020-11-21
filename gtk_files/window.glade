@@ -3,6 +3,11 @@
 <interface>
   <requires lib="gtk+" version="3.20"/>
   <object class="GtkTextBuffer" id="consoleTextbuffer"/>
+  <object class="GtkImage" id="delete">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="pixbuf">delete.png</property>
+  </object>
   <object class="GtkAdjustment" id="scrollbarAdjustement">
     <property name="upper">100</property>
     <property name="value">100</property>
@@ -174,7 +179,7 @@
         <child>
           <object class="GtkScrolledWindow" id="scrollableWindow">
             <property name="width-request">760</property>
-            <property name="height-request">350</property>
+            <property name="height-request">300</property>
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="vadjustment">scrollbarAdjustement</property>
@@ -207,7 +212,7 @@
           </object>
           <packing>
             <property name="x">20</property>
-            <property name="y">250</property>
+            <property name="y">300</property>
           </packing>
         </child>
         <child>
@@ -225,6 +230,22 @@
           <packing>
             <property name="x">600</property>
             <property name="y">630</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="flushButton">
+            <property name="width-request">30</property>
+            <property name="height-request">30</property>
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+            <property name="image">delete</property>
+            <property name="always-show-image">True</property>
+            <signal name="clicked" handler="on_flushButton_clicked" swapped="no"/>
+          </object>
+          <packing>
+            <property name="x">730</property>
+            <property name="y">260</property>
           </packing>
         </child>
       </object>

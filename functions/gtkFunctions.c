@@ -49,7 +49,7 @@ void on_xmlFileChooserButton_file_set() {
     update_button_sensitive();
 }
 
-G_MODULE_EXPORT void on_validateButton_clicked() {
+void on_validateButton_clicked() {
     console_writeline("--------------------------------------------------------");
     console_writeline("Starting validation....\n");
 
@@ -61,6 +61,10 @@ G_MODULE_EXPORT void on_validateButton_clicked() {
         updateStatus("ERROR - Your xml document could not be valided !", 2);
     }
     console_writeline("--------------------------------------------------------");
+}
+
+void on_flushButton_clicked() {
+    console_clear();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -133,7 +137,7 @@ void initTextBuffer() {
     GtkCssProvider *provider = gtk_css_provider_new();
     GtkStyleContext *context;
     gtk_css_provider_load_from_data(provider, "textview {"
-                                              " font: 15px serif;"
+                                              " font: 17px serif;"
                                               "}"
                                               "textview text {"
                                               " color: #2DFF1A;"
@@ -162,6 +166,7 @@ void console_write(const char *text) {
 
     g_free(endIter);
 
+    gtk_adjustment_set_value(vadjustment, gtk_adjustment_get_upper(vadjustment));
     gtk_adjustment_clamp_page(vadjustment, 0., gtk_adjustment_get_upper(vadjustment));
     gtk_adjustment_set_value(vadjustment, gtk_adjustment_get_upper(vadjustment));
 }
