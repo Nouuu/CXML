@@ -511,8 +511,36 @@ int attribut_node_parse(dtd_document **document, size_t size, size_t *current_i,
             logIt(message_buffer, 1);
             return 0;
         }
+
         //TODO TEST : "( H abc | F )"
-            current_attribute_node->attribute_type = strdup(parsing_buffer);
+        int index_first_cara = 0, index_last_cara = 0;
+        for (int i = 0; i < parsing_buffer_i; i+=1) {
+            if (isalpha(parsing_buffer[i])){
+                index_first_cara = i;
+                break;
+            }
+        }
+        for (int i = index_pipe; i > 0; i-=1) {
+            if (isalpha(parsing_buffer[i])){
+                index_last_cara = i;
+                break;
+            }
+        }
+        if(index_first_cara != index_last_cara){
+            for (int i = index_first_cara; i < index_last_cara; i+=1) {
+                if (isspace(parsing_buffer[i])){
+                    sprintf(message_buffer,
+                            "Error at %s node for %s node, there must be no space",
+                            current_attribute_node->rule_type, current_attribute_node->attribute_type);
+                    logIt(message_buffer, 1);
+                    return 0;
+
+                }
+            }
+        }
+
+
+        current_attribute_node->attribute_type = strdup(parsing_buffer);
 
 
 
