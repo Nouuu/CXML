@@ -6,12 +6,15 @@
 #define CXML_CLI_MENU_H
 
 #include "str_tools.h"
+#include "log.h"
 #include "console_color.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <libgen.h>
 #include <ctype.h>
+
+static char menu_message[500] = {0};
 
 int menu(char **xml_path, char **dtd_path);
 
