@@ -1,49 +1,101 @@
 # CXML
 
-XML DTD Validation written in C
-
 **Table of contents :**
 
 <!-- toc -->
 
-- [Dependencies](#dependencies)
-- [Environnement](#environnement)
-- [Setting up](#setting-up)
-- [Running](#running)
-  * [Clion configuration](#clion-configuration)
+- [Introduction](#introduction)
+  * [Features](#features)
+  * [Screenshots](#screenshots)
+  * [XML Parsing tree](#xml-parsing-tree)
+  * [DTD Parsing tree](#dtd-parsing-tree)
+- [Develop](#develop)
+  * [Dependencies](#dependencies)
+  * [Environment](#environment)
+  * [Setting up](#setting-up)
+  * [Dependencies](#dependencies-1)
+  * [Running](#running)
+    + [Clion configuration](#clion-configuration)
 
 <!-- tocstop -->
 
-# Dependencies
+# Introduction
 
-- GTK 3
+XML DTD Validation written in C with GTK interface.
 
-# Environnement
+## Features
+
+- Parse XML file and check syntax error
+- Parse external DTD file and check some of syntax error (not all)
+- Handle external DTD whit and without `!DOCTYPE`
+- Validate XML file with the given DTD file. Only `element` and `attlist` rules are handled 
+
+## Screenshots
+
+Here is some captures of the program :
+
+|      ![screen_1](https://i.imgur.com/Qsug4kI.png)      | <img src="https://i.imgur.com/6oZMooI.png" alt="screen_2" style="zoom: 40%;" /> |
+| :----------------------------------------------------: | :----------------------------------------------------------: |
+|      ![screen_3](https://i.imgur.com/1baXCRf.png)      |         ![screen_4](https://i.imgur.com/oHVqILf.png)         |
+| ![screen_5](images/README/image-20201121151645236.png) |    ![screen_4](images/README/image-20201121151805929.png)    |
+
+## XML Parsing tree
+
+Here is a visual representation of how the program is parsing xml file in our structures :
+
+![](images/README/XML Parsing Structure.png)
+
+## DTD Parsing tree
+
+Here is a visual representation of how the program is parsing dtd file in our structures :
+
+![](images/README/DTD Parsing Structure Element + Attribut.png)
+
+# Develop
+
+If you want to develop on this project, you have to setup a GTK CMAKE compatible environment.
+
+This program has been meant to be cross platform between Linux (Debian based) and Windows.
+
+## Dependencies
+
+- GTK 3 development library
+- gcc-8
+
+## Environment
 
 - **Operating system :** Linux (wsl, ubuntu or other debian based distribution)
 - **CMAKE version:** 3.16.3
 - **C Standard :** C99
 
-# Setting up
+## Setting up
 
-To install all necessary dependencies, run with root privileges
+First of all, you have to Clone the project on MAIN branch.
+
+## Dependencies 
+
+To install all necessary dependencies on Linux, run with root privileges
 
 ```bash
 install_dependencies.sh
 ```
 
-# Running
+If you are on Windows, you can follow this :baguette_bread: French guide to setup a Clion environment : https://github.com/Nouuu/GTK-Cours-et-TP
 
-Currently, you must provide XML path as argument while running program.
+## Running
 
-Example :
+If you already know how to build cmake app, then good for you ! Otherwise follow this guide : https://cmake.org/runningcmake/
 
-```bash
-./CXML xml_files/xml_example_1.xml
-```
+If you develop on Clion, you have nothing on this to do, it is already set up.
 
-## Clion configuration
+### Clion configuration
 
-You can set clion run configuration as following if you want to run it directly from IDE :
+You must set clion run configuration as following if you want to run it directly from IDE :
 
-![https://i.imgur.com/tvKE3ep.png](https://i.imgur.com/tvKE3ep.png)
+![](https://i.imgur.com/ioxzT74.png)
+
+# Get final executable
+
+You can go here to download the final release executable (both Linux and Windows) :
+
+https://github.com/Nouuu/CXML/releases
