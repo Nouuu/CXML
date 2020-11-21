@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 attribute_node *init_dtd_attribute() {
     /*
@@ -486,6 +487,30 @@ int attribut_node_parse(dtd_document **document, size_t size, size_t *current_i,
         }
 
         //TODO TEST : "( H |  )"
+        int index_pipe = 0;
+        bool cara_after_pipe = false;
+        for (int i = 0; i < parsing_buffer_i; i+=1) {
+            if (parsing_buffer[i] == '|'){
+                index_pipe = i;
+                break;
+            }
+        }
+        int i = index_pipe + 1;
+        do {
+            if(isalpha(parsing_buffer[i])){
+                cara_after_pipe = true;
+                break;
+            }
+            i+=1;
+        }while (i < strlen(parsing_buffer) );
+
+        if(!cara_after_pipe){
+            sprintf(message_buffer,
+                    "Error at %s node for %s node, need something after the '|'",
+                    current_attribute_node->rule_type, current_attribute_node->attribute_type);
+            logIt(message_buffer, 1);
+            return 0;
+        }
         //TODO TEST : "( H abc | F )"
             current_attribute_node->attribute_type = strdup(parsing_buffer);
 
