@@ -44,13 +44,13 @@ Here is some captures of the program :
 
 Here is a visual representation of how the program is parsing xml file in our structures :
 
-![](images/README/XML Parsing Structure.png)
+![](images/README/XML_Parsing_Structure.png)
 
 ## DTD Parsing tree
 
 Here is a visual representation of how the program is parsing dtd file in our structures :
 
-![](images/README/DTD Parsing Structure Element + Attribut.png)
+![](images/README/DTD_Parsing_Structure_Element_Attribut.png)
 
 # Develop
 
