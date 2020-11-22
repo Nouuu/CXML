@@ -464,8 +464,19 @@ int attribut_node_parse(dtd_document **document, size_t size, size_t *current_i,
 
         parsing_buffer[parsing_buffer_i] = '\0';
         //TODO TEST : "()"
-
         //TODO TEST : "(   )"
+        parsing_buffer_i = 1;
+        while (isspace(parsing_buffer[parsing_buffer_i])) {
+            parsing_buffer_i++;
+        }
+        if (parsing_buffer[parsing_buffer_i] == ')') {
+            sprintf(message_buffer,
+                    "Error at %s node for '%s' node on '%s' attribute, rule can't be empty ( )",
+                    current_attribute_node->rule_type, current_attribute_node->element_name,
+                    current_attribute_node->attribute_name);
+            logIt(message_buffer, 1);
+            return 0;
+        }
 
         //TODO TEST : "( H |  )"
 
