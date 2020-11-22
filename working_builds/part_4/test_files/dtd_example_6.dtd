@@ -1,0 +1,10 @@
+<!DOCTYPE encyclopedie [
+        <!ELEMENT encyclopedie (personne*)>
+        <!ELEMENT personne (nom,prenom,publication+)>
+        <!ATTLIST personne sexe (H | F) #REQUIRED>
+        <!ATTLIST personne datenaissance CDATA #REQUIRED>
+        <!ELEMENT nom (#PCDATA)>
+        <!ELEMENT prenom (#PCDATA)>
+        <!ELEMENT publication (#PCDATA)>
+        ]>
+
