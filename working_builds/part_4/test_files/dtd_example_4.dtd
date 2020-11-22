@@ -1,0 +1,9 @@
+<!DOCTYPE employee [
+        <!ELEMENT employee (name,designation, email)>
+        <!ATTLIST employee id CDATA #REQUIRED>
+        <!ELEMENT name (#PCDATA)>
+        <!ELEMENT designation (#PCDATA)>
+        <!ATTLIST designation discipline CDATA #IMPLIED>
+        <!ELEMENT email (#PCDATA)>
+        ]>
+
