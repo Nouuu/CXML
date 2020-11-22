@@ -464,84 +464,15 @@ int attribut_node_parse(dtd_document **document, size_t size, size_t *current_i,
 
         parsing_buffer[parsing_buffer_i] = '\0';
         //TODO TEST : "()"
-        if(strlen(parsing_buffer) <= 2){
-            sprintf(message_buffer,
-                    "Error at %s node for %s node, it can't be empty",
-                    current_attribute_node->rule_type, current_attribute_node->attribute_type);
-            logIt(message_buffer, 1);
-            return 0;
-        }
+
         //TODO TEST : "(   )"
-        char *trim_parsing_buffer = strdup(parsing_buffer);
-        int count = 0;
-        for (int i = 0; trim_parsing_buffer[i]; i++)
-            if (trim_parsing_buffer[i] != ' ')
-                trim_parsing_buffer[count++] = trim_parsing_buffer[i];
-        trim_parsing_buffer[count] = '\0';
-        if(strlen(trim_parsing_buffer) <= 2){
-            sprintf(message_buffer,
-                    "Error at %s node for %s node, it can't be empty",
-                    current_attribute_node->rule_type, current_attribute_node->attribute_type);
-            logIt(message_buffer, 1);
-            return 0;
-        }
 
         //TODO TEST : "( H |  )"
-        int index_pipe = 0;
-        bool cara_after_pipe = false;
-        for (int i = 0; i < parsing_buffer_i; i+=1) {
-            if (parsing_buffer[i] == '|'){
-                index_pipe = i;
-                break;
-            }
-        }
-        int i = index_pipe + 1;
-        do {
-            if(isalpha(parsing_buffer[i])){
-                cara_after_pipe = true;
-                break;
-            }
-            i+=1;
-        }while (i < strlen(parsing_buffer) );
-
-        if(!cara_after_pipe){
-            sprintf(message_buffer,
-                    "Error at %s node for %s node, need something after the '|'",
-                    current_attribute_node->rule_type, current_attribute_node->attribute_type);
-            logIt(message_buffer, 1);
-            return 0;
-        }
 
         //TODO TEST : "( H abc | F )"
-        int index_first_cara = 0, index_last_cara = 0;
-        for (int i = 0; i < parsing_buffer_i; i+=1) {
-            if (isalpha(parsing_buffer[i])){
-                index_first_cara = i;
-                break;
-            }
-        }
-        for (int i = index_pipe; i > 0; i-=1) {
-            if (isalpha(parsing_buffer[i])){
-                index_last_cara = i;
-                break;
-            }
-        }
-        if(index_first_cara != index_last_cara){
-            for (int i = index_first_cara; i < index_last_cara; i+=1) {
-                if (isspace(parsing_buffer[i])){
-                    sprintf(message_buffer,
-                            "Error at %s node for %s node, there must be no space",
-                            current_attribute_node->rule_type, current_attribute_node->attribute_type);
-                    logIt(message_buffer, 1);
-                    return 0;
-
-                }
-            }
-        }
 
 
         current_attribute_node->attribute_type = strdup(parsing_buffer);
-
 
 
     } else {
