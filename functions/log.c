@@ -42,7 +42,7 @@ void logIt(char *message, int error) {
         printf("[%s] %s\n", buff, message);
     }*/
     if (error) {
-        console_writeline(message);
+//        console_writeline(message);
         printf("[%s] %s\n", buff, message);
     }
     fprintf(fp, "[%s] %s\n", buff, message);

@@ -29,7 +29,7 @@ add_executable(CXML main.c
         ${required_files})
 
 
-add_executable(CXML_2_V1.0 main_release_cli.c
+add_executable(CXML_2_V1.5 main_release_cli.c
         functions/cli_menu.c
         ${required_files})
 
