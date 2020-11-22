@@ -35,6 +35,7 @@ typedef struct {
 static App_widgets *widgets;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#if defined(__WIN32) || defined(WIN32)
 
 G_MODULE_EXPORT void on_dtdFileChooserButton_file_set();
 
@@ -44,6 +45,7 @@ G_MODULE_EXPORT void on_validateButton_clicked();
 
 G_MODULE_EXPORT void on_flushButton_clicked();
 
+#endif
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void startGTK(int *argc, char ***argv, char *gladeFile);

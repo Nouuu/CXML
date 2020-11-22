@@ -7,8 +7,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#ifdef __unix__
 char *logFile = "log.txt";
-
+#elif defined(__WIN32) || defined(WIN32)
+char *logFile = "C:\\ProgramData\\cxml_log.txt";
+#endif
 char *gladeFile = "gtk_files/window.glade";
 
 void initLogFile();
