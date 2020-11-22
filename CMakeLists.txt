@@ -33,7 +33,7 @@ add_executable(CXML_3_V1.0 main_release_cli.c
         functions/cli_menu.c
         ${required_files})
 
-set(GTK_EXECUTABLE_NAME CXML_GTK_V1.0)
+set(GTK_EXECUTABLE_NAME CXML_GTK_V1.1)
 
 add_executable(${GTK_EXECUTABLE_NAME} main_gtk.c
         functions/cli_menu.c
