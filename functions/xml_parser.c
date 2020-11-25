@@ -479,7 +479,7 @@ parse_attributes(const char *source, int *i, char *parsing_buffer, int *parsing_
         if (source[(*i)] == '\"' || source[(*i)] == '\'') {
             if (!current_attribute.key) {
                 sprintf(message_buffer, "ERROR line %d column %d - attribute's value has no key", line, column);
-                logIt("ERROR - attribute's value has no key", 1);
+                logIt(message_buffer, 1);
                 return ERROR_PARSING;
             }
 
