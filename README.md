@@ -71,7 +71,7 @@ This program has been meant to be cross platform between Linux (Debian based) an
 
 ## Environment
 
-- **Operating system :**Windows or Linux (wsl, ubuntu or other debian based distribution)
+- **Operating system :** Windows or Linux (wsl, ubuntu or other debian based distribution)
 - **CMAKE version:** 3.16.3
 - **C Standard :** C99
 
