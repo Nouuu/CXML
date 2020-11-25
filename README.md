@@ -1,5 +1,9 @@
 # CXML
 
+| ![release](https://img.shields.io/github/v/release/Nouuu/CXML?style=flat-square) | ![contributors](https://img.shields.io/github/contributors/Nouuu/CXML?style=flat-square) | ![status](https://img.shields.io/badge/Status-Ended-brightgreen) |
+| ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
+|||
+
 **Table of contents :**
 
 <!-- toc -->
@@ -17,6 +21,8 @@
   * [Running](#running)
     + [Clion configuration](#clion-configuration)
 - [Get final executable](#get-final-executable)
+- [Final project report](#final-project-report)
+- [Contributors](#contributors)
 
 <!-- tocstop -->
 
@@ -100,3 +106,17 @@ You must set clion run configuration as following if you want to run it directly
 You can go here to download the final release executable (both Linux and Windows) :
 
 https://github.com/Nouuu/CXML/releases
+
+# Final project report
+
+This our team project report :baguette_bread: that resume everything in that project.
+
+ [XML_Rapport.pdf](XML_Rapport.pdf) 
+
+# Contributors
+
+|                                                     |                                                              |
+| --------------------------------------------------- | ------------------------------------------------------------ |
+| [Noé LARRIEU-LACOSTE](https://github.com/Nouuu)     | ![followers](https://img.shields.io/github/followers/nouuu)  |
+| [Isaac OUSLIMANE](https://github.com/IsaacOus)      | ![followers](https://img.shields.io/github/followers/IsaacOus) |
+| [Audrey DI VITO](https://github.com/Audrey-DI-VITO) | ![followers](https://img.shields.io/github/followers/Audrey-DI-VITO) |
