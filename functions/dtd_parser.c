@@ -528,6 +528,52 @@ int attribut_node_parse(dtd_document **document, size_t size, size_t *current_i,
             previous_pipe = next_pipe;
         }
 
+        previous_pipe = parsing_buffer;
+
+        while (previous_pipe != NULL) {
+            if (*previous_pipe != ')') {
+                next_pipe = strchr(previous_pipe + 1, ',');
+                if (!next_pipe) {
+                    next_pipe = strchr(previous_pipe + 1, ')');
+                }
+            } else {
+                break;
+            }
+            previous_pipe++;
+
+            while (isspace(*previous_pipe)) {
+                previous_pipe++;
+            }
+
+            if (next_pipe == previous_pipe) {
+                sprintf(message_buffer,
+                        "Error at %s node for '%s' node on '%s' attribute, you must add something before and after ','",
+                        current_attribute_node->rule_type, current_attribute_node->element_name,
+                        current_attribute_node->attribute_name);
+                logIt(message_buffer, 1);
+                return 0;
+            }
+
+            while (!isspace(*previous_pipe) && previous_pipe < next_pipe) {
+                previous_pipe++;
+            }
+
+            while (isspace(*previous_pipe)) {
+                previous_pipe++;
+            }
+
+            if (next_pipe != previous_pipe) {
+                sprintf(message_buffer,
+                        "Error at %s node for '%s' node on '%s' attribute, you can't put multiple words in conditional rule",
+                        current_attribute_node->rule_type, current_attribute_node->element_name,
+                        current_attribute_node->attribute_name);
+                logIt(message_buffer, 1);
+                return 0;
+            }
+
+            previous_pipe = next_pipe;
+        }
+
         current_attribute_node->attribute_type = strdup(parsing_buffer);
 
     } else {
