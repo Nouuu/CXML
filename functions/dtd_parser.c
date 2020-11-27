@@ -153,7 +153,6 @@ int parse_dtd(dtd_document *document) {
     }
 
     //////////// GO TO '[' //////////////
-    return 0;
 }
 
 int is_doctype(dtd_document *document, size_t size) {

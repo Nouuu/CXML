@@ -33,12 +33,13 @@ if (UNIX)
     set(CMAKE_EXE_LINKER_FLAGS "-Wl,-export-dynamic")
 endif (UNIX)
 
+add_executable(unit_test main.c
+        tests/xml_parsing_test.c
+        ${required_files})
 
 add_executable(${CLI_APP_NAME}
         main_release_cli.c
         ${required_files})
-
-set(GTK_EXECUTABLE_NAME CXML_GTK_V1.7)
 
 add_executable(${GTK_APP_NAME}
         main_gtk.c
