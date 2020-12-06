@@ -4,8 +4,8 @@ project(CXML C)
 set(CMAKE_C_STANDARD 99)
 
 set(PROJECT_NAME CXML)
-set(CLI_APP_VERSION 1.8)
-set(GTK_APP_VERSION 1.7)
+set(CLI_APP_VERSION 1.9)
+set(GTK_APP_VERSION 1.8)
 
 set(CLI_APP_NAME ${PROJECT_NAME}_CLI_${CLI_APP_VERSION})
 set(GTK_APP_NAME ${PROJECT_NAME}_GTK_${GTK_APP_VERSION})
@@ -47,3 +47,5 @@ add_executable(${GTK_APP_NAME}
         ${required_files})
 
 target_link_libraries(${GTK_APP_NAME} ${GTK3_LIBRARIES})
+
+target_compile_definitions(${GTK_APP_NAME} PRIVATE gtk)
