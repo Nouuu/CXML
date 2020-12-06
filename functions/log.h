@@ -18,5 +18,9 @@ int setLogFileName(char *filename);
 
 void logIt(char *message, int error);
 
+#ifdef gtk
+
 void console_writeline(const char *text);
+
+#endif
 #endif //CXML_LOG_H

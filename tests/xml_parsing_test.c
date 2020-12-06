@@ -3,29 +3,10 @@
 //
 
 #include "xml_parsing_test.h"
-
-void change_console_color() {
-#ifdef __unix__
-    printf("\033[1;32m");
-#elif defined(_WIN32)
-    HANDLE H = GetStdHandle(STD_OUTPUT_HANDLE);
-    SetConsoleTextAttribute(H, 2);
-#endif
-
-}
-
-void reset_console_color() {
-#ifdef __unix__
-    printf("\033[0m");
-#elif defined(_WIN32)
-    HANDLE H = GetStdHandle(STD_OUTPUT_HANDLE);
-    SetConsoleTextAttribute(H, 0);
-#endif
-
-}
+#include "console_color.h"
 
 void run_xml_parse_test() {
-    change_console_color();
+    change_console_color(green);
 
     printf("\n---- Running xml parsing test ----\n");
 

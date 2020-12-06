@@ -2,6 +2,8 @@
 // Created by Unknow on 20/11/2020.
 //
 
+
+
 #include "gtkFunctions.h"
 #include "log.h"
 #include <stdio.h>
@@ -13,6 +15,8 @@ char *logFile = "log.txt";
 char *logFile = "C:\\ProgramData\\cxml_log.txt";
 #endif
 char *gladeFile = "gtk_files/window.glade";
+App_widgets *widgets;
+
 
 void initLogFile();
 

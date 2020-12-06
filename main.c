@@ -17,44 +17,9 @@ int main(int argc, char **argv) {
     initLogFile();
 
     /////////////////////
-//    run_xml_parse_test();
+    run_xml_parse_test();
     /////////////////////
 
-    if (validate_dtd("xml_files/xml_example_6.xml", "dtd_files/dtd_example_6.dtd")) {
-        printf("DTD Test 1 valided\n");
-    }
-
-
-//    parse_line_elements(list);
-
-/*
-    xml_document document;
-    xml_document_load(&document, "xml_example_1.xml");
-
-    xml_node_list *fields = get_nodes("field", document);
-
-    process_pc_data("classroom", document);
-    get_node_attribute("key", document.root_node);
-    node_contain_required_attribute("key", document.root_node);
-
-    char **children_tag = malloc(sizeof(char *) * 4);
-    children_tag[0] = strdup("classroom");
-    children_tag[1] = strdup("key");
-    children_tag[2] = strdup("test");
-    children_tag[3] = strdup("text");
-    attribute_contain_required_value(document.root_node->attribute_list.data, (const char **) children_tag,
-                                     4);
-
-    node_contain_only_children_optional(document.root_node, "classroom");
-    node_contain_only_one_child_required(document.root_node, "classroom");
-    node_contain_only_one_child_optional(document.root_node, "classroom");
-    node_contain_only_children_required(document.root_node, "classroom");
-
-    check_node_child_position(document.root_node, "classroom", 2);
-
-    xml_document_free(&document);
-
-    return 0;*/
 }
 
 void initLogFile() {
